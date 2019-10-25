@@ -25,6 +25,11 @@ OpenCascadeShapeDifference::usage = "";
 OpenCascadeShapeIntersection::usage = "";
 OpenCascadeShapeUnion::usage = "";
 
+OpenCascadeShapeSurfaceMesh::usage = "";
+OpenCascadeShapeSurfaceMeshCoordinates::usage = "";
+OpenCascadeShapeSurfaceMeshElements::usage = "";
+OpenCascadeShapeSurfaceMeshElementOffsets::usage = "";
+
 OpenCascadeShapeExport::usage = "OpenCascadeShapeExport[ \"file.ext\", expr] exports data from a OpenCascadeShape expression into a file. OpenCascadeShapeExport[ \"file\", expr, \"format\"] exports data in the specified format."
 
 (*
@@ -34,6 +39,7 @@ OpenCascadeShapeImport::usage = "OpenCascadeShapeImport[ \"file.ext\", expr] imp
 *)
 
 Options[OpenCascadeShapeExport] = {"MaxBoundaryCellMeasure"->Automatic};
+Options[OpenCascadeShapeSurfaceMesh] = {};
 
 Begin["`Private`"]
 
@@ -57,23 +63,28 @@ needInitialization = True;
  Load all the functions from the OpenCascade library.
 *)
 LoadOpenCascade[] :=
-	Module[{},
-		deleteFun	= LibraryFunctionLoad[$OpenCascadeLibrary, "delete_ocShapeInstance", {Integer}, Integer];
+Module[{},
+	deleteFun	= LibraryFunctionLoad[$OpenCascadeLibrary, "delete_ocShapeInstance", {Integer}, Integer];
 
-		ocShapeInstanceListFun	= LibraryFunctionLoad[$OpenCascadeLibrary, "ocShapeInstanceList", {}, {Integer,1}];
-		makeBallFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeBall", {Integer, {Real, 1, "Shared"}, Real}, Integer];
-		makeConeFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeCone", {Integer, {Real, 1, "Shared"}, {Real, 1, "Shared"}, Real, Real}, Integer];
-		makeCuboidFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeCuboid", {Integer, {Real, 1, "Shared"}, {Real, 1, "Shared"}}, Integer];
-		makeCylinderFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeCylinder", {Integer, {Real, 1, "Shared"}, {Real, 1, "Shared"}, Real, Real}, Integer];
+	ocShapeInstanceListFun	= LibraryFunctionLoad[$OpenCascadeLibrary, "ocShapeInstanceList", {}, {Integer,1}];
+	makeBallFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeBall", {Integer, {Real, 1, "Shared"}, Real}, Integer];
+	makeConeFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeCone", {Integer, {Real, 1, "Shared"}, {Real, 1, "Shared"}, Real, Real}, Integer];
+	makeCuboidFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeCuboid", {Integer, {Real, 1, "Shared"}, {Real, 1, "Shared"}}, Integer];
+	makeCylinderFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeCylinder", {Integer, {Real, 1, "Shared"}, {Real, 1, "Shared"}, Real, Real}, Integer];
 
-		makeDifferenceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeDifference", {Integer, Integer, Integer}, Integer];
-		makeIntersectionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeIntersection", {Integer, Integer, Integer}, Integer];
-		makeUnionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeUnion", {Integer, Integer, Integer}, Integer];
+	makeDifferenceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeDifference", {Integer, Integer, Integer}, Integer];
+	makeIntersectionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeIntersection", {Integer, Integer, Integer}, Integer];
+	makeUnionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeUnion", {Integer, Integer, Integer}, Integer];
 
-		fileOperationFun = LibraryFunctionLoad[$OpenCascadeLibrary, "fileOperation", LinkObject, LinkObject];
+	makeSurfaceMeshFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSurfaceMesh", {Integer, {Real, 1, "Shared"}, {Integer, 1, "Shared"}}, Integer];
+	getSurfaceMeshCoordinatesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getSurfaceMeshCoordinates", {Integer}, {Real, 2}];
+	getSurfaceMeshElementsFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getSurfaceMeshElements", {Integer}, {Integer, 2}];
+	getSurfaceMeshElementOffsetsFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getSurfaceMeshElementOffsets", {Integer}, {Integer, 1}];
 
-		needInitialization = False;
-	]
+	fileOperationFun = LibraryFunctionLoad[$OpenCascadeLibrary, "fileOperation", LinkObject, LinkObject];
+
+	needInitialization = False;
+]
 
 
 (*
@@ -413,6 +424,64 @@ Module[{instance, res, origin, radius},
 	If[ res =!= 0, Return[$Failed, Module]];
 
 	instance
+]
+
+
+OpenCascadeShapeSurfaceMesh[
+	OpenCascadeShapeExpression[ id_]?(testOpenCascadeShapeExpression[OpenCascadeShapeSurfaceMesh]),
+	opts:OptionsPattern[OpenCascadeShapeSurfaceMesh]
+] := 
+Module[{res, realParams, boolParams},
+
+	realParams = pack[{
+		(* Angle *)				0.5,
+		(* Deflection *)		0.01,
+		(* AngleInterior *)		0.,
+		(* DeflectionInterior*)	0.,
+		(* MinSize *)			0.
+	}];
+
+	boolParams = pack[Boole[{
+		(* InParallel *)				False,
+		(* Relative *)					False,
+		(* InternalVerticesMode *)		True,
+		(* ControlSurfaceDeflection *)	True,
+		(* CleanModel *) 				False,
+		(* AdjustMinSize *)				False
+	}]];
+
+	res = makeSurfaceMeshFun[ id, realParams, boolParams];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	Null
+]
+
+OpenCascadeShapeSurfaceMeshCoordinates[
+	OpenCascadeShapeExpression[ id_]?(testOpenCascadeShapeExpression[OpenCascadeShapeSurfaceMeshCoordinates]),
+	opts:OptionsPattern[OpenCascadeShapeSurfaceMeshCoordinates]
+] :=
+Module[{coords},
+	coords = getSurfaceMeshCoordinatesFun[id];
+	coords
+]
+
+
+OpenCascadeShapeSurfaceMeshElements[
+	OpenCascadeShapeExpression[ id_]?(testOpenCascadeShapeExpression[OpenCascadeShapeSurfaceMeshElements]),
+	opts:OptionsPattern[OpenCascadeShapeSurfaceMeshElements]
+] :=
+Module[{ele},
+	ele = getSurfaceMeshElementsFun[id];
+	ele	
+]
+
+OpenCascadeShapeSurfaceMeshElementOffsets[
+	OpenCascadeShapeExpression[ id_]?(testOpenCascadeShapeExpression[OpenCascadeShapeSurfaceMeshElementOffsets]),
+	opts:OptionsPattern[OpenCascadeShapeSurfaceMeshElementOffsets]
+] :=
+Module[{offsets},
+	offsets = getSurfaceMeshElementOffsetsFun[id];
+	offsets
 ]
 
 End[]
