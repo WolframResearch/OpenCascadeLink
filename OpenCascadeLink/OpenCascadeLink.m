@@ -388,9 +388,9 @@ OpenCascadeShape[Cylinder[{pMin_, pMax_}, r_]] /;
 Module[{instance, res, origin, h},
 
 	p1 = pack[ N[ pMin]];
-	p2 = pack[ N[ pMax]];
+	p2 = pack[ N[ pMax]] - p1;
 
-	h = Norm[p1 - p2];
+	h = Norm[pMin - pMax];
 
 	instance = OpenCascadeShapeCreate[];
 	res = makeCylinderFun[ instanceID[ instance], p1, p2, r, h];
