@@ -30,6 +30,8 @@ OpenCascadeShapeSurfaceMeshCoordinates::usage = "";
 OpenCascadeShapeSurfaceMeshElements::usage = "";
 OpenCascadeShapeSurfaceMeshElementOffsets::usage = "";
 
+OpenCascadeShapeSurfaceMeshToBoundaryMesh::usage = "";
+
 OpenCascadeShapeExport::usage = "OpenCascadeShapeExport[ \"file.ext\", expr] exports data from a OpenCascadeShape expression into a file. OpenCascadeShapeExport[ \"file\", expr, \"format\"] exports data in the specified format."
 
 (*
@@ -38,8 +40,16 @@ OpenCascadeShapeImport::usage = "OpenCascadeShapeImport[ \"file.ext\", expr] imp
 
 *)
 
-Options[OpenCascadeShapeExport] = {"MaxBoundaryCellMeasure"->Automatic};
-Options[OpenCascadeShapeSurfaceMesh] = {};
+Options[OpenCascadeShapeExport] = {"ShapeSurfaceMeshOptions"->Automatic};
+Options[OpenCascadeShapeSurfaceMesh] = Sort[ {
+	"LinearDeflection"->Automatic,
+	"AngularDeflection"->Automatic
+}];
+
+Options[OpenCascadeShapeSurfaceMeshToBoundaryMesh] = Sort[{
+	"ShapeSurfaceMeshOptions"->Automatic,
+	"ElementMeshOptions"->Automatic
+}];
 
 Begin["`Private`"]
 
@@ -212,11 +222,11 @@ OpenCascadeShapeExport[
 	opts:OptionsPattern[OpenCascadeShapeExport]
 ] :=
 Module[{res, formName, fileName, fileWithExtension,
-	fns, newDir, validDirQ},
+	fns, newDir, validDirQ, surfaceMeshOpts},
 	formName = Switch[ form,
 					"STL" | "stl", "STL",
 					_, $Failed];
-	If[ formName === $Failed, Return[ $Failed]];
+	If[ formName === $Failed, Return[ $Failed, Module]];
 
 	fileWithExtension = file;
 	If[ FileExtension[file]=="",
@@ -228,14 +238,14 @@ Module[{res, formName, fileName, fileWithExtension,
 
 	If[ Length[fns] == 0,
 		Message[OpenCascadeShapeExport::file, form, fileWithExtension];
-		Return[$Failed];
+		Return[$Failed, Module];
 	];
 
 	If[ Length[fns] >= 1,
 		fileName = FileBaseName[ Last[fns]];
 		,
 		Message[OpenCascadeShapeExport::file, form, fileWithExtension];
-		Return[$Failed];
+		Return[$Failed, Module];
 	];
 
 	If[ Length[fns] > 1,
@@ -243,16 +253,27 @@ Module[{res, formName, fileName, fileWithExtension,
 		validDirQ = DirectoryQ[newDir];
 		If[ !validDirQ,
 			Message[OpenCascadeShapeExport::file, form, fileWithExtension];
-			Return[$Failed];
+			Return[$Failed, Module];
 		,
 			SetDirectory[newDir];
 		];
 	];
 
-	mbcm = N[ OptionValue["MaxBoundaryCellMeasure"]];
-	If[ !NumericQ[ mbcm], mbcm = 0.01;];
+	If[ formName === "STL",
+		surfaceMeshOpts = Flatten[{ OptionValue["ShapeSurfaceMeshOptions"]}];
+		If[ surfaceMeshOpts === {Automatic}, surfaceMeshOpts = {}];
+		surfaceMeshOpts = FilterRules[surfaceMeshOpts,
+			Options[OpenCascadeShapeSurfaceMesh]];
 
-	res = fileOperationFun[ id, StringJoin[fileName, ".", form], formName, mbcm];
+		ok = OpenCascadeShapeSurfaceMesh[ OpenCascadeShapeExpression[ id],
+			surfaceMeshOpts];
+		If[ ok === $Failed,
+			Message[OpenCascadeShapeExport::file, form, fileWithExtension];
+			Return[$Failed, Module];
+		];
+	];
+
+	res = fileOperationFun[ id, StringJoin[fileName, ".", form], formName];
 
 	If[ validDirQ,
 		ResetDirectory[];
@@ -431,11 +452,24 @@ OpenCascadeShapeSurfaceMesh[
 	OpenCascadeShapeExpression[ id_]?(testOpenCascadeShapeExpression[OpenCascadeShapeSurfaceMesh]),
 	opts:OptionsPattern[OpenCascadeShapeSurfaceMesh]
 ] := 
-Module[{res, realParams, boolParams},
+Module[{res, realParams, boolParams, ldeflection, adeflection},
+
+	(* TODO: this is an absolute value and should be scaled
+		with the shape bounds. *)
+	ldeflection = N[ OptionValue["LinearDeflection"]];
+	If[ !NumericQ[ ldeflection] || ldeflection <= 0.,
+		ldeflection = 0.01
+	];
+
+	adflection = N[ OptionValue["AngularDeflection"]];
+	If[ !NumericQ[ adeflection] || adeflection <= 0.,
+		adeflection = 0.5
+	];	
+
 
 	realParams = pack[{
-		(* Angle *)				0.5,
-		(* Deflection *)		0.01,
+		(* Angle *)				adeflection,
+		(* Deflection *)		ldeflection,
 		(* AngleInterior *)		0.,
 		(* DeflectionInterior*)	0.,
 		(* MinSize *)			0.
@@ -482,6 +516,50 @@ OpenCascadeShapeSurfaceMeshElementOffsets[
 Module[{offsets},
 	offsets = getSurfaceMeshElementOffsetsFun[id];
 	offsets
+]
+
+OpenCascadeShapeSurfaceMeshToBoundaryMesh[
+	instance:OpenCascadeShapeExpression[ id_]?(testOpenCascadeShapeExpression[OpenCascadeShapeSurfaceMeshToBoundaryMesh]),
+	opts:OptionsPattern[OpenCascadeShapeSurfaceMeshToBoundaryMesh]
+] := 
+Module[
+	{surfaceMeshOpts, ok, coords, bEle, offsets, stop, start, spans, markers,
+	markerOffset},
+
+	surfaceMeshOpts = Flatten[{ OptionValue["ShapeSurfaceMeshOptions"]}];
+	If[ surfaceMeshOpts === {Automatic}, surfaceMeshOpts = {}];
+	surfaceMeshOpts = FilterRules[surfaceMeshOpts,
+		Options[OpenCascadeShapeSurfaceMesh]];
+
+	ok = OpenCascadeShapeSurfaceMesh[ instance, surfaceMeshOpts];
+	If[ ok === $Failed, Return[$Failed, Module]; ];
+
+	coords = OpenCascadeShapeSurfaceMeshCoordinates[instance];
+	bEle = OpenCascadeShapeSurfaceMeshElements[instance];
+	offsets = OpenCascadeShapeSurfaceMeshElementOffsets[instance];
+
+	elementMeshOpts = Flatten[{ OptionValue["ElementMeshOptions"]}];
+	If[ elementMeshOpts === {Automatic}, elementMeshOpts = {}];
+	elementMeshOpts = FilterRules[elementMeshOpts,
+		Options[NDSolve`FEM`ToBoundaryMesh]];
+
+	markerOffset = OptionValue[NDSolve`FEM`ToBoundaryMesh,
+		elementMeshOpts, "MarkerOffset"];
+	If[ !MatchQ[ markerOffset, {_Integer?Positive}],
+		markerOffset = 0;
+	];
+
+	stop = FoldList[Plus, offsets];
+	start = Most[Join[{1}, stop + 1]];
+	spans = MapThread[Span, {start, stop}];
+	markers = MapThread[ ConstantArray[#1, #2]&,
+		{Range[Length[offsets]] + markerOffset, offsets}];
+	bEle = MapThread[NDSolve`FEM`TriangleElement,
+		{bEle[[#]] & /@ spans, markers}];
+
+	elementMeshOpts = FilterRules[elementMeshOpts,
+		Options[NDSolve`FEM`ElementMesh]];
+	NDSolve`FEM`ElementMesh[coords, Automatic, bEle, elementMeshOpts]
 ]
 
 End[]

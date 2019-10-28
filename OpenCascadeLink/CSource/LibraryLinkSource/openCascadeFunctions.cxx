@@ -415,7 +415,7 @@ DLLEXPORT int makeSurfaceMesh(WolframLibraryData libData, mint Argc, MArgument *
 	libData->MTensor_disown(tenPts2);
 
 
-	BRepMesh_IncrementalMesh Mesh( *instance, 0.01);
+	BRepMesh_IncrementalMesh Mesh( *instance, meshParams);
 	Mesh.Perform();
 	const Standard_Integer ok = !Mesh.GetStatusFlags();
 
@@ -649,13 +649,10 @@ DLLEXPORT int fileOperation(WolframLibraryData libData, MLINK mlp)
 	const char *fName = NULL;
 	const char *fType = NULL;
 
-	/* MaxBoundaryCellMeasure */
-	double mbcm;
-
 	if ( !MLTestHead( mlp, "List", &len))
 		return returnRes(mlp, fName, fType, LIBRARY_FUNCTION_ERROR);
 
-	if ( len != 4)
+	if ( len != 3)
 		return returnRes(mlp, fName, fType, LIBRARY_FUNCTION_ERROR);
 
 	if ( !MLGetInteger( mlp, &id))
@@ -665,9 +662,6 @@ DLLEXPORT int fileOperation(WolframLibraryData libData, MLINK mlp)
 		return returnRes(mlp, fName, fType, LIBRARY_FUNCTION_ERROR);
 
 	if ( !MLGetString(mlp, &fType))
-		return returnRes(mlp, fName, fType, LIBRARY_FUNCTION_ERROR);
-
-	if ( !MLGetReal( mlp, &mbcm))
 		return returnRes(mlp, fName, fType, LIBRARY_FUNCTION_ERROR);
 
 	if ( !MLNewPacket(mlp) )
@@ -681,13 +675,7 @@ DLLEXPORT int fileOperation(WolframLibraryData libData, MLINK mlp)
 	}
 	else if ( strcmp( fType, "STL") == 0) {
 		StlAPI_Writer stl_writer;
-		BRepMesh_IncrementalMesh Mesh( *instance, mbcm);
-		Mesh.Perform();
-		const Standard_Integer success = Mesh.GetStatusFlags();
-		if (!success) {
-			resStr = "False";
-			goto done;
-		}
+		/* there needs to be a mesh in the instance for this to work */
 		if ( !stl_writer.Write(*instance, (char*)fName)) {
 			resStr = "False";
 		}
@@ -700,7 +688,6 @@ DLLEXPORT int fileOperation(WolframLibraryData libData, MLINK mlp)
 	}
 */
 
-done:
 	if ( MLPutSymbol( mlp, resStr)) {
 		res = 0;
 	}
