@@ -24,6 +24,7 @@ OpenCascadeShape::usage = "";
 OpenCascadeShapeDifference::usage = "";
 OpenCascadeShapeIntersection::usage = "";
 OpenCascadeShapeUnion::usage = "";
+OpenCascadeShapeBooleanRegion::usage = "";
 
 OpenCascadeShapeSurfaceMesh::usage = "";
 OpenCascadeShapeSurfaceMeshCoordinates::usage = "";
@@ -109,8 +110,10 @@ testOpenCascadeShapeExpression[][e_] := testOpenCascadeShapeExpression[OpenCasca
 testOpenCascadeShapeExpression[mhead_Symbol][e_] := 
 	If[
 		TrueQ[OpenCascadeShapeExpressionQ[e]], 
-		True,
-		Message[MessageName[mhead,"ocinst"], e]; False
+		True
+	,
+		Message[MessageName[mhead,"ocinst"], e];
+		False
 	];
 	
 testOpenCascadeShapeExpression[_][e_] :=	TrueQ[OpenCascadeShapeExpressionQ[e]];
@@ -411,42 +414,92 @@ OpenCascadeShape[Cylinder[{pMin, pMax}, 1.]]
 	open cascde boolean operation
 *)
 
-OpenCascadeShapeDifference[
-	OpenCascadeShapeExpression[ id1_]?(testOpenCascadeShapeExpression[OpenCascadeUnion]),
-	OpenCascadeShapeExpression[ id2_]?(testOpenCascadeShapeExpression[OpenCascadeUnion])] :=
-Module[{instance, res, origin, radius},
+OpenCascadeShapeDifference[ shape1_] /; 
+	OpenCascadeShapeExpressionQ[shape1] := shape1
+
+OpenCascadeShapeDifference[ shape1_, shape2_] /; And[
+	OpenCascadeShapeExpressionQ[shape1],
+	OpenCascadeShapeExpressionQ[shape2]
+] := Module[
+	{instance, id1, id2, res, origin, radius},
 
 	instance = OpenCascadeShapeCreate[];
+	id1 = instanceID[ shape1];
+	id2 = instanceID[ shape2];
 	res = makeDifferenceFun[ instanceID[ instance], id1, id2];
 	If[ res =!= 0, Return[$Failed, Module]];
 
 	instance
 ]
 
-OpenCascadeShapeIntersection[
-	OpenCascadeShapeExpression[ id1_]?(testOpenCascadeShapeExpression[OpenCascadeUnion]),
-	OpenCascadeShapeExpression[ id2_]?(testOpenCascadeShapeExpression[OpenCascadeUnion])] :=
-Module[{instance, res, origin, radius},
+OpenCascadeShapeDifference[eN__] := Fold[OpenCascadeShapeDifference, {eN}]
+
+
+OpenCascadeShapeIntersection[ shape1_] /; 
+	OpenCascadeShapeExpressionQ[shape1] := shape1
+
+OpenCascadeShapeIntersection[ shape1_, shape2_] /; And[
+	OpenCascadeShapeExpressionQ[shape1],
+	OpenCascadeShapeExpressionQ[shape2]
+] := Module[
+	{instance, id1, id2, res, origin, radius},
 
 	instance = OpenCascadeShapeCreate[];
+	id1 = instanceID[ shape1];
+	id2 = instanceID[ shape2];
 	res = makeIntersectionFun[ instanceID[ instance], id1, id2];
 	If[ res =!= 0, Return[$Failed, Module]];
 
 	instance
 ]
 
-OpenCascadeShapeUnion[
-	OpenCascadeShapeExpression[ id1_]?(testOpenCascadeShapeExpression[OpenCascadeUnion]),
-	OpenCascadeShapeExpression[ id2_]?(testOpenCascadeShapeExpression[OpenCascadeUnion])] :=
-Module[{instance, res, origin, radius},
+OpenCascadeShapeIntersection[eN__] := Fold[OpenCascadeShapeIntersection, {eN}]
+
+
+OpenCascadeShapeUnion[ shape1_] /; 
+	OpenCascadeShapeExpressionQ[shape1] := shape1
+
+OpenCascadeShapeUnion[shape1_, shape2_] /; And[ 
+		OpenCascadeShapeExpressionQ[shape1],
+		OpenCascadeShapeExpressionQ[shape2]
+] := Module[
+	{instance, id1, id2, res, origin, radius},
 
 	instance = OpenCascadeShapeCreate[];
+	id1 = instanceID[ shape1];
+	id2 = instanceID[ shape2];
 	res = makeUnionFun[ instanceID[ instance], id1, id2];
 	If[ res =!= 0, Return[$Failed, Module]];
 
 	instance
 ]
 
+OpenCascadeShapeUnion[eN__] := Fold[OpenCascadeShapeUnion, {eN}]
+
+
+OpenCascadeShapeBooleanRegion[ br_BooleanRegion] /; Length[br] == 2 :=
+Module[
+	{booleanFunction, regions},
+
+	(* TODO: check for Xor and complain *)
+	booleanFunction = br[[1]] /. {
+		Or :> OpenCascadeShapeUnion,
+		And[s1_, Not[s2_]] :> OpenCascadeShapeDifference[s1, s2],
+		And[Not[s2_], s1_] :> OpenCascadeShapeDifference[s1, s2],
+		And :> OpenCascadeShapeIntersection
+	};
+
+	regions = OpenCascadeShape /@ br[[2]];
+	(* TODO: check that all regions valid *)
+
+	booleanFunction @@ regions
+]
+
+
+
+(*
+	surface meshing and meshed component extraction
+*)
 
 OpenCascadeShapeSurfaceMesh[
 	OpenCascadeShapeExpression[ id_]?(testOpenCascadeShapeExpression[OpenCascadeShapeSurfaceMesh]),
