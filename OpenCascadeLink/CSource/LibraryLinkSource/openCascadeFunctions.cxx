@@ -27,6 +27,9 @@
 
 #include <StlAPI_Writer.hxx>
 
+#include <STEPControl_Reader.hxx>
+#include <STEPControl_Writer.hxx>
+
 
 extern "C" {
 
@@ -647,52 +650,69 @@ DLLEXPORT int fileOperation(WolframLibraryData libData, MLINK mlp)
 	int len;
 
 	const char *fName = NULL;
-	const char *fType = NULL;
+	const char *opType = NULL;
 
 	if ( !MLTestHead( mlp, "List", &len))
-		return returnRes(mlp, fName, fType, LIBRARY_FUNCTION_ERROR);
+		return returnRes(mlp, fName, opType, LIBRARY_FUNCTION_ERROR);
 
 	if ( len != 3)
-		return returnRes(mlp, fName, fType, LIBRARY_FUNCTION_ERROR);
+		return returnRes(mlp, fName, opType, LIBRARY_FUNCTION_ERROR);
 
 	if ( !MLGetInteger( mlp, &id))
-		return returnRes(mlp, fName, fType, LIBRARY_FUNCTION_ERROR);
+		return returnRes(mlp, fName, opType, LIBRARY_FUNCTION_ERROR);
 
 	if ( !MLGetString(mlp, &fName))
-		return returnRes(mlp, fName, fType, LIBRARY_FUNCTION_ERROR);
+		return returnRes(mlp, fName, opType, LIBRARY_FUNCTION_ERROR);
 
-	if ( !MLGetString(mlp, &fType))
-		return returnRes(mlp, fName, fType, LIBRARY_FUNCTION_ERROR);
+	if ( !MLGetString(mlp, &opType))
+		return returnRes(mlp, fName, opType, LIBRARY_FUNCTION_ERROR);
 
 	if ( !MLNewPacket(mlp) )
-		return returnRes(mlp, fName, fType, LIBRARY_FUNCTION_ERROR);
+		return returnRes(mlp, fName, opType, LIBRARY_FUNCTION_ERROR);
 
 	const char* resStr = "True";
 
 	TopoDS_Shape* instance = get_ocShapeInstance(id);
-	if ((*instance).IsNull()) {
-		resStr = "False";
-	}
-	else if ( strcmp( fType, "STL") == 0) {
+	if ( strcmp( opType, "save_stl") == 0) {
 		StlAPI_Writer stl_writer;
 		/* there needs to be a mesh in the instance for this to work */
+		/* TODO: check? */
 		if ( !stl_writer.Write(*instance, (char*)fName)) {
 			resStr = "False";
 		}
 	}
-/*
-	else if ( strcmp( fType, "load_poly") == 0) {
-		if ( !instance->load_poly( (char*)fName)) {
+	else if ( strcmp( opType, "save_step") == 0) {
+		STEPControl_Writer step_writer;
+		step_writer.Transfer(*instance, STEPControl_ManifoldSolidBrep);
+		if ( !step_writer.Write((char*)fName)) {
 			resStr = "False";
 		}
 	}
-*/
+	else if ( strcmp( opType, "load_step") == 0) {
+		STEPControl_Reader reader; 
+		IFSelect_ReturnStatus status = reader.ReadFile( (char*)fName);
+		if( status != IFSelect_RetDone) {
+			resStr = "False";
+			goto done;
+		}
 
+		//reader.PrintCheckLoad(Standard_False, IFSelect_ItemsByEntity); 
+		reader.TransferRoots();
+		//reader.PrintCheckTransfer (Standard_False, IFSelect_CountByItem);
+
+		TopoDS_Shape shape = reader.OneShape();
+		*instance = shape;
+	}
+	else {
+		resStr = "False";
+	}
+
+done:
 	if ( MLPutSymbol( mlp, resStr)) {
 		res = 0;
 	}
 
-	return returnRes(mlp, fName, fType, res);
+	return returnRes(mlp, fName, opType, res);
 }
 
 

@@ -35,11 +35,8 @@ OpenCascadeShapeSurfaceMeshToBoundaryMesh::usage = "";
 
 OpenCascadeShapeExport::usage = "OpenCascadeShapeExport[ \"file.ext\", expr] exports data from a OpenCascadeShape expression into a file. OpenCascadeShapeExport[ \"file\", expr, \"format\"] exports data in the specified format."
 
-(*
-
 OpenCascadeShapeImport::usage = "OpenCascadeShapeImport[ \"file.ext\", expr] imports data from a file into a OpenCascadeShape expression. OpenCascadeShapeImport[ \"file\", expr, \"format\"] imports data in the specified format."
 
-*)
 
 Options[OpenCascadeShapeExport] = {"ShapeSurfaceMeshOptions"->Automatic};
 Options[OpenCascadeShapeSurfaceMesh] = Sort[ {
@@ -147,25 +144,25 @@ OpenCascadeShapeExpressions[] :=
 (*
  Functions for with the file formats that OpenCascade supports
 *)
-OpenCascadeShapeImport::file = "An error was found loading `1` file, `2`. Try Import as an alternative."
 
-OpenCascadeShapeImport[ file:(_String|_File), OpenCascadeShapeExpression[ id_]?(testOpenCascadeShapeExpression[OpenCascadeShapeImport]), form_String] :=
-	Module[{res, formName, fileName, fileWithExtension,
-		fns, newDir, validDirQ},
-		formName = Switch[ form,
-						"node", "load_node",
-						"poly", "load_poly",
-						"pbc", "load_pbc",
-						"var", "load_var",
-						"mtr", "load_mtr",
-						"off", "load_off",
-						"ply", "load_ply",
-						"stl", "load_stl",
-						"mesh", "load_medit",
-						"tetmesh", "load_tetmesh",
-						"voronoi", "load_voronoi",
+OpenCascadeShapeImport::file = "An error was found loading `1` file, `2`."
+
+OpenCascadeShapeImport[ file:(_String|_File)] :=
+	Module[{dir, fileName, ext},
+		dir = FileNameDrop[ file, -1];
+		fileName = FileBaseName[ file];
+		ext = FileExtension[file];
+		If[ dir =!= "", fileName = FileNameJoin[{dir, fileName}]];
+		OpenCascadeShapeImport[ fileName, ext]
+	]
+
+OpenCascadeShapeImport[ file:(_String|_File), form_String] :=
+	Module[{res, fileOperation, fileName, fileWithExtension,
+		fns, newDir, validDirQ, instance},
+		fileOperation = Switch[ form,
+						"stp"|"step", "load_step",
 						_, $Failed];
-		If[ formName === $Failed, Return[ $Failed]];
+		If[ fileOperation === $Failed, Return[ $Failed, Module]];
 
 		fileWithExtension = file;
 		If[ FileExtension[file]=="",
@@ -177,14 +174,14 @@ OpenCascadeShapeImport[ file:(_String|_File), OpenCascadeShapeExpression[ id_]?(
 
 		If[ Length[fns] == 0,
 			Message[OpenCascadeShapeImport::file, form, fileWithExtension];
-			Return[$Failed];
+			Return[$Failed, Module];
 		];
 
 		If[ Length[fns] >= 1,
 			fileName = FileBaseName[ Last[fns]];
 		,
 			Message[OpenCascadeShapeImport::file, form, fileWithExtension];
-			Return[$Failed];
+			Return[$Failed, Module];
 		];
 
 		If[ Length[fns] > 1,
@@ -192,7 +189,7 @@ OpenCascadeShapeImport[ file:(_String|_File), OpenCascadeShapeExpression[ id_]?(
 			validDirQ = DirectoryQ[newDir];
 			If[ !validDirQ,
 				Message[OpenCascadeShapeImport::file, form, fileWithExtension];
-				Return[$Failed];
+				Return[$Failed, Module];
 			,
 				SetDirectory[newDir];
 			];
@@ -201,19 +198,22 @@ OpenCascadeShapeImport[ file:(_String|_File), OpenCascadeShapeExpression[ id_]?(
 		If[ !FileExistsQ[StringJoin[{fileName, ".", form}]],
 			If[ validDirQ, ResetDirectory[]];
 			Message[OpenCascadeShapeImport::file, form, fileWithExtension];
-			Return[$Failed];
+			Return[$Failed, Module];
 		];
 
-		res = fileOperationFun[ id, fileName, formName];
+		instance = OpenCascadeShapeCreate[];
+
+		res = fileOperationFun[ instanceID[ instance],
+			StringJoin[{fileName, ".", form}], fileOperation];
 
 		If[ validDirQ, ResetDirectory[]; ];
 
 		If[ res =!= True,
 			Message[ OpenCascadeShapeImport::file, form, fileWithExtension];
-			$Failed;
+			$Failed
 		,
-			Null
-		];
+			instance
+		]
 	]
 
 OpenCascadeShapeExport::file = "An error was found saving `1` file, `2`."
@@ -221,15 +221,34 @@ OpenCascadeShapeExport::file = "An error was found saving `1` file, `2`."
 OpenCascadeShapeExport[
 	file:(_String|_File),
 	OpenCascadeShapeExpression[ id_]?(testOpenCascadeShapeExpression[OpenCascadeShapeExport]),
+	opts:OptionsPattern[OpenCascadeShapeExport]] :=
+Module[
+	{dir, fileName, ext},
+	dir = FileNameDrop[ file, -1];
+	fileName = FileBaseName[ file];
+	ext = FileExtension[file];
+	If[ dir =!= "", fileName = FileNameJoin[{dir, fileName}]];
+	OpenCascadeShapeExport[
+		fileName, 
+		OpenCascadeShapeExpression[id],
+		ext,
+		opts
+	]
+]
+
+OpenCascadeShapeExport[
+	file:(_String|_File),
+	OpenCascadeShapeExpression[ id_]?(testOpenCascadeShapeExpression[OpenCascadeShapeExport]),
 	form_String,
 	opts:OptionsPattern[OpenCascadeShapeExport]
 ] :=
-Module[{res, formName, fileName, fileWithExtension,
+Module[{res, fileOperation, fileName, fileWithExtension,
 	fns, newDir, validDirQ, surfaceMeshOpts},
-	formName = Switch[ form,
-					"STL" | "stl", "STL",
+	fileOperation = Switch[ form,
+					"STL" | "stl", "save_stl",
+					"step" | "stp", "save_step",
 					_, $Failed];
-	If[ formName === $Failed, Return[ $Failed, Module]];
+	If[ fileOperation === $Failed, Return[ $Failed, Module]];
 
 	fileWithExtension = file;
 	If[ FileExtension[file]=="",
@@ -262,7 +281,7 @@ Module[{res, formName, fileName, fileWithExtension,
 		];
 	];
 
-	If[ formName === "STL",
+	If[ fileOperation === "save_stl",
 		surfaceMeshOpts = Flatten[{ OptionValue["ShapeSurfaceMeshOptions"]}];
 		If[ surfaceMeshOpts === {Automatic}, surfaceMeshOpts = {}];
 		surfaceMeshOpts = FilterRules[surfaceMeshOpts,
@@ -276,7 +295,7 @@ Module[{res, formName, fileName, fileWithExtension,
 		];
 	];
 
-	res = fileOperationFun[ id, StringJoin[fileName, ".", form], formName];
+	res = fileOperationFun[ id, StringJoin[fileName, ".", form], fileOperation];
 
 	If[ validDirQ,
 		ResetDirectory[];
@@ -289,32 +308,6 @@ Module[{res, formName, fileName, fileWithExtension,
 		Null
 	];
 ]
-
-OpenCascadeShapeImport[ file:(_String|_File), OpenCascadeShapeExpression[ id_]?(testOpenCascadeShapeExpression[OpenCascadeShapeImport])] :=
-	Module[{dir, fileName, ext},
-		dir = FileNameDrop[ file, -1];
-		fileName = FileBaseName[ file];
-		ext = FileExtension[file];
-		If[ dir =!= "", fileName = FileNameJoin[{dir, fileName}]];
-		OpenCascadeShapeImport[ fileName, OpenCascadeShapeExpression[id], ext]
-	]
-
-OpenCascadeShapeExport[
-	file:(_String|_File),
-	OpenCascadeShapeExpression[ id_]?(testOpenCascadeShapeExpression[OpenCascadeShapeExport]),
-	opts:OptionsPattern[OpenCascadeShapeExport]] :=
-	Module[{dir, fileName, ext},
-		dir = FileNameDrop[ file, -1];
-		fileName = FileBaseName[ file];
-		ext = FileExtension[file];
-		If[ dir =!= "", fileName = FileNameJoin[{dir, fileName}]];
-		OpenCascadeShapeExport[
-			fileName, 
-			OpenCascadeShapeExpression[id],
-			ext,
-			opts
-		]
-	]
 
 
 instanceID[ OpenCascadeShapeExpression[ id_]] := id
