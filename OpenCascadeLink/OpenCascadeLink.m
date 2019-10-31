@@ -26,10 +26,14 @@ OpenCascadeShapeIntersection::usage = "";
 OpenCascadeShapeUnion::usage = "";
 OpenCascadeShapeBooleanRegion::usage = "";
 
+OpenCascadeShapeFillet::usage = "";
+
 OpenCascadeShapeSurfaceMesh::usage = "";
 OpenCascadeShapeSurfaceMeshCoordinates::usage = "";
 OpenCascadeShapeSurfaceMeshElements::usage = "";
 OpenCascadeShapeSurfaceMeshElementOffsets::usage = "";
+
+OpenCascadeShapeNumberOfEdges::usage = "";
 
 OpenCascadeShapeSurfaceMeshToBoundaryMesh::usage = "";
 
@@ -85,10 +89,14 @@ Module[{},
 	makeIntersectionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeIntersection", {Integer, Integer, Integer}, Integer];
 	makeUnionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeUnion", {Integer, Integer, Integer}, Integer];
 
+	makeFilletFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeFillet", {Integer, Integer, Real, {Integer, 1, "Shared"}}, Integer];
+
 	makeSurfaceMeshFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSurfaceMesh", {Integer, {Real, 1, "Shared"}, {Integer, 1, "Shared"}}, Integer];
 	getSurfaceMeshCoordinatesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getSurfaceMeshCoordinates", {Integer}, {Real, 2}];
 	getSurfaceMeshElementsFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getSurfaceMeshElements", {Integer}, {Integer, 2}];
 	getSurfaceMeshElementOffsetsFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getSurfaceMeshElementOffsets", {Integer}, {Integer, 1}];
+
+	getShapeNumberOfEdgesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeNumberOfEdges", {Integer}, Integer];
 
 	fileOperationFun = LibraryFunctionLoad[$OpenCascadeLibrary, "fileOperation", LinkObject, LinkObject];
 
@@ -507,6 +515,41 @@ Module[
 
 	booleanFunction @@ regions
 ]
+
+
+
+OpenCascadeShapeFillet[shape_, radius_, edgeIDs_] /; 
+		OpenCascadeShapeExpressionQ[shape] &&
+		NumericQ[ radius] &&
+		(edgeIDs === All || VectorQ[edgeIDs, NumericQ]) := Module[
+	{instance, numEdges, id1, res, r, eIDs = edgeIDs},
+
+	r = N[ radius];
+	If[ r < $MachineEpsilon, Return[ shape, Module]; ];
+
+	numEdges = getShapeNumberOfEdgesFun[ instanceID[ shape]];
+	If[ eIDs === All, eIDs = Range[ numEdges]; ];
+
+	eIDs = Sort[ pack[ eIDs]];
+	If[ eIDs === {}, Return[ shape, Module]; ];
+
+	If[ Max[ eIDs] > numEdges, Return[ shape, Module]; ];
+
+	instance = OpenCascadeShapeCreate[];
+	id1 = instanceID[ shape];
+	(* - 1 since C uses 0 index start *)
+	res = makeFilletFun[ instanceID[ instance], id1, r, eIDs - 1];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instance
+]
+
+OpenCascadeShapeFillet[shape_, radius_] :=
+	OpenCascadeShapeFillet[ shape, radius, All] 
+
+OpenCascadeShapeNumberOfEdges[shape_] /; OpenCascadeShapeExpressionQ[shape] :=
+getShapeNumberOfEdgesFun[ instanceID[ shape]]
+
 
 
 

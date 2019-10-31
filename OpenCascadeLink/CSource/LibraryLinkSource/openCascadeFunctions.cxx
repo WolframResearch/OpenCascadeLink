@@ -21,6 +21,8 @@
 #include <BRepAlgoAPI_Common.hxx>
 #include <BRepAlgoAPI_Fuse.hxx>
 
+#include <BRepFilletAPI_MakeFillet.hxx>
+
 #include <IMeshData_Status.hxx>
 #include <IMeshTools_Parameters.hxx>
 #include <BRepMesh_IncrementalMesh.hxx>
@@ -49,10 +51,14 @@ extern "C" {
 	DLLEXPORT int makeIntersection(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeUnion(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
+	DLLEXPORT int makeFillet(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+
 	DLLEXPORT int makeSurfaceMesh(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int getSurfaceMeshCoordinates(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int getSurfaceMeshElements(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int getSurfaceMeshElementOffsets(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+
+	DLLEXPORT int getShapeNumberOfEdges(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int fileOperation(WolframLibraryData libData, MLINK mlp);
 
@@ -417,6 +423,54 @@ DLLEXPORT int makeUnion(WolframLibraryData libData, mint Argc, MArgument *Args, 
 	return 0;
 }
 
+
+
+DLLEXPORT int makeFillet(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	mint id  = MArgument_getInteger(Args[0]);
+	mint id1 = MArgument_getInteger(Args[1]);
+	double radius = MArgument_getReal(Args[2]);
+
+	/* these are assumed to be sorted */
+	MTensor p = MArgument_getMTensor(Args[3]);
+	int type = libData->MTensor_getType(p);
+	int rank = libData->MTensor_getRank(p);
+	const mint* dims = libData->MTensor_getDimensions(p);
+
+	TopoDS_Shape *instance  = get_ocShapeInstance( id);
+	TopoDS_Shape *instance1 = get_ocShapeInstance( id1);
+
+	if (instance == NULL || instance1 == NULL ||
+			type != MType_Integer || rank != 1 || dims[0] < 1) {
+		libData->MTensor_disown(p);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	mint* indices = libData->MTensor_getIntegerData(p);
+
+	BRepFilletAPI_MakeFillet filleted(*instance1);
+
+	TopExp_Explorer explore(*instance1, TopAbs_EDGE);
+	mint i = 0, iter = 0;
+    while (explore.More() && (i < dims[0])) {
+		if ( indices[i] == iter) {
+			filleted.Add(radius, TopoDS::Edge(explore.Current()));
+			i++;
+		};
+		iter++;
+		explore.Next();
+	}
+
+	*instance = filleted.Shape();
+
+	MArgument_setInteger(res, 0);
+	return 0;
+}
+
+
+
+
 DLLEXPORT int makeSurfaceMesh(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
 {
 	mint id = MArgument_getInteger(Args[0]);
@@ -721,6 +775,30 @@ DLLEXPORT int getSurfaceMeshElementOffsets(WolframLibraryData libData, mint Argc
 	MArgument_setMTensor(res, tenOffsets);
 	return 0;
 }
+
+
+DLLEXPORT int getShapeNumberOfEdges(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	mint id  = MArgument_getInteger(Args[0]);
+	mint count = 0;
+
+	TopoDS_Shape *instance  = get_ocShapeInstance( id);
+
+	if (instance == NULL) {
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	TopExp_Explorer explore(*instance, TopAbs_EDGE);
+    while (explore.More()) {
+		count++;
+		explore.Next();
+	}
+
+	MArgument_setInteger(res, count);
+	return 0;
+}
+
 
 
 DLLEXPORT int fileOperation(WolframLibraryData libData, MLINK mlp)
