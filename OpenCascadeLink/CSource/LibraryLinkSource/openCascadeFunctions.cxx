@@ -4,12 +4,18 @@
 #include "WolframLibrary.h"
 #include "openCascadeWolframDLL.h"
 
-#include <TopoDS_Shape.hxx>                                                     
 #include <gp_Ax2.hxx>
+#include <gp_Vec.hxx>
+
+#include <TopoDS_Shape.hxx>                                                     
 #include <BRepPrimAPI_MakeBox.hxx>
 #include <BRepPrimAPI_MakeCone.hxx>
 #include <BRepPrimAPI_MakeCylinder.hxx>
 #include <BRepPrimAPI_MakeSphere.hxx>                                           
+#include <BRepPrimAPI_MakePrism.hxx>
+
+#include <BRepBuilderAPI_MakePolygon.hxx>
+#include <BRepBuilderAPI_MakeFace.hxx>
 
 #include <BRepAlgoAPI_Cut.hxx>
 #include <BRepAlgoAPI_Common.hxx>
@@ -37,6 +43,7 @@ extern "C" {
 	DLLEXPORT int makeCone(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeCuboid(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeCylinder(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+	DLLEXPORT int makePrism(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int makeDifference(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeIntersection(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
@@ -267,6 +274,79 @@ DLLEXPORT int makeCylinder(WolframLibraryData libData, mint Argc, MArgument *Arg
 }
 
 
+DLLEXPORT int makePrism(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	mint id = MArgument_getInteger(Args[0]);
+
+	MTensor p1 = MArgument_getMTensor(Args[1]);
+	int type1 = libData->MTensor_getType(p1);
+	int rank1 = libData->MTensor_getRank(p1);
+	const mint* dims1 = libData->MTensor_getDimensions(p1);
+
+	MTensor p2 = MArgument_getMTensor(Args[2]);
+	int type2 = libData->MTensor_getType(p2);
+	int rank2 = libData->MTensor_getRank(p2);
+	const mint* dims2 = libData->MTensor_getDimensions(p2);
+
+	TopoDS_Shape *instance = get_ocShapeInstance( id);
+
+	if (instance == NULL || 
+			type1 != MType_Real || rank1 != 2 || dims1[0] != 3 || dims1[1] != 3 ||
+			type2 != MType_Real || rank2 != 2 || dims2[0] != 2 || dims2[1] != 3
+		) {
+		libData->MTensor_disown(p1);
+		libData->MTensor_disown(p2);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	double* rawPts1 = libData->MTensor_getRealData(p1);
+    gp_Pnt b1 = gp_Pnt(
+		(Standard_Real) rawPts1[0],
+		(Standard_Real) rawPts1[1],
+		(Standard_Real) rawPts1[2]
+	);
+    gp_Pnt b2 = gp_Pnt(
+		(Standard_Real) rawPts1[3],
+		(Standard_Real) rawPts1[4],
+		(Standard_Real) rawPts1[5]
+	);
+    gp_Pnt b3 = gp_Pnt(
+		(Standard_Real) rawPts1[6],
+		(Standard_Real) rawPts1[7],
+		(Standard_Real) rawPts1[8]
+	);
+	libData->MTensor_disown(p1);
+
+	TopoDS_Wire wire;
+	wire = BRepBuilderAPI_MakePolygon(b1, b2, b3, Standard_True).Wire();
+	TopoDS_Face base = BRepBuilderAPI_MakeFace(wire, Standard_True); 
+
+	double* rawPts2 = libData->MTensor_getRealData(p2);
+    gp_Pnt gp1 = gp_Pnt(
+		(Standard_Real) rawPts2[0],
+		(Standard_Real) rawPts2[1],
+		(Standard_Real) rawPts2[2]
+	);
+    gp_Pnt gp2 = gp_Pnt(
+		(Standard_Real) rawPts2[3],
+		(Standard_Real) rawPts2[4],
+		(Standard_Real) rawPts2[5]
+	);
+	libData->MTensor_disown(p2);
+
+	gp_Vec vec = gp_Vec(gp1, gp2);
+
+    TopoDS_Shape shape = BRepPrimAPI_MakePrism(base, vec,
+		Standard_True, Standard_True).Shape();
+
+	*instance = shape;
+
+	MArgument_setInteger(res, 0);
+	return 0;
+}
+
+
 
 DLLEXPORT int makeDifference(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
 {
@@ -421,6 +501,7 @@ DLLEXPORT int makeSurfaceMesh(WolframLibraryData libData, mint Argc, MArgument *
 	BRepMesh_IncrementalMesh Mesh( *instance, meshParams);
 	Mesh.Perform();
 	const Standard_Integer ok = !Mesh.GetStatusFlags();
+	/* TODO: message */
 
 	MArgument_setInteger(res, (mint) ok);
 	return 0;
@@ -677,6 +758,7 @@ DLLEXPORT int fileOperation(WolframLibraryData libData, MLINK mlp)
 		StlAPI_Writer stl_writer;
 		/* there needs to be a mesh in the instance for this to work */
 		/* TODO: check? */
+		/* ascii is default but can do binary: StlAPI_Writer::ASCIIMode */
 		if ( !stl_writer.Write(*instance, (char*)fName)) {
 			resStr = "False";
 		}

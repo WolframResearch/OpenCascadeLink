@@ -79,6 +79,7 @@ Module[{},
 	makeConeFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeCone", {Integer, {Real, 1, "Shared"}, {Real, 1, "Shared"}, Real, Real}, Integer];
 	makeCuboidFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeCuboid", {Integer, {Real, 1, "Shared"}, {Real, 1, "Shared"}}, Integer];
 	makeCylinderFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeCylinder", {Integer, {Real, 1, "Shared"}, {Real, 1, "Shared"}, Real, Real}, Integer];
+	makePrismFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makePrism", {Integer, {Real, 2, "Shared"}, {Real, 2, "Shared"}}, Integer];
 
 	makeDifferenceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeDifference", {Integer, Integer, Integer}, Integer];
 	makeIntersectionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeIntersection", {Integer, Integer, Integer}, Integer];
@@ -399,6 +400,25 @@ OpenCascadeShape[Cylinder[{pMin_, pMax_}]] /;
 		VectorQ[pMin, NumericQ] && (Length[ pMin] == 3) && 
 		VectorQ[pMax, NumericQ] && (Length[ pMax] == 3) :=
 OpenCascadeShape[Cylinder[{pMin, pMax}, 1.]]
+
+
+OpenCascadeShape[Prism[p_]] /;
+		MatrixQ[p, NumericQ] && (Dimensions[ p] == {6, 3}) :=
+Module[{instance, base, target, direcction, res},
+
+	If[ Length[ DeleteDuplicates[p]] =!= 6, Return[$Failed, Module]];
+
+	base = pack[ N[ p[[ 1;;3]]]];
+	target = pack[ N[ p[[ 4;;6]]]];
+
+	direction = pack[ { Mean[ base], Mean[ target]}];
+
+	instance = OpenCascadeShapeCreate[];
+	res = makePrismFun[ instanceID[ instance], base, direction];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instance
+]
 
 
 
