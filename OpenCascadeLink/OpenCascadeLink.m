@@ -27,6 +27,7 @@ OpenCascadeShapeUnion::usage = "";
 OpenCascadeShapeBooleanRegion::usage = "";
 
 OpenCascadeShapeFillet::usage = "";
+OpenCascadeShapeChamfer::usage = "";
 
 OpenCascadeShapeSurfaceMesh::usage = "";
 OpenCascadeShapeSurfaceMeshCoordinates::usage = "";
@@ -90,6 +91,7 @@ Module[{},
 	makeUnionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeUnion", {Integer, Integer, Integer}, Integer];
 
 	makeFilletFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeFillet", {Integer, Integer, Real, {Integer, 1, "Shared"}}, Integer];
+	makeChamferFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeChamfer", {Integer, Integer, Real, {Integer, 1, "Shared"}}, Integer];
 
 	makeSurfaceMeshFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSurfaceMesh", {Integer, {Real, 1, "Shared"}, {Integer, 1, "Shared"}}, Integer];
 	getSurfaceMeshCoordinatesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getSurfaceMeshCoordinates", {Integer}, {Real, 2}];
@@ -518,6 +520,11 @@ Module[
 
 
 
+OpenCascadeShapeNumberOfEdges[shape_] /; OpenCascadeShapeExpressionQ[shape] :=
+getShapeNumberOfEdgesFun[ instanceID[ shape]]
+
+
+
 OpenCascadeShapeFillet[shape_, radius_, edgeIDs_] /; 
 		OpenCascadeShapeExpressionQ[shape] &&
 		NumericQ[ radius] &&
@@ -547,8 +554,35 @@ OpenCascadeShapeFillet[shape_, radius_, edgeIDs_] /;
 OpenCascadeShapeFillet[shape_, radius_] :=
 	OpenCascadeShapeFillet[ shape, radius, All] 
 
-OpenCascadeShapeNumberOfEdges[shape_] /; OpenCascadeShapeExpressionQ[shape] :=
-getShapeNumberOfEdgesFun[ instanceID[ shape]]
+
+OpenCascadeShapeChamfer[shape_, distance_, edgeIDs_] /; 
+		OpenCascadeShapeExpressionQ[shape] &&
+		NumericQ[ distance] &&
+		(edgeIDs === All || VectorQ[edgeIDs, NumericQ]) := Module[
+	{instance, numEdges, id1, res, d, eIDs = edgeIDs},
+
+	d = N[ distance];
+	If[ d < $MachineEpsilon, Return[ shape, Module]; ];
+
+	numEdges = getShapeNumberOfEdgesFun[ instanceID[ shape]];
+	If[ eIDs === All, eIDs = Range[ numEdges]; ];
+
+	eIDs = Sort[ pack[ eIDs]];
+	If[ eIDs === {}, Return[ shape, Module]; ];
+
+	If[ Max[ eIDs] > numEdges, Return[ shape, Module]; ];
+
+	instance = OpenCascadeShapeCreate[];
+	id1 = instanceID[ shape];
+	(* - 1 since C uses 0 index start *)
+	res = makeChamferFun[ instanceID[ instance], id1, d, eIDs - 1];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instance
+]
+
+OpenCascadeShapeChamfer[shape_, distance_] :=
+	OpenCascadeShapeFillet[ shape, distance, All] 
 
 
 
