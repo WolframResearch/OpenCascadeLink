@@ -48,6 +48,8 @@ extern "C" {
 	DLLEXPORT int makeCylinder(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makePrism(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
+	DLLEXPORT int makePolygon(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+
 	DLLEXPORT int makeDifference(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeIntersection(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeUnion(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
@@ -67,11 +69,14 @@ extern "C" {
 }
 
 
-static int returnZeroLengthArray( WolframLibraryData libData, mint type, MArgument res)
+static int returnZeroLengthArray( WolframLibraryData libData, mint type, mint rank, MArgument res)
 {
-	mint dims[1] = {0};
+	mint dims[rank];
 	MTensor resTen;
-	int err = libData->MTensor_new( type, 1, dims, &resTen);
+
+	for (int i = 0; i < rank; i++) dims[i] = 0;
+
+	int err = libData->MTensor_new( type, rank, dims, &resTen);
 	MArgument_setMTensor(res, resTen);
 	return err;
 }
@@ -353,6 +358,49 @@ DLLEXPORT int makePrism(WolframLibraryData libData, mint Argc, MArgument *Args, 
 	MArgument_setInteger(res, 0);
 	return 0;
 }
+
+
+
+
+DLLEXPORT int makePolygon(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	mint id = MArgument_getInteger(Args[0]);
+
+	MTensor p1 = MArgument_getMTensor(Args[1]);
+	int type1 = libData->MTensor_getType(p1);
+	int rank1 = libData->MTensor_getRank(p1);
+	const mint* dims1 = libData->MTensor_getDimensions(p1);
+
+	TopoDS_Shape *instance = get_ocShapeInstance( id);
+
+	if (instance == NULL || type1 != MType_Real ||
+		rank1 != 2 || dims1[0] < 3 || dims1[1] != 3) {
+		libData->MTensor_disown(p1);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	double* rawPts1 = libData->MTensor_getRealData(p1);
+	BRepBuilderAPI_MakePolygon polygon;
+
+	for (int i = 0; i < (dims1[0] * dims1[1]); i = i + 3) {
+ 	   polygon.Add( gp_Pnt(
+			(Standard_Real) rawPts1[i    ],
+			(Standard_Real) rawPts1[i + 1],
+			(Standard_Real) rawPts1[i + 2]
+		));
+	}
+	polygon.Close();
+	libData->MTensor_disown(p1);
+
+	TopoDS_Shape shape  = BRepBuilderAPI_MakeFace(polygon.Wire()).Shape();
+
+	*instance = shape;
+
+	MArgument_setInteger(res, 0);
+	return 0;
+}
+
 
 
 
@@ -646,7 +694,7 @@ DLLEXPORT int getSurfaceMeshCoordinates(WolframLibraryData libData, mint Argc, M
 	dims[1] = 3;// Maybe should use mesh_dim
 
 	if ( dims[0] == 0) {
-		return returnZeroLengthArray( libData, MType_Real, res);
+		return returnZeroLengthArray( libData, MType_Real, 2, res);
 	}
 
 	int err = libData->MTensor_new( MType_Real, 2, dims, &tenPts);
@@ -717,7 +765,7 @@ DLLEXPORT int getSurfaceMeshElements(WolframLibraryData libData, mint Argc, MArg
 	dims[1] = 3;
 
 	if ( dims[0] == 0) {
-		return returnZeroLengthArray( libData, MType_Integer, res);
+		return returnZeroLengthArray( libData, MType_Integer, 2, res);
 	}
 
 	int err = libData->MTensor_new( MType_Integer, 2, dims, &tenEle);
@@ -801,7 +849,7 @@ DLLEXPORT int getSurfaceMeshElementOffsets(WolframLibraryData libData, mint Argc
 	dims[0] = numberOfOffsets;
 
 	if ( dims[0] == 0) {
-		return returnZeroLengthArray( libData, MType_Integer, res);
+		return returnZeroLengthArray( libData, MType_Integer, 1, res);
 	}
 
 	int err = libData->MTensor_new( MType_Integer, 1, dims, &tenOffsets);

@@ -86,6 +86,8 @@ Module[{},
 	makeCylinderFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeCylinder", {Integer, {Real, 1, "Shared"}, {Real, 1, "Shared"}, Real, Real}, Integer];
 	makePrismFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makePrism", {Integer, {Real, 2, "Shared"}, {Real, 2, "Shared"}}, Integer];
 
+	makePolygonFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makePolygon", {Integer, {Real, 2, "Shared"}}, Integer];
+
 	makeDifferenceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeDifference", {Integer, Integer, Integer}, Integer];
 	makeIntersectionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeIntersection", {Integer, Integer, Integer}, Integer];
 	makeUnionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeUnion", {Integer, Integer, Integer}, Integer];
@@ -431,6 +433,21 @@ Module[{instance, base, target, direcction, res},
 ]
 
 
+OpenCascadeShape[Polygon[coords_]] /;
+		MatrixQ[coords, NumericQ] && MatchQ[ Dimensions[coords], {_, 3}] :=
+Module[{p, instance, res},
+
+	p = pack[ N[ coords]];
+
+	If[ Length[ DeleteDuplicates[p]] =!= Length[p], Return[$Failed, Module]];
+
+	instance = OpenCascadeShapeCreate[];
+	res = makePolygonFun[ instanceID[ instance], N[ p]];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instance
+]
+
 
 
 (*
@@ -505,7 +522,7 @@ Module[
 	{booleanFunction, regions},
 
 	(* TODO: check for Xor and complain *)
-	booleanFunction = br[[1]] /. {
+	booleanFunction = br[[1]] //. {
 		Or :> OpenCascadeShapeUnion,
 		And[s1_, Not[s2_]] :> OpenCascadeShapeDifference[s1, s2],
 		And[Not[s2_], s1_] :> OpenCascadeShapeDifference[s1, s2],
@@ -678,7 +695,11 @@ Module[
 	If[ ok === $Failed, Return[$Failed, Module]; ];
 
 	coords = OpenCascadeShapeSurfaceMeshCoordinates[instance];
+	If[ Length[coords] < 3, Return[$Failed, Module]; ];
+
 	bEle = OpenCascadeShapeSurfaceMeshElements[instance];
+	If[ Length[bEle] < 1, Return[$Failed, Module]; ];
+
 	offsets = OpenCascadeShapeSurfaceMeshElementOffsets[instance];
 
 	elementMeshOpts = Flatten[{ OptionValue["ElementMeshOptions"]}];
