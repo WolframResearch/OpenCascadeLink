@@ -30,6 +30,7 @@ OpenCascadeShapeFillet::usage = "";
 OpenCascadeShapeChamfer::usage = "";
 
 OpenCascadeShapeSewing::usage = "";
+OpenCascadeShapeSweep::usage = "";
 
 OpenCascadeShapeSurfaceMesh::usage = "";
 OpenCascadeShapeSurfaceMeshCoordinates::usage = "";
@@ -89,6 +90,8 @@ Module[{},
 	makePrismFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makePrism", {Integer, {Real, 2, "Shared"}, {Real, 2, "Shared"}}, Integer];
 
 	makeSewingFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSewing", {Integer, {Integer, 1, "Shared"}}, Integer];
+	makeSweepFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSweep", {Integer, Integer, {Real, 2, "Shared"}, Real}, Integer];
+
 	makePolygonFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makePolygon", {Integer, {Real, 2, "Shared"}}, Integer];
 
 	makeDifferenceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeDifference", {Integer, Integer, Integer}, Integer];
@@ -505,8 +508,7 @@ Module[{balls},
 ]
 
 
-
-(* surfaces in 3D *)
+(* Surface operations *)
 
 OpenCascadeShapeSewing[oces:{e1_, e2__}] /;
 	 And @@ (OpenCascadeShapeExpressionQ /@ oces) :=
@@ -523,7 +525,29 @@ Module[{p, instance, res},
 	instance
 ]
 
+OpenCascadeShapeSweep[ shape1_, {p1_, p2_}, a_] /;
+	OpenCascadeShapeExpressionQ[shape1] &&
+		VectorQ[p1, NumericQ] && (Length[p1] === 3) &&
+		VectorQ[p2, NumericQ] && (Length[p2] === 3) &&
+		NumericQ[a] :=
+Module[
+	{instance, id1, res, axis},
 
+	axis = pack[{p1, p2 - p1}];
+	angle = N[ a];
+
+	instance = OpenCascadeShapeCreate[];
+	id1 = instanceID[ shape1];
+	res = makeSweepFun[ instanceID[ instance], id1, axis, angle];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instance
+]
+OpenCascadeShapeSweep[ shape1_, {p1_, p2_}] :=
+	OpenCascadeShapeSweep[shape1,{p1, p2}, 2 Pi]
+
+
+(* surfaces in 3D *)
 
 OpenCascadeShape[Polygon[coords_]] /;
 		MatrixQ[coords, NumericQ] && MatchQ[ Dimensions[coords], {_, 3}] :=
