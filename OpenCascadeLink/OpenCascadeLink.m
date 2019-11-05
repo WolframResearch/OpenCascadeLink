@@ -29,6 +29,8 @@ OpenCascadeShapeBooleanRegion::usage = "";
 OpenCascadeShapeFillet::usage = "";
 OpenCascadeShapeChamfer::usage = "";
 
+OpenCascadeShapeSewing::usage = "";
+
 OpenCascadeShapeSurfaceMesh::usage = "";
 OpenCascadeShapeSurfaceMeshCoordinates::usage = "";
 OpenCascadeShapeSurfaceMeshElements::usage = "";
@@ -86,6 +88,7 @@ Module[{},
 	makeCylinderFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeCylinder", {Integer, {Real, 1, "Shared"}, {Real, 1, "Shared"}, Real, Real}, Integer];
 	makePrismFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makePrism", {Integer, {Real, 2, "Shared"}, {Real, 2, "Shared"}}, Integer];
 
+	makeSewingFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSewing", {Integer, {Integer, 1, "Shared"}}, Integer];
 	makePolygonFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makePolygon", {Integer, {Real, 2, "Shared"}}, Integer];
 
 	makeDifferenceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeDifference", {Integer, Integer, Integer}, Integer];
@@ -433,6 +436,26 @@ Module[{instance, base, target, direcction, res},
 ]
 
 
+
+(* surfaces in 3D *)
+
+OpenCascadeShapeSewing[oces:{e1_, e2__}] /;
+	 And @@ (OpenCascadeShapeExpressionQ /@ oces) :=
+Module[{p, instance, res},
+
+	ids = pack[ instanceID /@ oces];
+
+	If[ Length[ DeleteDuplicates[ids]] =!= Length[ids], Return[$Failed, Module]];
+
+	instance = OpenCascadeShapeCreate[];
+	res = makeSewingFun[ instanceID[ instance], ids];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instance
+]
+
+
+
 OpenCascadeShape[Polygon[coords_]] /;
 		MatrixQ[coords, NumericQ] && MatchQ[ Dimensions[coords], {_, 3}] :=
 Module[{p, instance, res},
@@ -521,12 +544,13 @@ OpenCascadeShapeBooleanRegion[ br_BooleanRegion] /; Length[br] == 2 :=
 Module[
 	{booleanFunction, regions},
 
-	(* TODO: check for Xor and complain *)
 	booleanFunction = br[[1]] //. {
 		Or :> OpenCascadeShapeUnion,
 		And[s1_, Not[s2_]] :> OpenCascadeShapeDifference[s1, s2],
 		And[Not[s2_], s1_] :> OpenCascadeShapeDifference[s1, s2],
-		And :> OpenCascadeShapeIntersection
+		And :> OpenCascadeShapeIntersection,
+		Xor[s1_, sn__] :> OpenCascadeShapeUnion @@
+			(OpenCascadeShapeDifference @@ Tuples[{s1, sn}, 2])
 	};
 
 	regions = OpenCascadeShape /@ br[[2]];

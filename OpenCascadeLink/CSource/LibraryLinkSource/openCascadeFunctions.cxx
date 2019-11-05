@@ -14,15 +14,17 @@
 #include <BRepPrimAPI_MakeSphere.hxx>                                           
 #include <BRepPrimAPI_MakePrism.hxx>
 
-#include <BRepBuilderAPI_MakePolygon.hxx>
-#include <BRepBuilderAPI_MakeFace.hxx>
-
 #include <BRepAlgoAPI_Cut.hxx>
 #include <BRepAlgoAPI_Common.hxx>
 #include <BRepAlgoAPI_Fuse.hxx>
 
 #include <BRepFilletAPI_MakeFillet.hxx>
 #include <BRepFilletAPI_MakeChamfer.hxx>
+
+#include <BRepBuilderAPI_MakePolygon.hxx>
+#include <BRepBuilderAPI_MakeFace.hxx>
+#include <BRepBuilderAPI_Sewing.hxx>
+#include <BRepBuilderAPI_MakeSolid.hxx>
 
 #include <IMeshData_Status.hxx>
 #include <IMeshTools_Parameters.hxx>
@@ -48,6 +50,7 @@ extern "C" {
 	DLLEXPORT int makeCylinder(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makePrism(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
+	DLLEXPORT int makeSewing(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makePolygon(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int makeDifference(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
@@ -359,6 +362,55 @@ DLLEXPORT int makePrism(WolframLibraryData libData, mint Argc, MArgument *Args, 
 	return 0;
 }
 
+
+
+DLLEXPORT int makeSewing(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	mint id = MArgument_getInteger(Args[0]);
+
+	MTensor p1 = MArgument_getMTensor(Args[1]);
+	int type1 = libData->MTensor_getType(p1);
+	int rank1 = libData->MTensor_getRank(p1);
+	const mint* dims1 = libData->MTensor_getDimensions(p1);
+
+	TopoDS_Shape *instance = get_ocShapeInstance( id);
+
+	if (instance == NULL || type1 != MType_Integer ||
+			 rank1 != 1 || dims1[0] < 0) {
+		libData->MTensor_disown(p1);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	mint * rawP1 = libData->MTensor_getIntegerData(p1);
+
+	BRepBuilderAPI_Sewing sew;
+	TopoDS_Shape *anID;
+	for (int i = 0; i < dims1[0]; i++) {
+		anID = get_ocShapeInstance( rawP1[ i]);
+
+		for (TopExp_Explorer faces (*anID, TopAbs_FACE);
+				faces.More(); faces.Next()) {
+			sew.Add(TopoDS::Face (faces.Current()));
+		}
+	}
+	libData->MTensor_disown(p1);
+
+	sew.Perform();
+
+	TopoDS_Shape sewedshape  = sew.SewedShape();
+
+	BRepBuilderAPI_MakeSolid shape;
+	for (TopExp_Explorer anExpSF (sewedshape, TopAbs_SHELL);
+			anExpSF.More(); anExpSF.Next()) {
+		shape.Add(TopoDS::Shell (anExpSF.Current()));
+	}
+
+	*instance = shape;
+
+	MArgument_setInteger(res, 0);
+	return 0;
+}
 
 
 
@@ -677,7 +729,7 @@ DLLEXPORT int getSurfaceMeshCoordinates(WolframLibraryData libData, mint Argc, M
 		return LIBRARY_FUNCTION_ERROR;
 	}
 
-	// calculate total number of the nodes and triangles                          
+	// calculate total number of the nodes and triangles
 	for (	TopExp_Explorer anExpSF (*instance, TopAbs_FACE);
 			anExpSF.More(); anExpSF.Next()) {
 
@@ -975,4 +1027,39 @@ done:
 	return returnRes(mlp, fName, opType, res);
 }
 
+/*
+
+#include <iostream>
+using namespace std;
+
+TopoDS_Shape sewedShape = shape;
+if (shape.ShapeType() == TopAbs_COMPOUND) {
+	cout << "Compound\n";
+}
+if (shape.ShapeType() == TopAbs_COMPSOLID) {
+	cout << "CompSolid\n";
+}
+if (shape.ShapeType() == TopAbs_SOLID) {
+	cout << "Solid\n";
+}
+if (shape.ShapeType() == TopAbs_SHELL) {
+	cout << "Shell\n";
+}
+if (shape.ShapeType() == TopAbs_FACE) {
+	cout << "Face\n";
+}
+if (shape.ShapeType() == TopAbs_WIRE) {
+	cout << "Wire\n";
+}
+if (shape.ShapeType() == TopAbs_EDGE) {
+	cout << "Edge\n";
+}
+if (shape.ShapeType() == TopAbs_VERTEX) {
+	cout << "Vertex\n";
+}
+if (shape.ShapeType() == TopAbs_SHAPE) {
+	cout << "Shape\n";
+}
+
+*/
 
