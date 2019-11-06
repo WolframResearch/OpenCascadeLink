@@ -660,6 +660,13 @@ DLLEXPORT int makeFillet(WolframLibraryData libData, mint Argc, MArgument *Args,
 		explore.Next();
 	}
 
+	filleted.Build();
+	if (!filleted.IsDone()) {
+		*instance = *instance1;
+		MArgument_setInteger(res, 1);
+		return 0;
+	}
+
 	*instance = filleted.Shape();
 
 	MArgument_setInteger(res, 0);
@@ -705,13 +712,13 @@ DLLEXPORT int makeChamfer(WolframLibraryData libData, mint Argc, MArgument *Args
 	}
 
 	chamfered.Build();
-
 	if (!chamfered.IsDone()) {
 		*instance = *instance1;
-	} else {
-		*instance = chamfered.Shape();
+		MArgument_setInteger(res, 1);
+		return 0;
 	}
 
+	*instance = chamfered.Shape();
 	MArgument_setInteger(res, 0);
 	return 0;
 }
