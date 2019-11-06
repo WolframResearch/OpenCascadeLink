@@ -388,6 +388,7 @@ DLLEXPORT int makeSewing(WolframLibraryData libData, mint Argc, MArgument *Args,
 
 	mint * rawP1 = libData->MTensor_getIntegerData(p1);
 
+	/* add tolerance options */
 	BRepBuilderAPI_Sewing sew;
 	TopoDS_Shape *anID;
 	for (int i = 0; i < dims1[0]; i++) {

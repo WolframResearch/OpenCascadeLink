@@ -526,6 +526,8 @@ Module[{p, instance, res},
 
 	instance
 ]
+OpenCascadeShapeSewing[{e1_}] /;
+	 OpenCascadeShapeExpressionQ[e1] := e1
 
 OpenCascadeShapeRotationalSweep[ shape1_, {p1_, p2_}, a_] /;
 	OpenCascadeShapeExpressionQ[shape1] &&
@@ -584,6 +586,25 @@ Module[{p, instance, res},
 ]
 
 
+OpenCascadeShape[p:Polygon[coords_, data_]] /;
+	MatrixQ[coords, NumericQ] && MatchQ[ Dimensions[coords], {_, 3}] :=
+Module[{mesh, c, cells, inci, poly, shapes},
+	mesh = Quiet[ DiscretizeRegion[p, MaxCellMeasure -> Infinity]];
+	If[ MeshRegionQ[ mesh],
+		c = MeshCoordinates[ mesh];
+		cells = MeshCells[ mesh, {2, All}, Multicells -> True];
+		inci = Join @@ cells[[All, 1]];
+		poly = Polygon /@ NDSolve`FEM`GetElementCoordinates[c, inci];
+		shapes = OpenCascadeShape /@ poly;
+		If[ Union[ OpenCascadeShapeExpressionQ /@ shapes] == {True},
+			OpenCascadeShapeSewing[ shapes]
+		, (* else *)
+			Return[ $Failed, Module]
+		]
+	, (* else *)
+		Return[ $Failed, Module]
+	]
+]
 
 (*
 	open cascde boolean operation
