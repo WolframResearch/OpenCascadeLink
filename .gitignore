@@ -3,10 +3,7 @@
 .cproject
 .MathematicaResources
 .WolframResources
-.settings
-.amateras
 .autotools
-.externalToolBuilders
 #ignore vim temp and swap files
 *~
 *.swp
@@ -15,7 +12,6 @@
 .idea/
 *.iml
 .vs/
-CMakeSettings.json
-Terminal Saved Output
 .editorconfig
 core
+openCascadeWolframDLL.*

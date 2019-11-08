@@ -65,22 +65,31 @@ pack = Developer`ToPackedArray;
 
 $OpenCascadeVersion = "7.4.0"
 
-$OpenCascadeLibrary = FindLibrary[ "openCascadeWolframDLL"]
-$OpenCascadeLibrary = "/home/ruebenko/wri_git/OpenCascadeLink/build/Linux-x86-64/openCascadeWolframDLL.so" 
-
 $OpenCascadeInstallationDirectory = DirectoryName[ $InputFileName]
+baseLibraryName = FileNameJoin[{ $OpenCascadeInstallationDirectory,
+	"LibraryResources", $SystemID}];
+$OpenCascadeLibrary = FindLibrary[ FileNameJoin[{ baseLibraryName,
+		"openCascadeWolframDLL" }]];
 
 pack = Developer`ToPackedArray;
 
 needInitialization = True;
 
-
-
 (*
  Load all the functions from the OpenCascade library.
 *)
 LoadOpenCascade[] :=
-Module[{},
+Module[{libDir, preLoadLibs, success},
+
+	(* since open cascade needs to be build as a shared library
+	(because it is LGPL) we need to pre load the library such that
+	the LibraryFunctionLoad can work *)
+
+	libDir = FileNameJoin[{baseLibraryName, "lib"}];
+	preLoadLibs = FileNames["*.*", libDir];
+	success = Union[LibraryLoad /@ preLoadLibs] === {Null};
+	If[ !success, Return[ $Failed, Module]];
+
 	deleteFun	= LibraryFunctionLoad[$OpenCascadeLibrary, "delete_ocShapeInstance", {Integer}, Integer];
 
 	ocShapeInstanceListFun	= LibraryFunctionLoad[$OpenCascadeLibrary, "ocShapeInstanceList", {}, {Integer,1}];
