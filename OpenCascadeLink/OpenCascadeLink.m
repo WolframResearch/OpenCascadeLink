@@ -79,15 +79,22 @@ needInitialization = True;
  Load all the functions from the OpenCascade library.
 *)
 LoadOpenCascade[] :=
-Module[{libDir, preLoadLibs, success},
+Module[{libDir, oldpath, preLoadLibs, success},
 
 	(* since open cascade needs to be build as a shared library
 	(because it is LGPL) we need to pre load the library such that
 	the LibraryFunctionLoad can work *)
 
 	libDir = FileNameJoin[{baseLibraryName, "lib"}];
+	If[$OperatingSystem === "Windows",
+		oldpath = Environment["PATH"];
+		SetEnvironment["PATH" -> oldpath <> ";" <> libDir]
+	];
 	preLoadLibs = FileNames["*.*", libDir];
 	success = Union[LibraryLoad /@ preLoadLibs] === {Null};
+	If[$OperatingSystem === "Windows",
+		SetEnvironment["PATH" -> oldpath]
+	];
 	If[ !success, Return[ $Failed, Module]];
 
 	deleteFun	= LibraryFunctionLoad[$OpenCascadeLibrary, "delete_ocShapeInstance", {Integer}, Integer];
