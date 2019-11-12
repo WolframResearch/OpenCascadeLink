@@ -78,13 +78,14 @@ extern "C" {
 
 static int returnZeroLengthArray( WolframLibraryData libData, mint type, mint rank, MArgument res)
 {
-	mint dims[rank];
+	mint* dims = new mint[rank];
 	MTensor resTen;
 
 	for (int i = 0; i < rank; i++) dims[i] = 0;
 
 	int err = libData->MTensor_new( type, rank, dims, &resTen);
 	MArgument_setMTensor(res, resTen);
+	delete[] dims;
 	return err;
 }
 
