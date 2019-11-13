@@ -50,7 +50,9 @@ OpenCascadeShapeImport::usage = "OpenCascadeShapeImport[ \"file.ext\", expr] imp
 Options[OpenCascadeShapeExport] = {"ShapeSurfaceMeshOptions"->Automatic};
 Options[OpenCascadeShapeSurfaceMesh] = Sort[ {
 	"LinearDeflection"->Automatic,
-	"AngularDeflection"->Automatic
+	"AngularDeflection"->Automatic,
+	"ComputeInParallel"->Automatic,
+	"RelativeDeflection"->Automatic
 }];
 
 Options[OpenCascadeShapeSurfaceMeshToBoundaryMesh] = Sort[{
@@ -785,7 +787,9 @@ OpenCascadeShapeSurfaceMesh[
 	OpenCascadeShapeExpression[ id_]?(testOpenCascadeShapeExpression[OpenCascadeShapeSurfaceMesh]),
 	opts:OptionsPattern[OpenCascadeShapeSurfaceMesh]
 ] := 
-Module[{res, realParams, boolParams, ldeflection, adeflection},
+Module[
+	{res, realParams, boolParams, ldeflection, adeflection, parallelQ,
+	relativeQ},
 
 	(* TODO: this is an absolute value and should be scaled
 		with the shape bounds. *)
@@ -799,6 +803,11 @@ Module[{res, realParams, boolParams, ldeflection, adeflection},
 		adeflection = 0.5
 	];	
 
+	parallelQ = OptionValue["ComputeInParallel"];
+	If[ !BooleanQ[ parallelQ], parallelQ = False];
+
+	relativeQ = OptionValue["RelativeDeflection"];
+	If[ !BooleanQ[ relativeQ], relativeQ = True];
 
 	realParams = pack[{
 		(* Angle *)				adeflection,
@@ -809,8 +818,8 @@ Module[{res, realParams, boolParams, ldeflection, adeflection},
 	}];
 
 	boolParams = pack[Boole[{
-		(* InParallel *)				False,
-		(* Relative *)					False,
+		(* InParallel *)				parallelQ,
+		(* Relative *)					relativeQ,
 		(* InternalVerticesMode *)		True,
 		(* ControlSurfaceDeflection *)	True,
 		(* CleanModel *) 				False,
