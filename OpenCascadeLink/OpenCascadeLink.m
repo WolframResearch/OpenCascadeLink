@@ -646,7 +646,9 @@ OpenCascadeShapeDifference[ shape1_, shape2_] /; And[
 	instance
 ]
 
-OpenCascadeShapeDifference[eN__] := Fold[OpenCascadeShapeDifference, {eN}]
+OpenCascadeShapeDifference[eN__]
+	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === {True} :=
+Fold[OpenCascadeShapeDifference, {eN}]
 
 
 OpenCascadeShapeIntersection[ shape1_] /; 
@@ -667,7 +669,9 @@ OpenCascadeShapeIntersection[ shape1_, shape2_] /; And[
 	instance
 ]
 
-OpenCascadeShapeIntersection[eN__] := Fold[OpenCascadeShapeIntersection, {eN}]
+OpenCascadeShapeIntersection[eN__] /;
+	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === {True} :=
+Fold[OpenCascadeShapeIntersection, {eN}]
 
 
 OpenCascadeShapeUnion[ shape1_] /; 
@@ -688,7 +692,9 @@ OpenCascadeShapeUnion[shape1_, shape2_] /; And[
 	instance
 ]
 
-OpenCascadeShapeUnion[eN__] := Fold[OpenCascadeShapeUnion, {eN}]
+OpenCascadeShapeUnion[eN__] /;
+	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === {True} :=
+Fold[OpenCascadeShapeUnion, {eN}]
 
 
 OpenCascadeShapeBooleanRegion[ br_BooleanRegion] /; Length[br] == 2 :=
