@@ -646,7 +646,7 @@ OpenCascadeShapeDifference[ shape1_, shape2_] /; And[
 	instance
 ]
 
-OpenCascadeShapeDifference[eN__]
+OpenCascadeShapeDifference[eN__] /;
 	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === {True} :=
 Fold[OpenCascadeShapeDifference, {eN}]
 
