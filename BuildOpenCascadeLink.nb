@@ -1,0 +1,792 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     34175,        784]
+NotebookOptionsPosition[     29541,        702]
+NotebookOutlinePosition[     29885,        717]
+CellTagsIndexPosition[     29842,        714]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Building OpenCascadeLink", "Subsection",ExpressionUUID->"a128afc6-35b7-43fd-8da5-175a71c0b21d"],
+
+Cell["\<\
+To build the OpenCascadeLink, first OpenCascade needs to be build. The actual \
+link will then be build in a second step.\
+\>", "Text",ExpressionUUID->"c9b067a2-feea-4117-b6e3-e6f4a3bf44eb"],
+
+Cell[TextData[{
+ "To make things a bit easier a set of pre built OpenCascade libraries is \
+included in this paclet. Thus, if you intend to just build the link to the \
+prebuilt libraries the only that step is necessary to do. Building only the \
+link is of interest if you added, for example, a new function to the link. If \
+you would like to make use of a new version of OpenCascade, then the \
+OpenCascade libraries need to be build first. You can download OpenCascade ",
+ ButtonBox["here",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://www.opencascade.com/content/latest-release"], None},
+  ButtonNote->"https://www.opencascade.com/content/latest-release"],
+ "."
+}], "Text",ExpressionUUID->"52a6be59-d057-4dff-ac5f-649bbd860d2f"],
+
+Cell[CellGroupData[{
+
+Cell["Building OpenCascade on Linux", "Subsubsection",ExpressionUUID->"01eb8fd8-c499-4c8f-9e67-9ddeddada0a2"],
+
+Cell["\<\
+$ tar xfpz opencascade-7.4.0.tgz
+$ mkdir build
+$ cd build
+$ cmake -DBUILD_MODULE_Draw=OFF ../opencascade-7.4.0
+$ make\
+\>", "Text",ExpressionUUID->"e8ed6464-ce1e-4767-945a-c42b4dbc23b1"],
+
+Cell["Copy the library into this directory:", "Text",ExpressionUUID->"09ab2ace-c0f4-42f9-842b-14a39797767f"],
+
+Cell[BoxData[
+ RowBox[{"FileNameJoin", "[", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<PrebuiltLibraries\>\"",
+     ",", "$SystemID", ",", "\"\<lib\>\""}], "}"}], "]"}]], "Input",Expression\
+UUID->"851031e9-9744-4464-9523-84716ed41ee9"],
+
+Cell["\<\
+$ cp build/lin64/gcc/lib/* \
+~/wri_git/OpenCascadeLink/PrebuiltLibraries/Linux-x86-64/lib\
+\>", "Text",ExpressionUUID->"7503b866-b0a4-4acb-b2fd-393b92fe8d25"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Building OpenCascade on Mac", "Subsubsection",
+ CellChangeTimes->{{3.782253912733014*^9, 3.78225392153788*^9}, {
+  3.782254056994916*^9, 
+  3.782254057094715*^9}},ExpressionUUID->"908f8e5f-bc54-4208-8a69-\
+ecf9579b2f53"],
+
+Cell["\<\
+$ tar zxvf opencascade-7.4.0.tgz
+$ mkdir opencascade-build
+$ cd opencascade-build
+$ mkdir install
+$ cmake -DCMAKE_MACOSX_RPATH=ON -DCMAKE_INSTALL_RPATH=@loader_path \
+-DCMAKE_OSX_DEPLOYMENT_TARGET=10.12 -DCMAKE_INSTALL_PREFIX=install \
+-DBUILD_MODULE_Draw=OFF -DANDROID=ON ../opencascade-7.4.0
+$ cmake --build . --target install --parallel 12\
+\>", "Text",
+ CellChangeTimes->{{3.782688686213236*^9, 
+  3.782688690343937*^9}},ExpressionUUID->"1a4193e5-fb63-400b-8691-\
+792a6c097d32"],
+
+Cell["Copy the library into this directory:", "Text",ExpressionUUID->"e796235c-e110-4cb9-91dd-c87fb18d02b4"],
+
+Cell[BoxData[
+ RowBox[{"FileNameJoin", "[", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<PrebuiltLibraries\>\"",
+     ",", "$SystemID", ",", "\"\<lib\>\""}], "}"}], "]"}]], "Input",Expression\
+UUID->"1c71c351-07cb-41af-8594-77304b03d5a9"],
+
+Cell["\<\
+$ cp -R install/lib/*.dylib \
+~/git/Paclets/OpenCascadeLink/PrebuiltLibraries/MacOSX-x86-64/lib/\
+\>", "Text",ExpressionUUID->"ca8e8830-c482-40f1-bc33-430e79381ac6"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Building OpenCascade on Windows", "Subsubsection",
+ CellChangeTimes->{{3.782253912733014*^9, 3.78225392153788*^9}, {
+  3.782254056994916*^9, 3.782254057094715*^9}, {3.782341719237693*^9, 
+  3.782341720143797*^9}},ExpressionUUID->"63e1cb79-991c-436b-82ec-\
+1ff2cdd2dbb1"],
+
+Cell[TextData[{
+ "Download and extract the sources in C:\\dev\\opencascade-7.4.0.\n\nDownload \
+and extract the 3rd party component Freetype in C:\\dev\\occt3rdparty. A \
+prebuilt version is available from\n\n",
+ ButtonBox["https://www.opencascade.com/sites/default/files/private/occt/\
+3rdparty/freetype-2.6.5-vc14-uwp-64.zip",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://www.opencascade.com/sites/default/files/private/occt/\
+3rdparty/freetype-2.6.5-vc14-uwp-64.zip"], None},
+  ButtonNote->
+   "https://www.opencascade.com/sites/default/files/private/occt/3rdparty/\
+freetype-2.6.5-vc14-uwp-64.zip"],
+ "\n\nor it can be built from sources according to the instructions available \
+at\n\n",
+ ButtonBox["https://www.opencascade.com/doc/occt-7.4.0/overview/html/occt_dev_\
+guides __building _ 3rdparty_windows.html",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://www.opencascade.com/doc/occt-7.4.0/overview/html/occt_dev_\
+guides__building_3rdparty_windows.html"], None},
+  ButtonNote->
+   "https://www.opencascade.com/doc/occt-7.4.0/overview/html/occt_dev_guides__\
+building_3rdparty_windows.html"]
+}], "Text",ExpressionUUID->"db0d407a-2da6-41d0-9b86-662594e6a593"],
+
+Cell["\<\
+C:\\dev> mkdir opencascade-build
+C:\\dev> cd opencascade-build
+C:\\dev> mkdir install
+C:\\dev> cmake -DBUILD_MODULE_Draw=OFF - G \"Visual Studio 15 2017 Win64\" \
+-D3RDPARTY_DIR=C:\\dev\\occt3rdparty -DCMAKE_INSTALL _PREFIX=install \
+..\\opencascade-7.4.0
+C:\\dev>  cmake --build . --config Release --target install --parallel 12\
+\>", "Text",ExpressionUUID->"6aa9c6d4-a8cb-4393-aadc-f9301cab6d50"],
+
+Cell["\<\
+Copy the import libraries opencascade-build\\install\\win64\\vc14\\lib\\*.lib \
+into this directory:\
+\>", "Text",
+ CellChangeTimes->{{3.7826889684875717`*^9, 
+  3.782688969079546*^9}},ExpressionUUID->"cf597b56-bf0f-4364-80dc-\
+96c6dd295f41"],
+
+Cell[BoxData[
+ RowBox[{"FileNameJoin", "[", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<PrebuiltLibraries\>\"",
+     ",", "$SystemID", ",", "\"\<import\>\""}], "}"}], "]"}]], "Input",Express\
+ionUUID->"f515f3a3-5269-47e9-871c-254a6f157d3c"],
+
+Cell["\<\
+Copy the runtime DLL libraries \
+opencascade-build\\install\\win64\\vc14\\bin\\*.dll  and freetype.dll (if \
+used) into this directory:\
+\>", "Text",
+ CellChangeTimes->{{3.782688986960642*^9, 
+  3.7826890248401327`*^9}},ExpressionUUID->"a179c6c5-1f8f-46f4-b65a-\
+193df61f6870"],
+
+Cell[BoxData[
+ RowBox[{"FileNameJoin", "[", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<PrebuiltLibraries\>\"",
+     ",", "$SystemID", ",", "\"\<lib\>\""}], "}"}], "]"}]], "Input",Expression\
+UUID->"f6b15d5f-b417-42f4-9cfa-a6ffb2c95ed0"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Build the OpenCascadeLink", "Subsubsection",ExpressionUUID->"7ab88f83-cbf5-4b2c-adf6-aaf116615d3f"],
+
+Cell[BoxData["Quit"], "Input",
+ CellLabel->"In[36]:=",ExpressionUUID->"7c99dfc1-a6db-4f91-adeb-eac5153332a7"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Load", " ", "the", " ", "compiler", " ", "diver", " ", "package", " ", 
+    "and", " ", "set", " ", "the", " ", "project", " ", 
+    RowBox[{"directory", ":"}]}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"<<", "CCompilerDriver`"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"projDir", "=", 
+     RowBox[{"NotebookDirectory", "[", "]"}]}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+    "Set", " ", "up", " ", "the", " ", "directories", " ", "for", " ", 
+     "source", " ", "and", " ", "include", " ", 
+     RowBox[{"files", "."}]}], " ", "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"sourceDir", "=", 
+     RowBox[{"FileNameJoin", "[", 
+      RowBox[{"{", 
+       RowBox[{
+       "projDir", ",", "\"\<OpenCascadeLink\>\"", ",", "\"\<CSource\>\"", 
+        ",", "\"\<LibraryLinkSource\>\""}], "}"}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"includeDir", "=", 
+     RowBox[{"FileNameJoin", "[", 
+      RowBox[{"{", 
+       RowBox[{
+       "projDir", ",", "\"\<OpenCascadeLink\>\"", ",", "\"\<CSource\>\"", 
+        ",", "\"\<OpenCascadeSource\>\"", ",", "\"\<include\>\""}], "}"}], 
+      "]"}]}], ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+    "Copy", " ", "the", " ", "shiped", " ", "prebuilt", " ", "OpenCascade", 
+     " ", "libraries", " ", "into", " ", "their", " ", "final", " ", 
+     "place"}], " ", "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"prebuiltLibDir", "=", 
+     RowBox[{"FileNameJoin", "[", 
+      RowBox[{"{", 
+       RowBox[{
+       "projDir", ",", "\"\<PrebuiltLibraries\>\"", ",", "$SystemID"}], "}"}],
+       "]"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"targetLibDir", "=", 
+     RowBox[{"FileNameJoin", "[", 
+      RowBox[{"{", 
+       RowBox[{
+       "projDir", ",", "\"\<OpenCascadeLink\>\"", ",", 
+        "\"\<LibraryResources\>\""}], "}"}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"If", "[", " ", 
+     RowBox[{
+      RowBox[{"DirectoryQ", "[", "targetLibDir", "]"}], ",", 
+      RowBox[{"DeleteDirectory", "[", 
+       RowBox[{"targetLibDir", ",", 
+        RowBox[{"DeleteContents", "\[Rule]", "True"}]}], "]"}]}], "]"}], 
+    ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"CreateDirectory", "[", "targetLibDir", "]"}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"targetLibDir", "=", 
+     RowBox[{"FileNameJoin", "[", 
+      RowBox[{"{", 
+       RowBox[{"targetLibDir", ",", "$SystemID"}], "}"}], "]"}]}], ";"}], 
+   "\n", 
+   RowBox[{
+    RowBox[{"CopyDirectory", "[", 
+     RowBox[{"prebuiltLibDir", ",", "targetLibDir"}], "]"}], ";"}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{"set", " ", "up", " ", "the", " ", "output"}], " ", "*)"}], "\n", 
+   
+   RowBox[{
+    RowBox[{"outputDir", "=", 
+     RowBox[{"FileNameJoin", "[", 
+      RowBox[{"{", 
+       RowBox[{"projDir", ",", "\"\<build\>\"", ",", "$SystemID"}], "}"}], 
+      "]"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"outputName", "=", "\"\<openCascadeWolframDLL\>\""}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"files", "=", 
+     RowBox[{"{", 
+      RowBox[{
+      "\"\<openCascadeFunctions.cxx\>\"", ",", 
+       "\"\<openCascadeInstance.cxx\>\""}], "}"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"files", "=", 
+     RowBox[{"Map", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"FileNameJoin", "[", 
+         RowBox[{"{", 
+          RowBox[{"sourceDir", ",", "#"}], "}"}], "]"}], "&"}], ",", 
+       "files"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+    "set", " ", "up", " ", "the", " ", "library", " ", "files", " ", "in", 
+     " ", "the", " ", "order", " ", "needed"}], " ", "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"libDirName", "=", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{"$OperatingSystem", "===", "\"\<Windows\>\""}], ",", 
+       "\"\<import\>\"", ",", "\"\<lib\>\""}], "]"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"libDir", "=", 
+     RowBox[{"FileNameJoin", "[", 
+      RowBox[{"{", 
+       RowBox[{"prebuiltLibDir", ",", "libDirName"}], "}"}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"libs", "=", 
+     RowBox[{"{", 
+      RowBox[{
+      "\"\<TKernel\>\"", ",", "\"\<TKMath\>\"", ",", "\"\<TKG2d\>\"", ",", 
+       "\"\<TKG3d\>\"", ",", "\"\<TKGeomBase\>\"", ",", "\"\<TKBRep\>\"", 
+       ",", "\"\<TKGeomAlgo\>\"", ",", "\"\<TKTopAlgo\>\"", ",", 
+       "\"\<TKPrim\>\"", ",", "\"\<TKBO\>\"", ",", "\"\<TKShHealing\>\"", 
+       ",", "\"\<TKBool\>\"", ",", "\"\<TKHLR\>\"", ",", "\"\<TKFillet\>\"", 
+       ",", "\"\<TKOffset\>\"", ",", "\"\<TKFeat\>\"", ",", "\"\<TKMesh\>\"", 
+       ",", "\"\<TKXMesh\>\"", ",", "\"\<TKService\>\"", ",", "\"\<TKV3d\>\"",
+        ",", "\"\<TKOpenGl\>\"", ",", "\"\<TKMeshVS\>\"", ",", 
+       "\"\<TKCDF\>\"", ",", "\"\<TKLCAF\>\"", ",", "\"\<TKCAF\>\"", ",", 
+       "\"\<TKBinL\>\"", ",", "\"\<TKXmlL\>\"", ",", "\"\<TKBin\>\"", ",", 
+       "\"\<TKXml\>\"", ",", "\"\<TKStdL\>\"", ",", "\"\<TKStd\>\"", ",", 
+       "\"\<TKTObj\>\"", ",", "\"\<TKBinTObj\>\"", ",", "\"\<TKXmlTObj\>\"", 
+       ",", "\"\<TKVCAF\>\"", ",", "\"\<TKXSBase\>\"", ",", 
+       "\"\<TKSTEPBase\>\"", ",", "\"\<TKSTEPAttr\>\"", ",", 
+       "\"\<TKSTEP209\>\"", ",", "\"\<TKSTEP\>\"", ",", "\"\<TKIGES\>\"", 
+       ",", "\"\<TKXCAF\>\"", ",", "\"\<TKXDEIGES\>\"", ",", 
+       "\"\<TKXDESTEP\>\"", ",", "\"\<TKSTL\>\"", ",", "\"\<TKVRML\>\"", ",", 
+       "\"\<TKXmlXCAF\>\"", ",", "\"\<TKBinXCAF\>\"", ",", 
+       "\"\<TKRWMesh\>\""}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+    "set", " ", "up", " ", "system", " ", "specific", " ", "compiler", " ", 
+     "options"}], " ", "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"Switch", "[", 
+     RowBox[{
+     "$SystemID", ",", "\[IndentingNewLine]", "\"\<Linux-x86-64\>\"", ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{"coptions", "=", "\"\<\>\""}], ",", "\[IndentingNewLine]", 
+      "\"\<MacOSX-x86-64\>\"", ",", "\[IndentingNewLine]", 
+      RowBox[{"coptions", "=", "\"\<-std=c++0x\>\""}], ",", 
+      "\[IndentingNewLine]", "\"\<Windows-x86-64\>\"", ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{"coptions", "=", "\"\</EHsc\>\""}], ",", "\[IndentingNewLine]", 
+      "_", ",", "$Failed"}], "\[IndentingNewLine]", "]"}], ";"}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{"compile", " ", "the", " ", "link"}], " ", "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"occtLink", "=", 
+     RowBox[{"CreateLibrary", "[", 
+      RowBox[{"files", ",", "outputName", "\[IndentingNewLine]", ",", 
+       RowBox[{"\"\<TargetDirectory\>\"", "\[Rule]", "outputDir"}], 
+       "\[IndentingNewLine]", ",", 
+       RowBox[{"\"\<CleanIntermediate\>\"", "\[Rule]", "True"}], 
+       "\[IndentingNewLine]", ",", 
+       RowBox[{"\"\<IncludeDirectories\>\"", "\[Rule]", 
+        RowBox[{"{", "includeDir", "}"}]}], "\[IndentingNewLine]", ",", 
+       RowBox[{"\"\<LibraryDirectories\>\"", "\[Rule]", 
+        RowBox[{"{", "libDir", "}"}]}], "\[IndentingNewLine]", ",", 
+       RowBox[{"\"\<Libraries\>\"", "\[Rule]", "libs"}], 
+       "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{",", 
+         RowBox[{"\"\<Debug\>\"", "\[Rule]", "True"}]}], "*)"}], 
+       "\[IndentingNewLine]", ",", 
+       RowBox[{"\"\<CompileOptions\>\"", "\[Rule]", " ", "coptions"}]}], 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{",", 
+        RowBox[{"\"\<ShellOutputFunction\>\"", "\[Rule]", "Print"}]}], "*)"}],
+       "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{",", 
+        RowBox[{"\"\<ShellCommandFunction\>\"", "\[Rule]", "Print"}]}], 
+       "*)"}], "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{
+    "Copy", " ", "the", " ", "build", " ", "link", " ", "into", " ", "the", 
+     " ", "layout"}], " ", "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"occtLinkTarget", "=", 
+     RowBox[{"FileNameJoin", "[", 
+      RowBox[{"{", 
+       RowBox[{
+       "projDir", ",", "\"\<OpenCascadeLink\>\"", ",", 
+        "\"\<LibraryResources\>\"", ",", "$SystemID", ",", 
+        RowBox[{"FileNameTake", "[", 
+         RowBox[{"occtLink", ",", 
+          RowBox[{"-", "1"}]}], "]"}]}], "}"}], "]"}]}], ";"}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{"CopyFile", "[", 
+    RowBox[{"occtLink", ",", "occtLinkTarget", ",", 
+     RowBox[{"OverwriteTarget", "\[Rule]", "True"}]}], "]"}]}]}]], "Input",
+ CellLabel->"In[41]:=",ExpressionUUID->"b150000e-8f51-46a7-a64c-1a9c2646ebef"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Basics Tests", "Subsubsection",ExpressionUUID->"fc7167bb-4fc5-4e85-a613-33f5b4ead6a6"],
+
+Cell[BoxData["Quit"], "Input",
+ CellLabel->"In[11]:=",ExpressionUUID->"b0fb6180-9f21-4ba4-a7be-bc786d304bf5"],
+
+Cell[BoxData[
+ RowBox[{"Get", "[", 
+  RowBox[{"FileNameJoin", "[", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<OpenCascadeLink\>\"", 
+     ",", "\"\<OpenCascadeLink.m\>\""}], "}"}], "]"}], "]"}]], "Input",
+ CellLabel->"In[2]:=",ExpressionUUID->"0283f58f-f86b-4e4a-8d85-fcbad652ca14"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"inst", "=", 
+  RowBox[{"OpenCascadeShapeCreate", "[", "]"}]}]], "Input",
+ CellLabel->"In[3]:=",ExpressionUUID->"203492d9-8576-4ae4-82c6-8a9c7ca2e53c"],
+
+Cell[BoxData[
+ RowBox[{"OpenCascadeShapeExpression", "[", "1", "]"}]], "Output",
+ CellLabel->"Out[3]=",ExpressionUUID->"5f504024-b8c5-45ca-a90d-999055b80baa"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"OpenCascadeShapeExpressionQ", "[", "inst", "]"}]], "Input",
+ CellLabel->"In[4]:=",ExpressionUUID->"05def6ba-91a0-4e69-92bb-ffae9b68a1cb"],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[4]=",ExpressionUUID->"878445ad-a92c-4672-8385-6010ca4e7518"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"oce", "=", 
+  RowBox[{"OpenCascadeShapeExpressions", "[", "]"}]}]], "Input",
+ CellLabel->"In[5]:=",ExpressionUUID->"0ed5ab37-9075-4dc7-8d7c-520c5d1e783e"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"OpenCascadeShapeExpression", "[", "1", "]"}], "}"}]], "Output",
+ CellLabel->"Out[5]=",ExpressionUUID->"c93c61b7-2690-4408-933d-a9d489a0f888"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"OpenCascadeShapeDelete", "[", 
+  RowBox[{"oce", "[", 
+   RowBox[{"[", "1", "]"}], "]"}], "]"}]], "Input",
+ CellLabel->"In[6]:=",ExpressionUUID->"33c9e9bb-130a-4a08-84b4-d582f6157ab1"],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[6]=",ExpressionUUID->"d3e320b7-bc3a-45ff-aa57-8fb44b048b69"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"OpenCascadeShapeExpressions", "[", "]"}]], "Input",
+ CellLabel->"In[7]:=",ExpressionUUID->"df18c87f-76a7-432a-970b-a8333cf21d36"],
+
+Cell[BoxData[
+ RowBox[{"{", "}"}]], "Output",
+ CellLabel->"Out[7]=",ExpressionUUID->"667c49f2-67e1-4ce1-ab7a-6ddfcdb5806c"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"s1", "=", 
+  RowBox[{"OpenCascadeShape", "[", 
+   RowBox[{"Ball", "[", 
+    RowBox[{"{", 
+     RowBox[{"1", ",", "0", ",", "0"}], "}"}], "]"}], "]"}]}]], "Input",
+ CellLabel->"In[8]:=",ExpressionUUID->"b8b5a512-4e15-4e4f-ad99-13b555b1ad95"],
+
+Cell[BoxData[
+ RowBox[{"OpenCascadeShapeExpression", "[", "2", "]"}]], "Output",
+ CellLabel->"Out[8]=",ExpressionUUID->"02e76eca-2004-4ce4-be43-d4332e8f8d62"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"bmesh1", "=", 
+  RowBox[{
+  "OpenCascadeShapeSurfaceMeshToBoundaryMesh", "[", "s1", "]"}]}]], "Input",
+ CellLabel->"In[9]:=",ExpressionUUID->"be8ec323-b075-4811-9207-b242f9d1ebc0"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"NDSolve`FEM`ElementMesh", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"0.`", ",", "2.`"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"-", "1.`"}], ",", "1.`"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"-", "1.`"}], ",", "1.`"}], "}"}]}], "}"}], ",", 
+    "Automatic"}], "]"}],
+  False,
+  Editable->False,
+  SelectWithContents->True]], "Output",
+ CellLabel->"Out[9]=",ExpressionUUID->"e88c92be-694a-4059-894b-3b60fa52b865"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"bmesh1", "[", "\"\<Wireframe\>\"", "]"}]], "Input",
+ CellLabel->"In[10]:=",ExpressionUUID->"eaf9a799-5635-4822-b6b7-c76a8d5f1385"],
+
+Cell[BoxData[
+ Graphics3DBox[
+  {EdgeForm[GrayLevel[0]], FaceForm[None, None], 
+   GraphicsComplex3DBox[CompressedData["
+1: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
+
+    "], Polygon3DBox[CompressedData["
+1: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
+Z/fcu+v+Xc/+A0uvcYs=
+     "]]]},
+  Boxed->False]], "Output",
+ CellLabel->"Out[10]=",ExpressionUUID->"7a1d04bb-b5be-4f65-80ad-504167f43f02"]
+}, Open  ]]
+}, Closed]]
+}, Open  ]]
+},
+WindowSize->{477., 780.75},
+WindowMargins->{{Automatic, 1.5}, {Automatic, 13.5}},
+FrontEndVersion->"12.1 for Linux x86 (64-bit) (October 26, 2019)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 101, 0, 55, "Subsection",ExpressionUUID->"a128afc6-35b7-43fd-8da5-175a71c0b21d"],
+Cell[684, 24, 200, 3, 81, "Text",ExpressionUUID->"c9b067a2-feea-4117-b6e3-e6f4a3bf44eb"],
+Cell[887, 29, 747, 13, 196, "Text",ExpressionUUID->"52a6be59-d057-4dff-ac5f-649bbd860d2f"],
+Cell[CellGroupData[{
+Cell[1659, 46, 109, 0, 45, "Subsubsection",ExpressionUUID->"01eb8fd8-c499-4c8f-9e67-9ddeddada0a2"],
+Cell[1771, 48, 196, 6, 127, "Text",ExpressionUUID->"e8ed6464-ce1e-4767-945a-c42b4dbc23b1"],
+Cell[1970, 56, 108, 0, 35, "Text",ExpressionUUID->"09ab2ace-c0f4-42f9-842b-14a39797767f"],
+Cell[2081, 58, 277, 6, 29, "Input",ExpressionUUID->"851031e9-9744-4464-9523-84716ed41ee9"],
+Cell[2361, 66, 168, 3, 35, "Text",ExpressionUUID->"7503b866-b0a4-4acb-b2fd-393b92fe8d25"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[2566, 74, 226, 4, 37, "Subsubsection",ExpressionUUID->"908f8e5f-bc54-4208-8a69-ecf9579b2f53"],
+Cell[2795, 80, 492, 12, 196, "Text",ExpressionUUID->"1a4193e5-fb63-400b-8691-792a6c097d32"],
+Cell[3290, 94, 108, 0, 35, "Text",ExpressionUUID->"e796235c-e110-4cb9-91dd-c87fb18d02b4"],
+Cell[3401, 96, 277, 6, 29, "Input",ExpressionUUID->"1c71c351-07cb-41af-8594-77304b03d5a9"],
+Cell[3681, 104, 175, 3, 35, "Text",ExpressionUUID->"ca8e8830-c482-40f1-bc33-430e79381ac6"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[3893, 112, 276, 4, 37, "Subsubsection",ExpressionUUID->"63e1cb79-991c-436b-82ec-1ff2cdd2dbb1"],
+Cell[4172, 118, 1193, 24, 288, "Text",ExpressionUUID->"db0d407a-2da6-41d0-9b86-662594e6a593"],
+Cell[5368, 144, 408, 8, 150, "Text",ExpressionUUID->"6aa9c6d4-a8cb-4393-aadc-f9301cab6d50"],
+Cell[5779, 154, 252, 6, 35, "Text",ExpressionUUID->"cf597b56-bf0f-4364-80dc-96c6dd295f41"],
+Cell[6034, 162, 280, 6, 29, "Input",ExpressionUUID->"f515f3a3-5269-47e9-871c-254a6f157d3c"],
+Cell[6317, 170, 287, 7, 58, "Text",ExpressionUUID->"a179c6c5-1f8f-46f4-b65a-193df61f6870"],
+Cell[6607, 179, 277, 6, 29, "Input",ExpressionUUID->"f6b15d5f-b417-42f4-9cfa-a6ffb2c95ed0"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[6921, 190, 105, 0, 37, "Subsubsection",ExpressionUUID->"7ab88f83-cbf5-4b2c-adf6-aaf116615d3f"],
+Cell[7029, 192, 109, 1, 29, "Input",ExpressionUUID->"7c99dfc1-a6db-4f91-adeb-eac5153332a7"],
+Cell[7141, 195, 8788, 210, 1928, "Input",ExpressionUUID->"b150000e-8f51-46a7-a64c-1a9c2646ebef"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[15966, 410, 92, 0, 37, "Subsubsection",ExpressionUUID->"fc7167bb-4fc5-4e85-a613-33f5b4ead6a6"],
+Cell[16061, 412, 109, 1, 29, "Input",ExpressionUUID->"b0fb6180-9f21-4ba4-a7be-bc786d304bf5"],
+Cell[16173, 415, 326, 7, 71, "Input",ExpressionUUID->"0283f58f-f86b-4e4a-8d85-fcbad652ca14"],
+Cell[CellGroupData[{
+Cell[16524, 426, 174, 3, 29, "Input",ExpressionUUID->"203492d9-8576-4ae4-82c6-8a9c7ca2e53c"],
+Cell[16701, 431, 158, 2, 33, "Output",ExpressionUUID->"5f504024-b8c5-45ca-a90d-999055b80baa"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16896, 438, 161, 2, 29, "Input",ExpressionUUID->"05def6ba-91a0-4e69-92bb-ffae9b68a1cb"],
+Cell[17060, 442, 109, 1, 33, "Output",ExpressionUUID->"878445ad-a92c-4672-8385-6010ca4e7518"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17206, 448, 178, 3, 29, "Input",ExpressionUUID->"0ed5ab37-9075-4dc7-8d7c-520c5d1e783e"],
+Cell[17387, 453, 181, 3, 33, "Output",ExpressionUUID->"c93c61b7-2690-4408-933d-a9d489a0f888"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17605, 461, 207, 4, 29, "Input",ExpressionUUID->"33c9e9bb-130a-4a08-84b4-d582f6157ab1"],
+Cell[17815, 467, 106, 1, 33, "Output",ExpressionUUID->"d3e320b7-bc3a-45ff-aa57-8fb44b048b69"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17958, 473, 153, 2, 29, "Input",ExpressionUUID->"df18c87f-76a7-432a-970b-a8333cf21d36"],
+Cell[18114, 477, 123, 2, 33, "Output",ExpressionUUID->"667c49f2-67e1-4ce1-ab7a-6ddfcdb5806c"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[18274, 484, 264, 6, 29, "Input",ExpressionUUID->"b8b5a512-4e15-4e4f-ad99-13b555b1ad95"],
+Cell[18541, 492, 158, 2, 33, "Output",ExpressionUUID->"02e76eca-2004-4ce4-be43-d4332e8f8d62"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[18736, 499, 204, 4, 71, "Input",ExpressionUUID->"be8ec323-b075-4811-9207-b242f9d1ebc0"],
+Cell[18943, 505, 545, 18, 55, "Output",ExpressionUUID->"e88c92be-694a-4059-894b-3b60fa52b865"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[19525, 528, 154, 2, 29, "Input",ExpressionUUID->"eaf9a799-5635-4822-b6b7-c76a8d5f1385"],
+Cell[19682, 532, 9819, 165, 358, "Output",ExpressionUUID->"7a1d04bb-b5be-4f65-80ad-504167f43f02"]
+}, Open  ]]
+}, Closed]]
+}, Open  ]]
+}
+]
+*)
+
