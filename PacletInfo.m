@@ -9,7 +9,7 @@ Paclet[
     Extensions -> 
         {
             {"Application", Context -> "OpenCascadeLink`"}, 
-            {"Documentation", Language -> All, MainPage -> "Guides/OpenCascadeLink"}
+            {"Documentation", Language -> All, MainPage -> "Tutorials/UsingOpenCascadeLink"}
         }
 ]
 
