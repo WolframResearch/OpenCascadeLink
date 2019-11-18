@@ -30,6 +30,7 @@
 #include <IMeshData_Status.hxx>
 #include <IMeshTools_Parameters.hxx>
 #include <BRepMesh_IncrementalMesh.hxx>
+#include <BRepTools.hxx>
 
 #include <BRep_Tool.hxx>                                                        
 #include <TopoDS.hxx>                                                           
@@ -808,6 +809,8 @@ DLLEXPORT int makeSurfaceMesh(WolframLibraryData libData, mint Argc, MArgument *
 	}
 	libData->MTensor_disown(tenPts2);
 
+	/* possibly allow witching this off via an option */
+	BRepTools::Clean( *instance);
 
 	BRepMesh_IncrementalMesh Mesh( *instance, meshParams);
 	Mesh.Perform();
