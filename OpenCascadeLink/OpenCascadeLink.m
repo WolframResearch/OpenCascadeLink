@@ -202,6 +202,7 @@ OpenCascadeShapeImport[ file:(_String|_File), form_String] :=
 		fns, newDir, validDirQ, instance},
 		fileOperation = Switch[ form,
 						"stp"|"step", "load_step",
+						"brep" | "rle", "load_brep",
 						_, $Failed];
 		If[ fileOperation === $Failed, Return[ $Failed, Module]];
 
@@ -288,6 +289,7 @@ Module[{res, fileOperation, fileName, fileWithExtension,
 	fileOperation = Switch[ form,
 					"STL" | "stl", "save_stl",
 					"step" | "stp", "save_step",
+					"brep", "save_brep",
 					_, $Failed];
 	If[ fileOperation === $Failed, Return[ $Failed, Module]];
 

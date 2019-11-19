@@ -1127,6 +1127,11 @@ DLLEXPORT int fileOperation(WolframLibraryData libData, MLINK mlp)
 			resStr = "False";
 		}
 	}
+	else if ( strcmp( opType, "save_brep") == 0) {
+		if ( !BRepTools::Write(*instance, (char*)fName)) {
+			resStr = "False";
+		}
+	}
 	else if ( strcmp( opType, "load_step") == 0) {
 		STEPControl_Reader reader; 
 		IFSelect_ReturnStatus status = reader.ReadFile( (char*)fName);
@@ -1142,6 +1147,13 @@ DLLEXPORT int fileOperation(WolframLibraryData libData, MLINK mlp)
 		TopoDS_Shape shape = reader.OneShape();
 		*instance = shape;
 	}
+	else if ( strcmp( opType, "load_brep") == 0) {
+		BRep_Builder builder;
+		TopoDS_Shape shape;
+		/* TODO: how to check validity? */
+		BRepTools::Read(shape, (char*)fName, builder); 
+		*instance = shape;
+	}
 	else {
 		resStr = "False";
 	}
@@ -1154,39 +1166,4 @@ done:
 	return returnRes(mlp, fName, opType, res);
 }
 
-/*
-
-#include <iostream>
-using namespace std;
-
-TopoDS_Shape sewedShape = shape;
-if (shape.ShapeType() == TopAbs_COMPOUND) {
-	cout << "Compound\n";
-}
-if (shape.ShapeType() == TopAbs_COMPSOLID) {
-	cout << "CompSolid\n";
-}
-if (shape.ShapeType() == TopAbs_SOLID) {
-	cout << "Solid\n";
-}
-if (shape.ShapeType() == TopAbs_SHELL) {
-	cout << "Shell\n";
-}
-if (shape.ShapeType() == TopAbs_FACE) {
-	cout << "Face\n";
-}
-if (shape.ShapeType() == TopAbs_WIRE) {
-	cout << "Wire\n";
-}
-if (shape.ShapeType() == TopAbs_EDGE) {
-	cout << "Edge\n";
-}
-if (shape.ShapeType() == TopAbs_VERTEX) {
-	cout << "Vertex\n";
-}
-if (shape.ShapeType() == TopAbs_SHAPE) {
-	cout << "Shape\n";
-}
-
-*/
 
