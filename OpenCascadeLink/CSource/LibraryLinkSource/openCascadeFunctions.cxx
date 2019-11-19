@@ -39,6 +39,7 @@
 #include <Poly_Triangulation.hxx>
 
 #include <StlAPI_Writer.hxx>
+#include <StlAPI_Reader.hxx>
 
 #include <STEPControl_Reader.hxx>
 #include <STEPControl_Writer.hxx>
@@ -1129,6 +1130,12 @@ DLLEXPORT int fileOperation(WolframLibraryData libData, MLINK mlp)
 	}
 	else if ( strcmp( opType, "save_brep") == 0) {
 		if ( !BRepTools::Write(*instance, (char*)fName)) {
+			resStr = "False";
+		}
+	}
+	else if ( strcmp( opType, "load_stl") == 0) {
+		StlAPI_Reader stl_reader;
+		if ( !stl_reader.Read(*instance, (char*)fName)) {
 			resStr = "False";
 		}
 	}

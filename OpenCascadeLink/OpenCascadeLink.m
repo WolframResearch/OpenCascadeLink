@@ -201,6 +201,7 @@ OpenCascadeShapeImport[ file:(_String|_File), form_String] :=
 	Module[{res, fileOperation, fileName, fileWithExtension,
 		fns, newDir, validDirQ, instance},
 		fileOperation = Switch[ form,
+						"STL" | "stl", "load_stl",
 						"stp"|"step", "load_step",
 						"brep" | "rle", "load_brep",
 						_, $Failed];
