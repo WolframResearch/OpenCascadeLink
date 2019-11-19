@@ -71,6 +71,7 @@ extern "C" {
 	DLLEXPORT int getSurfaceMeshElementOffsets(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int getShapeNumberOfEdges(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+	DLLEXPORT int getShapeType(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int fileOperation(WolframLibraryData libData, MLINK mlp);
 
@@ -1059,6 +1060,24 @@ DLLEXPORT int getShapeNumberOfEdges(WolframLibraryData libData, mint Argc, MArgu
 	return 0;
 }
 
+
+DLLEXPORT int getShapeType(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	mint id  = MArgument_getInteger(Args[0]);
+	mint type = 0;
+
+	TopoDS_Shape *instance  = get_ocShapeInstance( id);
+
+	if (instance == NULL) {
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	type = (*instance).ShapeType();
+
+	MArgument_setInteger(res, type);
+	return 0;
+}
 
 
 DLLEXPORT int fileOperation(WolframLibraryData libData, MLINK mlp)

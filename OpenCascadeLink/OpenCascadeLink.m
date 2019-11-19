@@ -39,6 +39,7 @@ OpenCascadeShapeSurfaceMeshElements::usage = "";
 OpenCascadeShapeSurfaceMeshElementOffsets::usage = "";
 
 OpenCascadeShapeNumberOfEdges::usage = "";
+OpenCascadeShapeType::usage = "";
 
 OpenCascadeShapeSurfaceMeshToBoundaryMesh::usage = "";
 
@@ -127,6 +128,7 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	getSurfaceMeshElementOffsetsFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getSurfaceMeshElementOffsets", {Integer}, {Integer, 1}];
 
 	getShapeNumberOfEdgesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeNumberOfEdges", {Integer}, Integer];
+	getShapeTypeFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeType", {Integer}, Integer];
 
 	fileOperationFun = LibraryFunctionLoad[$OpenCascadeLibrary, "fileOperation", LinkObject, LinkObject];
 
@@ -720,6 +722,26 @@ Module[
 
 OpenCascadeShapeNumberOfEdges[shape_] /; OpenCascadeShapeExpressionQ[shape] :=
 getShapeNumberOfEdgesFun[ instanceID[ shape]]
+
+OpenCascadeShapeType[shape_] /; OpenCascadeShapeExpressionQ[shape] :=
+Module[{type},
+	type = getShapeTypeFun[ instanceID[ shape]];
+
+	(* These come from the TopAbs_ShapeEnum *)
+
+	Switch[ type,
+		0, "Compound",
+		1, "CompundSolid",
+		2, "Solid",
+		3, "Shell",
+		4, "Face",
+		5, "Wire",
+		6, "Edge",
+		7, "Vertex",
+		8, "Shape",
+		_, $Failed
+	]
+]
 
 
 
