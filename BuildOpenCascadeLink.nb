@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     34175,        784]
-NotebookOptionsPosition[     29541,        702]
-NotebookOutlinePosition[     29885,        717]
-CellTagsIndexPosition[     29842,        714]
+NotebookDataLength[     27633,        630]
+NotebookOptionsPosition[     22653,        542]
+NotebookOutlinePosition[     23037,        558]
+CellTagsIndexPosition[     22994,        555]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -191,219 +191,59 @@ Cell[CellGroupData[{
 Cell["Build the OpenCascadeLink", "Subsubsection",ExpressionUUID->"7ab88f83-cbf5-4b2c-adf6-aaf116615d3f"],
 
 Cell[BoxData["Quit"], "Input",
- CellLabel->"In[36]:=",ExpressionUUID->"7c99dfc1-a6db-4f91-adeb-eac5153332a7"],
+ CellLabel->"In[5]:=",ExpressionUUID->"7c99dfc1-a6db-4f91-adeb-eac5153332a7"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{"load", " ", "the", " ", "BuildOpenCascadeLink", " ", "command"}], 
+   " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"Get", "[", 
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<scripts\>\"", ",", 
+      "\"\<BuildOpenCascadeLink.wl\>\""}], "}"}], "]"}], "]"}]}]], "Input",
+ CellLabel->"In[39]:=",ExpressionUUID->"e32adc6d-106e-4512-8755-767bbbbc4792"],
 
 Cell[BoxData[
  RowBox[{
   RowBox[{"(*", " ", 
    RowBox[{
-   "Load", " ", "the", " ", "compiler", " ", "diver", " ", "package", " ", 
-    "and", " ", "set", " ", "the", " ", "project", " ", 
-    RowBox[{"directory", ":"}]}], " ", "*)"}], "\[IndentingNewLine]", 
+   "where", " ", "are", " ", "the", " ", "sources", " ", "and", " ", "where", 
+    " ", "should", " ", "we", " ", "build", " ", 
+    RowBox[{"to", "?"}]}], " ", "*)"}], "\[IndentingNewLine]", 
   RowBox[{
-   RowBox[{"<<", "CCompilerDriver`"}], "\[IndentingNewLine]", 
-   RowBox[{
-    RowBox[{"projDir", "=", 
-     RowBox[{"NotebookDirectory", "[", "]"}]}], ";"}], "\[IndentingNewLine]", 
-   "\[IndentingNewLine]", 
-   RowBox[{"(*", " ", 
-    RowBox[{
-    "Set", " ", "up", " ", "the", " ", "directories", " ", "for", " ", 
-     "source", " ", "and", " ", "include", " ", 
-     RowBox[{"files", "."}]}], " ", "*)"}], "\n", 
-   RowBox[{
-    RowBox[{"sourceDir", "=", 
-     RowBox[{"FileNameJoin", "[", 
-      RowBox[{"{", 
-       RowBox[{
-       "projDir", ",", "\"\<OpenCascadeLink\>\"", ",", "\"\<CSource\>\"", 
-        ",", "\"\<LibraryLinkSource\>\""}], "}"}], "]"}]}], ";"}], 
-   "\[IndentingNewLine]", 
-   RowBox[{
-    RowBox[{"includeDir", "=", 
-     RowBox[{"FileNameJoin", "[", 
-      RowBox[{"{", 
-       RowBox[{
-       "projDir", ",", "\"\<OpenCascadeLink\>\"", ",", "\"\<CSource\>\"", 
-        ",", "\"\<OpenCascadeSource\>\"", ",", "\"\<include\>\""}], "}"}], 
-      "]"}]}], ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
-   RowBox[{"(*", " ", 
-    RowBox[{
-    "Copy", " ", "the", " ", "shiped", " ", "prebuilt", " ", "OpenCascade", 
-     " ", "libraries", " ", "into", " ", "their", " ", "final", " ", 
-     "place"}], " ", "*)"}], "\[IndentingNewLine]", 
-   RowBox[{
-    RowBox[{"prebuiltLibDir", "=", 
-     RowBox[{"FileNameJoin", "[", 
-      RowBox[{"{", 
-       RowBox[{
-       "projDir", ",", "\"\<PrebuiltLibraries\>\"", ",", "$SystemID"}], "}"}],
-       "]"}]}], ";"}], "\[IndentingNewLine]", 
-   RowBox[{
-    RowBox[{"targetLibDir", "=", 
-     RowBox[{"FileNameJoin", "[", 
-      RowBox[{"{", 
-       RowBox[{
-       "projDir", ",", "\"\<OpenCascadeLink\>\"", ",", 
-        "\"\<LibraryResources\>\""}], "}"}], "]"}]}], ";"}], 
-   "\[IndentingNewLine]", 
-   RowBox[{
-    RowBox[{"If", "[", " ", 
-     RowBox[{
-      RowBox[{"DirectoryQ", "[", "targetLibDir", "]"}], ",", 
-      RowBox[{"DeleteDirectory", "[", 
-       RowBox[{"targetLibDir", ",", 
-        RowBox[{"DeleteContents", "\[Rule]", "True"}]}], "]"}]}], "]"}], 
-    ";"}], "\[IndentingNewLine]", 
-   RowBox[{
-    RowBox[{"CreateDirectory", "[", "targetLibDir", "]"}], ";"}], "\n", 
-   RowBox[{
-    RowBox[{"targetLibDir", "=", 
-     RowBox[{"FileNameJoin", "[", 
-      RowBox[{"{", 
-       RowBox[{"targetLibDir", ",", "$SystemID"}], "}"}], "]"}]}], ";"}], 
-   "\n", 
-   RowBox[{
-    RowBox[{"CopyDirectory", "[", 
-     RowBox[{"prebuiltLibDir", ",", "targetLibDir"}], "]"}], ";"}], "\n", 
-   "\[IndentingNewLine]", 
-   RowBox[{"(*", " ", 
-    RowBox[{"set", " ", "up", " ", "the", " ", "output"}], " ", "*)"}], "\n", 
-   
-   RowBox[{
-    RowBox[{"outputDir", "=", 
-     RowBox[{"FileNameJoin", "[", 
-      RowBox[{"{", 
-       RowBox[{"projDir", ",", "\"\<build\>\"", ",", "$SystemID"}], "}"}], 
-      "]"}]}], ";"}], "\n", 
-   RowBox[{
-    RowBox[{"outputName", "=", "\"\<openCascadeWolframDLL\>\""}], ";"}], 
-   "\[IndentingNewLine]", 
-   RowBox[{
-    RowBox[{"files", "=", 
-     RowBox[{"{", 
+   RowBox[{"setup", "=", 
+    RowBox[{"Association", "[", 
+     RowBox[{"{", "\[IndentingNewLine]", 
       RowBox[{
-      "\"\<openCascadeFunctions.cxx\>\"", ",", 
-       "\"\<openCascadeInstance.cxx\>\""}], "}"}]}], ";"}], 
-   "\[IndentingNewLine]", 
-   RowBox[{
-    RowBox[{"files", "=", 
-     RowBox[{"Map", "[", 
-      RowBox[{
-       RowBox[{
+       RowBox[{"\"\<BaseDirectory\>\"", "\[Rule]", 
+        RowBox[{"NotebookDirectory", "[", "]"}]}], ",", 
+       RowBox[{"\"\<BuildDirectory\>\"", "\[Rule]", 
         RowBox[{"FileNameJoin", "[", 
          RowBox[{"{", 
-          RowBox[{"sourceDir", ",", "#"}], "}"}], "]"}], "&"}], ",", 
-       "files"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
-   "\[IndentingNewLine]", 
-   RowBox[{"(*", " ", 
-    RowBox[{
-    "set", " ", "up", " ", "the", " ", "library", " ", "files", " ", "in", 
-     " ", "the", " ", "order", " ", "needed"}], " ", "*)"}], 
-   "\[IndentingNewLine]", 
-   RowBox[{
-    RowBox[{"libDirName", "=", 
-     RowBox[{"If", "[", 
-      RowBox[{
-       RowBox[{"$OperatingSystem", "===", "\"\<Windows\>\""}], ",", 
-       "\"\<import\>\"", ",", "\"\<lib\>\""}], "]"}]}], ";"}], "\n", 
-   RowBox[{
-    RowBox[{"libDir", "=", 
-     RowBox[{"FileNameJoin", "[", 
-      RowBox[{"{", 
-       RowBox[{"prebuiltLibDir", ",", "libDirName"}], "}"}], "]"}]}], ";"}], 
-   "\[IndentingNewLine]", 
-   RowBox[{
-    RowBox[{"libs", "=", 
-     RowBox[{"{", 
-      RowBox[{
-      "\"\<TKernel\>\"", ",", "\"\<TKMath\>\"", ",", "\"\<TKG2d\>\"", ",", 
-       "\"\<TKG3d\>\"", ",", "\"\<TKGeomBase\>\"", ",", "\"\<TKBRep\>\"", 
-       ",", "\"\<TKGeomAlgo\>\"", ",", "\"\<TKTopAlgo\>\"", ",", 
-       "\"\<TKPrim\>\"", ",", "\"\<TKBO\>\"", ",", "\"\<TKShHealing\>\"", 
-       ",", "\"\<TKBool\>\"", ",", "\"\<TKHLR\>\"", ",", "\"\<TKFillet\>\"", 
-       ",", "\"\<TKOffset\>\"", ",", "\"\<TKFeat\>\"", ",", "\"\<TKMesh\>\"", 
-       ",", "\"\<TKXMesh\>\"", ",", "\"\<TKService\>\"", ",", "\"\<TKV3d\>\"",
-        ",", "\"\<TKOpenGl\>\"", ",", "\"\<TKMeshVS\>\"", ",", 
-       "\"\<TKCDF\>\"", ",", "\"\<TKLCAF\>\"", ",", "\"\<TKCAF\>\"", ",", 
-       "\"\<TKBinL\>\"", ",", "\"\<TKXmlL\>\"", ",", "\"\<TKBin\>\"", ",", 
-       "\"\<TKXml\>\"", ",", "\"\<TKStdL\>\"", ",", "\"\<TKStd\>\"", ",", 
-       "\"\<TKTObj\>\"", ",", "\"\<TKBinTObj\>\"", ",", "\"\<TKXmlTObj\>\"", 
-       ",", "\"\<TKVCAF\>\"", ",", "\"\<TKXSBase\>\"", ",", 
-       "\"\<TKSTEPBase\>\"", ",", "\"\<TKSTEPAttr\>\"", ",", 
-       "\"\<TKSTEP209\>\"", ",", "\"\<TKSTEP\>\"", ",", "\"\<TKIGES\>\"", 
-       ",", "\"\<TKXCAF\>\"", ",", "\"\<TKXDEIGES\>\"", ",", 
-       "\"\<TKXDESTEP\>\"", ",", "\"\<TKSTL\>\"", ",", "\"\<TKVRML\>\"", ",", 
-       "\"\<TKXmlXCAF\>\"", ",", "\"\<TKBinXCAF\>\"", ",", 
-       "\"\<TKRWMesh\>\""}], "}"}]}], ";"}], "\[IndentingNewLine]", 
-   "\[IndentingNewLine]", 
-   RowBox[{"(*", " ", 
-    RowBox[{
-    "set", " ", "up", " ", "system", " ", "specific", " ", "compiler", " ", 
-     "options"}], " ", "*)"}], "\n", 
-   RowBox[{
-    RowBox[{"Switch", "[", 
-     RowBox[{
-     "$SystemID", ",", "\[IndentingNewLine]", "\"\<Linux-x86-64\>\"", ",", 
-      "\[IndentingNewLine]", 
-      RowBox[{"coptions", "=", "\"\<\>\""}], ",", "\[IndentingNewLine]", 
-      "\"\<MacOSX-x86-64\>\"", ",", "\[IndentingNewLine]", 
-      RowBox[{"coptions", "=", "\"\<-std=c++0x\>\""}], ",", 
-      "\[IndentingNewLine]", "\"\<Windows-x86-64\>\"", ",", 
-      "\[IndentingNewLine]", 
-      RowBox[{"coptions", "=", "\"\</EHsc\>\""}], ",", "\[IndentingNewLine]", 
-      "_", ",", "$Failed"}], "\[IndentingNewLine]", "]"}], ";"}], "\n", 
-   "\[IndentingNewLine]", 
-   RowBox[{"(*", " ", 
-    RowBox[{"compile", " ", "the", " ", "link"}], " ", "*)"}], 
-   "\[IndentingNewLine]", 
-   RowBox[{
-    RowBox[{"occtLink", "=", 
-     RowBox[{"CreateLibrary", "[", 
-      RowBox[{"files", ",", "outputName", "\[IndentingNewLine]", ",", 
-       RowBox[{"\"\<TargetDirectory\>\"", "\[Rule]", "outputDir"}], 
-       "\[IndentingNewLine]", ",", 
-       RowBox[{"\"\<CleanIntermediate\>\"", "\[Rule]", "True"}], 
-       "\[IndentingNewLine]", ",", 
-       RowBox[{"\"\<IncludeDirectories\>\"", "\[Rule]", 
-        RowBox[{"{", "includeDir", "}"}]}], "\[IndentingNewLine]", ",", 
-       RowBox[{"\"\<LibraryDirectories\>\"", "\[Rule]", 
-        RowBox[{"{", "libDir", "}"}]}], "\[IndentingNewLine]", ",", 
-       RowBox[{"\"\<Libraries\>\"", "\[Rule]", "libs"}], 
-       "\[IndentingNewLine]", 
-       RowBox[{"(*", 
-        RowBox[{",", 
-         RowBox[{"\"\<Debug\>\"", "\[Rule]", "True"}]}], "*)"}], 
-       "\[IndentingNewLine]", ",", 
-       RowBox[{"\"\<CompileOptions\>\"", "\[Rule]", " ", "coptions"}]}], 
-      "\[IndentingNewLine]", 
-      RowBox[{"(*", 
-       RowBox[{",", 
-        RowBox[{"\"\<ShellOutputFunction\>\"", "\[Rule]", "Print"}]}], "*)"}],
-       "\[IndentingNewLine]", 
-      RowBox[{"(*", 
-       RowBox[{",", 
-        RowBox[{"\"\<ShellCommandFunction\>\"", "\[Rule]", "Print"}]}], 
-       "*)"}], "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]", 
-   RowBox[{"(*", " ", 
-    RowBox[{
-    "Copy", " ", "the", " ", "build", " ", "link", " ", "into", " ", "the", 
-     " ", "layout"}], " ", "*)"}], "\n", 
-   RowBox[{
-    RowBox[{"occtLinkTarget", "=", 
-     RowBox[{"FileNameJoin", "[", 
-      RowBox[{"{", 
-       RowBox[{
-       "projDir", ",", "\"\<OpenCascadeLink\>\"", ",", 
-        "\"\<LibraryResources\>\"", ",", "$SystemID", ",", 
-        RowBox[{"FileNameTake", "[", 
-         RowBox[{"occtLink", ",", 
-          RowBox[{"-", "1"}]}], "]"}]}], "}"}], "]"}]}], ";"}], "\n", 
-   "\[IndentingNewLine]", 
-   RowBox[{"CopyFile", "[", 
-    RowBox[{"occtLink", ",", "occtLinkTarget", ",", 
-     RowBox[{"OverwriteTarget", "\[Rule]", "True"}]}], "]"}]}]}]], "Input",
- CellLabel->"In[41]:=",ExpressionUUID->"b150000e-8f51-46a7-a64c-1a9c2646ebef"]
+          RowBox[{
+           RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<build\>\""}], 
+          "}"}], "]"}]}]}], "\[IndentingNewLine]", "}"}], "]"}]}], 
+   ";"}]}]], "Input",
+ CellLabel->"In[40]:=",ExpressionUUID->"1053d118-7213-4dbb-b4dc-8e215810c459"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{"Do", " ", "the", " ", "build"}], " ", "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"BuildOpenCascadeLink", "[", "setup", "]"}]}]], "Input",
+ CellLabel->"In[41]:=",ExpressionUUID->"3ab5f839-05ca-4d29-9724-761dd7084782"],
+
+Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/\
+OpenCascadeLink/LibraryResources/Linux-x86-64/openCascadeWolframDLL.so\"\>"], \
+"Output",
+ CellLabel->"Out[41]=",ExpressionUUID->"8d644654-fe84-4571-9797-23410f08d958"]
+}, Open  ]]
 }, Closed]],
 
 Cell[CellGroupData[{
@@ -700,8 +540,9 @@ Z/fcu+v+Xc/+A0uvcYs=
 }, Closed]]
 }, Open  ]]
 },
-WindowSize->{477., 780.75},
+WindowSize->{717., 780.75},
 WindowMargins->{{Automatic, 1.5}, {Automatic, 13.5}},
+TaggingRules->{"TryRealOnly" -> False},
 FrontEndVersion->"12.1 for Linux x86 (64-bit) (October 26, 2019)",
 StyleDefinitions->"Default.nb"
 ]
@@ -718,8 +559,8 @@ CellTagsIndex->{}
 Notebook[{
 Cell[CellGroupData[{
 Cell[580, 22, 101, 0, 55, "Subsection",ExpressionUUID->"a128afc6-35b7-43fd-8da5-175a71c0b21d"],
-Cell[684, 24, 200, 3, 81, "Text",ExpressionUUID->"c9b067a2-feea-4117-b6e3-e6f4a3bf44eb"],
-Cell[887, 29, 747, 13, 196, "Text",ExpressionUUID->"52a6be59-d057-4dff-ac5f-649bbd860d2f"],
+Cell[684, 24, 200, 3, 58, "Text",ExpressionUUID->"c9b067a2-feea-4117-b6e3-e6f4a3bf44eb"],
+Cell[887, 29, 747, 13, 127, "Text",ExpressionUUID->"52a6be59-d057-4dff-ac5f-649bbd860d2f"],
 Cell[CellGroupData[{
 Cell[1659, 46, 109, 0, 45, "Subsubsection",ExpressionUUID->"01eb8fd8-c499-4c8f-9e67-9ddeddada0a2"],
 Cell[1771, 48, 196, 6, 127, "Text",ExpressionUUID->"e8ed6464-ce1e-4767-945a-c42b4dbc23b1"],
@@ -745,44 +586,49 @@ Cell[6607, 179, 277, 6, 29, "Input",ExpressionUUID->"f6b15d5f-b417-42f4-9cfa-a6f
 }, Closed]],
 Cell[CellGroupData[{
 Cell[6921, 190, 105, 0, 37, "Subsubsection",ExpressionUUID->"7ab88f83-cbf5-4b2c-adf6-aaf116615d3f"],
-Cell[7029, 192, 109, 1, 29, "Input",ExpressionUUID->"7c99dfc1-a6db-4f91-adeb-eac5153332a7"],
-Cell[7141, 195, 8788, 210, 1928, "Input",ExpressionUUID->"b150000e-8f51-46a7-a64c-1a9c2646ebef"]
+Cell[7029, 192, 108, 1, 29, "Input",ExpressionUUID->"7c99dfc1-a6db-4f91-adeb-eac5153332a7"],
+Cell[7140, 195, 484, 11, 71, "Input",ExpressionUUID->"e32adc6d-106e-4512-8755-767bbbbc4792"],
+Cell[7627, 208, 865, 21, 113, "Input",ExpressionUUID->"1053d118-7213-4dbb-b4dc-8e215810c459"],
+Cell[CellGroupData[{
+Cell[8517, 233, 276, 6, 51, "Input",ExpressionUUID->"3ab5f839-05ca-4d29-9724-761dd7084782"],
+Cell[8796, 241, 233, 3, 55, "Output",ExpressionUUID->"8d644654-fe84-4571-9797-23410f08d958"]
+}, Open  ]]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[15966, 410, 92, 0, 37, "Subsubsection",ExpressionUUID->"fc7167bb-4fc5-4e85-a613-33f5b4ead6a6"],
-Cell[16061, 412, 109, 1, 29, "Input",ExpressionUUID->"b0fb6180-9f21-4ba4-a7be-bc786d304bf5"],
-Cell[16173, 415, 326, 7, 71, "Input",ExpressionUUID->"0283f58f-f86b-4e4a-8d85-fcbad652ca14"],
+Cell[9078, 250, 92, 0, 37, "Subsubsection",ExpressionUUID->"fc7167bb-4fc5-4e85-a613-33f5b4ead6a6"],
+Cell[9173, 252, 109, 1, 29, "Input",ExpressionUUID->"b0fb6180-9f21-4ba4-a7be-bc786d304bf5"],
+Cell[9285, 255, 326, 7, 71, "Input",ExpressionUUID->"0283f58f-f86b-4e4a-8d85-fcbad652ca14"],
 Cell[CellGroupData[{
-Cell[16524, 426, 174, 3, 29, "Input",ExpressionUUID->"203492d9-8576-4ae4-82c6-8a9c7ca2e53c"],
-Cell[16701, 431, 158, 2, 33, "Output",ExpressionUUID->"5f504024-b8c5-45ca-a90d-999055b80baa"]
+Cell[9636, 266, 174, 3, 29, "Input",ExpressionUUID->"203492d9-8576-4ae4-82c6-8a9c7ca2e53c"],
+Cell[9813, 271, 158, 2, 33, "Output",ExpressionUUID->"5f504024-b8c5-45ca-a90d-999055b80baa"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[16896, 438, 161, 2, 29, "Input",ExpressionUUID->"05def6ba-91a0-4e69-92bb-ffae9b68a1cb"],
-Cell[17060, 442, 109, 1, 33, "Output",ExpressionUUID->"878445ad-a92c-4672-8385-6010ca4e7518"]
+Cell[10008, 278, 161, 2, 29, "Input",ExpressionUUID->"05def6ba-91a0-4e69-92bb-ffae9b68a1cb"],
+Cell[10172, 282, 109, 1, 33, "Output",ExpressionUUID->"878445ad-a92c-4672-8385-6010ca4e7518"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[17206, 448, 178, 3, 29, "Input",ExpressionUUID->"0ed5ab37-9075-4dc7-8d7c-520c5d1e783e"],
-Cell[17387, 453, 181, 3, 33, "Output",ExpressionUUID->"c93c61b7-2690-4408-933d-a9d489a0f888"]
+Cell[10318, 288, 178, 3, 29, "Input",ExpressionUUID->"0ed5ab37-9075-4dc7-8d7c-520c5d1e783e"],
+Cell[10499, 293, 181, 3, 33, "Output",ExpressionUUID->"c93c61b7-2690-4408-933d-a9d489a0f888"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[17605, 461, 207, 4, 29, "Input",ExpressionUUID->"33c9e9bb-130a-4a08-84b4-d582f6157ab1"],
-Cell[17815, 467, 106, 1, 33, "Output",ExpressionUUID->"d3e320b7-bc3a-45ff-aa57-8fb44b048b69"]
+Cell[10717, 301, 207, 4, 29, "Input",ExpressionUUID->"33c9e9bb-130a-4a08-84b4-d582f6157ab1"],
+Cell[10927, 307, 106, 1, 33, "Output",ExpressionUUID->"d3e320b7-bc3a-45ff-aa57-8fb44b048b69"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[17958, 473, 153, 2, 29, "Input",ExpressionUUID->"df18c87f-76a7-432a-970b-a8333cf21d36"],
-Cell[18114, 477, 123, 2, 33, "Output",ExpressionUUID->"667c49f2-67e1-4ce1-ab7a-6ddfcdb5806c"]
+Cell[11070, 313, 153, 2, 29, "Input",ExpressionUUID->"df18c87f-76a7-432a-970b-a8333cf21d36"],
+Cell[11226, 317, 123, 2, 33, "Output",ExpressionUUID->"667c49f2-67e1-4ce1-ab7a-6ddfcdb5806c"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[18274, 484, 264, 6, 29, "Input",ExpressionUUID->"b8b5a512-4e15-4e4f-ad99-13b555b1ad95"],
-Cell[18541, 492, 158, 2, 33, "Output",ExpressionUUID->"02e76eca-2004-4ce4-be43-d4332e8f8d62"]
+Cell[11386, 324, 264, 6, 29, "Input",ExpressionUUID->"b8b5a512-4e15-4e4f-ad99-13b555b1ad95"],
+Cell[11653, 332, 158, 2, 33, "Output",ExpressionUUID->"02e76eca-2004-4ce4-be43-d4332e8f8d62"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[18736, 499, 204, 4, 71, "Input",ExpressionUUID->"be8ec323-b075-4811-9207-b242f9d1ebc0"],
-Cell[18943, 505, 545, 18, 55, "Output",ExpressionUUID->"e88c92be-694a-4059-894b-3b60fa52b865"]
+Cell[11848, 339, 204, 4, 71, "Input",ExpressionUUID->"be8ec323-b075-4811-9207-b242f9d1ebc0"],
+Cell[12055, 345, 545, 18, 55, "Output",ExpressionUUID->"e88c92be-694a-4059-894b-3b60fa52b865"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[19525, 528, 154, 2, 29, "Input",ExpressionUUID->"eaf9a799-5635-4822-b6b7-c76a8d5f1385"],
-Cell[19682, 532, 9819, 165, 358, "Output",ExpressionUUID->"7a1d04bb-b5be-4f65-80ad-504167f43f02"]
+Cell[12637, 368, 154, 2, 29, "Input",ExpressionUUID->"eaf9a799-5635-4822-b6b7-c76a8d5f1385"],
+Cell[12794, 372, 9819, 165, 358, "Output",ExpressionUUID->"7a1d04bb-b5be-4f65-80ad-504167f43f02"]
 }, Open  ]]
 }, Closed]]
 }, Open  ]]

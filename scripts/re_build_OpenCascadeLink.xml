@@ -1,0 +1,64 @@
+<project name='OpenCascadeLink' basedir='..' default='NativeLibrary.build'>
+
+	<property file='${basedir}/build-local.properties' />
+
+	<property name='component' value='${ant.project.name}' />
+	<property name='system_id' value='### Must be set by Jenkins ###' />
+
+	<property name='app.name' value='${component}' />
+	<property name='inputDir' value='${basedir}/${app.name}/Documentation' />
+	<property name='language' value='### Must be set by Jenkins ###' />
+
+	<property environment='env' />
+	<import file='${env.RE_ANTLIBRARY_HOME}/ant-lib.xml' />
+
+
+	<target name='NativeLibrary.OpenCascadeLink.execute' extensionOf='NativeLibrary.execute'>
+
+		<mathematica
+			exe='${mathExe}'
+			fresh='true'
+			quit='true'
+			runfile='${basedir}${file.separator}scripts${file.separator}re_build_OpenCascadeLink.wl'
+			/>
+
+	</target>
+
+	<target name='Paclet.OpenCascadeLink.init.custom' extensionOf='Paclet.init.custom'>
+
+		<!--
+			Prevent Paclet.clean from deleting files_directory,
+			since CopyAndUnarchiveArtifact just put all the paclet
+			files in there....
+		-->
+
+		<property name='keep.files_directory' value='true' />
+
+	</target>
+
+	<target name='Paclet.OpenCascadeLink.execute' extensionOf='Paclet.execute'>
+
+		<mathematica exe="${mathExe}" fresh="true" quit="true"><![CDATA[
+
+			Print["$Version: ", $Version];
+			Print["$InstallationDirectory: ", $InstallationDirectory];
+
+			Unset[$MessagePrePrint];
+			Needs["PacletManager`"];
+
+			src = FileNameJoin[{AntProperty["files_directory"], "OpenCascadeLink"}];
+			Print["src:", src]
+			dest = FileNameJoin[AntProperty["output_directory"]];
+			Print["dest:", dest]
+			PackPaclet[src, dest]
+
+			SetDirectory[dest]
+			If [TrueQ[FileExistsQ[FileNames["*.paclet"][[1]]]],
+				Print[FileNames["*.paclet"][[1]] " ... OK"],
+				AntFail["Paclet not produced" ]];
+
+		]]></mathematica>
+
+	</target>
+
+</project>
