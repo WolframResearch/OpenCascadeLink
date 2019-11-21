@@ -30,10 +30,8 @@ BuildOpenCascadeLink[assoc_?AssociationQ] := Module[
 		FileNameJoin[{targetDir, "Kernel"}]];
 	CopyDirectory[ FileNameJoin[ {ocProjectDir, "ExampleData"}],
 		FileNameJoin[{targetDir, "ExampleData"}]];
-(*
 	CopyFile[ FileNameJoin[ {projectDir, "PacletInfo.m"}],
 		FileNameJoin[{targetDir, "PacletInfo.m"}]];
-*)
 
 	(* Copy the shiped prebuilt OpenCascade libraries into their final place *)
 	prebuiltLibDir = FileNameJoin[{projectDir, "PrebuiltLibraries", $SystemID}];
