@@ -12,6 +12,17 @@
 	<property environment='env' />
 	<import file='${env.RE_ANTLIBRARY_HOME}/ant-lib.xml' />
 
+	<target name='Component.OpenCascadeLink.execute' extensionOf='Component.execute'>
+
+		<copy todir='${files_directory}/${component}'>
+			<fileset dir='${basedir}/${component}'>
+				<include name='PacletInfo.m' />
+			</fileset>
+		</copy>
+
+	</target>
+
+
 
 	<target name='NativeLibrary.OpenCascadeLink.execute' extensionOf='NativeLibrary.execute'>
 
