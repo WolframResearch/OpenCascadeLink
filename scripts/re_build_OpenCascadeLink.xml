@@ -16,7 +16,6 @@
 
 		<copy todir='${files_directory}/${component}'>
 			<fileset dir='${basedir}/${component}'>
-				<include name='CSource/*' />
 				<include name='ExampleData/*' />
 				<include name='Kernel/*.m' />
 				<include name='OpenCascadeLink.m' />
