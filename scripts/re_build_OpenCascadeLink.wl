@@ -1,6 +1,6 @@
 
 (* load the BuildOpenCascadeLink command *)
-Get[ FileNameJoin[{$InputFileName, "scripts", "BuildOpenCascadeLink.wl"}]];
+Get[ FileNameJoin[{DirectoryName[$InputFileName], "BuildOpenCascadeLink.wl"}]];
 
 (* where are the sources and where should we build to? *)
 setup = Association[{
