@@ -533,6 +533,11 @@ Module[{balls},
 ]
 
 
+OpenCascadeShape[ br_BooleanRegion] /; Length[br] == 2 :=
+	OpenCascadeShapeBooleanRegion[ br]
+
+
+
 (* Surface operations *)
 
 OpenCascadeShapeSewing[oces:{e1_, e2__}] /;
