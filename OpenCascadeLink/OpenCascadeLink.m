@@ -19,29 +19,29 @@ OpenCascadeShapeDelete::usage = "OpenCascadeShapeDelete[ expr] removes an instan
 
 OpenCascadeShapeExpressions::usage = "OpenCascadeShapeExpressions[] returns a list of active OpenCascadeShape expressions."
 
-OpenCascadeShape::usage = "";
+OpenCascadeShape::usage = "OpenCascadeShape[ expr] returns an instance of an OpenCascade expression representing expr in OpenCascade.";
 
-OpenCascadeShapeDifference::usage = "";
-OpenCascadeShapeIntersection::usage = "";
-OpenCascadeShapeUnion::usage = "";
-OpenCascadeShapeBooleanRegion::usage = "";
+OpenCascadeShapeDifference::usage = "OpenCascadeShapeDifference[ shape1, shape2] returns a new instance of an OpenCascade expression representing the difference of the shapes shape1 and shape2.";
+OpenCascadeShapeIntersection::usage = "OpenCascadeShapeIntersection[ shape1, shape2] returns a new instance of an OpenCascade expression representing the intersection of the shapes shape1 and shape2.";
+OpenCascadeShapeUnion::usage = "OpenCascadeShapeUnion[ shape1, shape2] returns a new instance of an OpenCascade expression representing the union of the shapes shape1 and shape2.";
+OpenCascadeShapeBooleanRegion::usage = "OpenCascadeShape[ expr] returns a new instance of an OpenCascade expression representing the BooleanRegion expr.";
 
-OpenCascadeShapeFillet::usage = "";
-OpenCascadeShapeChamfer::usage = "";
+OpenCascadeShapeFillet::usage = "OpenCascadeShapeFillet[ shape, r] returns a new instance of an OpenCascade expression with edges filleted with radius r.";
+OpenCascadeShapeChamfer::usage = "OpenCascadeShapeChamfer[ shape, d] returns a new instance of an OpenCascade expression with edges chamfered with distance d.";
 
-OpenCascadeShapeSewing::usage = "";
-OpenCascadeShapeRotationalSweep::usage = "";
-OpenCascadeShapeLinearSweep::usage = "";
+OpenCascadeShapeSewing::usage = "OpenCascadeShapeSewing[ {shape1, shape2,..}] returns a new instance of an OpenCascade expression with sewn shape1, shape2,...";
+OpenCascadeShapeRotationalSweep::usage = "OpenCascadeShapeRotationalSweep[ shape, {p1, p2}, angle] returns a new instance of an OpenCascade expression that rotates shape by angle radians around the axis between p1 and p2.";
+OpenCascadeShapeLinearSweep::usage = "OpenCascadeShapeLinearSweep[ shape, {p1, p2}] returns a new instance of an OpenCascade expression that linearly sweepes shape from p1 to p2.";
 
-OpenCascadeShapeSurfaceMesh::usage = "";
-OpenCascadeShapeSurfaceMeshCoordinates::usage = "";
-OpenCascadeShapeSurfaceMeshElements::usage = "";
-OpenCascadeShapeSurfaceMeshElementOffsets::usage = "";
+OpenCascadeShapeSurfaceMesh::usage = "OpenCascadeShapeSurfaceMesh[ shape] returns a new instance of an OpenCascade expression with it's surface meshed.";
+OpenCascadeShapeSurfaceMeshCoordinates::usage = "OpenCascadeShapeSurfaceMeshCoordinates[ shape] returns the meshed shape's coordinates.";
+OpenCascadeShapeSurfaceMeshElements::usage = "OpenCascadeShapeSurfaceMeshElements[ shape] returns the meshed shape's surface elements.";
+OpenCascadeShapeSurfaceMeshElementOffsets::usage = "OpenCascadeShapeSurfaceMeshElementOffsets[ shape] returns the meshed shape's element offsets.";
 
-OpenCascadeShapeNumberOfEdges::usage = "";
-OpenCascadeShapeType::usage = "";
+OpenCascadeShapeNumberOfEdges::usage = "OpenCascadeShapeNumberOfEdges[ shape] returns the number of edges in a shape.";
+OpenCascadeShapeType::usage = "OpenCascadeShapeType[ shape] returns the shape type.";
 
-OpenCascadeShapeSurfaceMeshToBoundaryMesh::usage = "";
+OpenCascadeShapeSurfaceMeshToBoundaryMesh::usage = "OpenCascadeShapeSurfaceMeshToBoundaryMesh[ shape] returns the shape as a boundary ElementMesh.";
 
 OpenCascadeShapeExport::usage = "OpenCascadeShapeExport[ \"file.ext\", expr] exports data from a OpenCascadeShape expression into a file. OpenCascadeShapeExport[ \"file\", expr, \"format\"] exports data in the specified format."
 
@@ -810,7 +810,7 @@ OpenCascadeShapeChamfer[shape_, distance_, edgeIDs_] /;
 ]
 
 OpenCascadeShapeChamfer[shape_, distance_] :=
-	OpenCascadeShapeFillet[ shape, distance, All] 
+	OpenCascadeShapeChamfer[ shape, distance, All] 
 
 
 
