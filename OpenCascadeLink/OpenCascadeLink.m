@@ -466,41 +466,22 @@ Module[{instance, base, target, direcction, res},
 (**)
 (* derived 3D primitives *)
 (**)
-OpenCascadeShape[Tetrahedron[p_]] /;
-		MatrixQ[p, NumericQ] && (Dimensions[ p] == {4, 3}) :=
-Module[{c, inci, sewenFaces},
 
-	If[ Length[ DeleteDuplicates[p]] =!= 4, Return[$Failed, Module]];
-
-	c = pack[ N[ p]];
-	(* OpenCascade uses reverse ordering *)
-	inci = pack[{{3, 2, 1}, {4, 2, 1}, {4, 3, 2}, {4, 1, 3}}];
-
-	faces = OpenCascadeShape[Polygon[#]]& /@ (c[[#]]& /@ inci);
-	(* This is sewing and making it a solid *)
-	sewenFaces = OpenCascadeShapeSewing[faces];
-
-	sewenFaces
+OpenCascadeShape[CapsuleShape[{pMin_, pMax_}, r_]] /;
+		VectorQ[pMin, NumericQ] && (Length[ pMin] == 3) && 
+		VectorQ[pMax, NumericQ] && (Length[ pMax] == 3) :=
+Module[{cylinder, ball1, ball2},
+	cylinder = OpenCascadeShape[ Cylinder[{pMin, pMax}, r]];
+	ball1 = OpenCascadeShape[ Ball[ pMin, r]];
+	ball2 = OpenCascadeShape[ Ball[ pMax, r]];
+	OpenCascadeShapeUnion[ball1, cylinder, ball2]
 ]
 
-OpenCascadeShape[Pyramid[p_]] /;
-		MatrixQ[p, NumericQ] && (Dimensions[ p] == {5, 3}) :=
-Module[{c, inci, sewenFaces},
+OpenCascadeShape[CapsuleShape[{pMin_, pMax_}]] /;
+		VectorQ[pMin, NumericQ] && (Length[ pMin] == 3) && 
+		VectorQ[pMax, NumericQ] && (Length[ pMax] == 3) :=
+OpenCascadeShape[CapsuleShape[{pMin, pMax}, 1]]
 
-	If[ Length[ DeleteDuplicates[p]] =!= 5, Return[$Failed, Module]];
-
-	c = pack[ N[ p]];
-	(* OpenCascade uses reverse ordering *)
-	(* Reverse /@ {{1, 2, 3, 4}, {1, 2, 5}, {2, 3, 5}, {3, 4, 5}, {4, 1, 5}} *)
-	inci = {{4, 3, 2, 1}, {5, 2, 1}, {5, 3, 2}, {5, 4, 3}, {5, 1, 4}};
-
-	faces = OpenCascadeShape[Polygon[#]]& /@ (c[[#]]& /@ inci);
-
-	(* This is sewing and making it a solid *)
-	sewenFaces = OpenCascadeShapeSewing[faces];
-
-	sewenFaces
-]
 
 OpenCascadeShape[Hexahedron[p_]] /;
 		MatrixQ[p, NumericQ] && (Dimensions[ p] == {8, 3}) :=
@@ -524,12 +505,50 @@ Module[{c, inci, sewenFaces},
 ]
 
 
+OpenCascadeShape[Pyramid[p_]] /;
+		MatrixQ[p, NumericQ] && (Dimensions[ p] == {5, 3}) :=
+Module[{c, inci, sewenFaces},
+
+	If[ Length[ DeleteDuplicates[p]] =!= 5, Return[$Failed, Module]];
+
+	c = pack[ N[ p]];
+	(* OpenCascade uses reverse ordering *)
+	(* Reverse /@ {{1, 2, 3, 4}, {1, 2, 5}, {2, 3, 5}, {3, 4, 5}, {4, 1, 5}} *)
+	inci = {{4, 3, 2, 1}, {5, 2, 1}, {5, 3, 2}, {5, 4, 3}, {5, 1, 4}};
+
+	faces = OpenCascadeShape[Polygon[#]]& /@ (c[[#]]& /@ inci);
+
+	(* This is sewing and making it a solid *)
+	sewenFaces = OpenCascadeShapeSewing[faces];
+
+	sewenFaces
+]
+
+
 OpenCascadeShape[SphericalShell[c_, {r1_, r2_}]] /;
 		VectorQ[c, NumericQ] && (Length[ c] == 3) &&
 		NumericQ[r1] && NumericQ[r2] :=
 Module[{balls},
 	balls = OpenCascadeShape /@ {Ball[c, r2], Ball[c, r1]};
 	OpenCascadeShapeDifference @@ balls
+]
+
+
+OpenCascadeShape[Tetrahedron[p_]] /;
+		MatrixQ[p, NumericQ] && (Dimensions[ p] == {4, 3}) :=
+Module[{c, inci, sewenFaces},
+
+	If[ Length[ DeleteDuplicates[p]] =!= 4, Return[$Failed, Module]];
+
+	c = pack[ N[ p]];
+	(* OpenCascade uses reverse ordering *)
+	inci = pack[{{3, 2, 1}, {4, 2, 1}, {4, 3, 2}, {4, 1, 3}}];
+
+	faces = OpenCascadeShape[Polygon[#]]& /@ (c[[#]]& /@ inci);
+	(* This is sewing and making it a solid *)
+	sewenFaces = OpenCascadeShapeSewing[faces];
+
+	sewenFaces
 ]
 
 
@@ -657,7 +676,7 @@ OpenCascadeShapeDifference[ shape1_, shape2_] /; And[
 ]
 
 OpenCascadeShapeDifference[eN__] /;
-	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === {True} :=
+	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === True :=
 Fold[OpenCascadeShapeDifference, {eN}]
 
 
@@ -680,7 +699,7 @@ OpenCascadeShapeIntersection[ shape1_, shape2_] /; And[
 ]
 
 OpenCascadeShapeIntersection[eN__] /;
-	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === {True} :=
+	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === True :=
 Fold[OpenCascadeShapeIntersection, {eN}]
 
 
@@ -703,7 +722,7 @@ OpenCascadeShapeUnion[shape1_, shape2_] /; And[
 ]
 
 OpenCascadeShapeUnion[eN__] /;
-	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === {True} :=
+	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === True :=
 Fold[OpenCascadeShapeUnion, {eN}]
 
 
