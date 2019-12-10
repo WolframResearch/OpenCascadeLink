@@ -483,6 +483,9 @@ OpenCascadeShape[CapsuleShape[{pMin_, pMax_}]] /;
 OpenCascadeShape[CapsuleShape[{pMin, pMax}, 1]]
 
 
+OpenCascadeShape[ er:EmptyRegion[_]] := er
+
+
 OpenCascadeShape[Hexahedron[p_]] /;
 		MatrixQ[p, NumericQ] && (Dimensions[ p] == {8, 3}) :=
 Module[{c, inci, sewenFaces},
