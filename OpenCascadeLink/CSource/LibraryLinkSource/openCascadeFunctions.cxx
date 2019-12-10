@@ -546,7 +546,15 @@ DLLEXPORT int makePolygon(WolframLibraryData libData, mint Argc, MArgument *Args
 	polygon.Close();
 	libData->MTensor_disown(p1);
 
-	TopoDS_Shape shape  = BRepBuilderAPI_MakeFace(polygon.Wire()).Shape();
+	BRepBuilderAPI_MakeFace face;
+	face = polygon.Wire();
+	if (!face.IsDone()) {
+		/* this leaves *instance undefined */
+		MArgument_setInteger(res, 1);
+		return 0;
+	}
+
+	TopoDS_Shape shape  = face.Shape();
 
 	*instance = shape;
 

@@ -141,7 +141,8 @@ Module[{libDir, oldpath, preLoadLibs, success},
 *)
 getOpenCascadeShapeExpressionID[e_OpenCascadeShapeExpression] := ManagedLibraryExpressionID[e, "OpenCascadeShapeManager"];
 
-OpenCascadeShapeExpressionQ[e_OpenCascadeShapeExpression] := ManagedLibraryExpressionQ[e, "OpenCascadeShapeManager"];
+OpenCascadeShapeExpressionQ[e_OpenCascadeShapeExpression] := TrueQ[ ManagedLibraryExpressionQ[e, "OpenCascadeShapeManager"]];
+OpenCascadeShapeExpressionQ[___] := False; 
 
 testOpenCascadeShapeExpression[][e_] := testOpenCascadeShapeExpression[OpenCascadeShapeExpression][OpenCascadeShapeExpression][e];
 
@@ -208,7 +209,7 @@ OpenCascadeShapeImport[ file:(_String|_File), form_String] :=
 		If[ fileOperation === $Failed, Return[ $Failed, Module]];
 
 		fileWithExtension = file;
-		If[ FileExtension[file]=="",
+		If[ FileExtension[file] == "",
 			fileWithExtension = StringJoin[file, ".", form];
 		];
 
@@ -295,7 +296,7 @@ Module[{res, fileOperation, fileName, fileWithExtension,
 	If[ fileOperation === $Failed, Return[ $Failed, Module]];
 
 	fileWithExtension = file;
-	If[ FileExtension[file]=="",
+	If[ FileExtension[file] == "",
 		fileWithExtension = StringJoin[file, ".", form];
 	];
 
@@ -644,9 +645,9 @@ Module[{mesh, c, cells, inci, poly, shapes},
 		c = MeshCoordinates[ mesh];
 		cells = MeshCells[ mesh, {2, All}, Multicells -> True];
 		inci = Join @@ cells[[All, 1]];
-		poly = Polygon /@ NDSolve`FEM`GetElementCoordinates[c, inci];
+		poly = Polygon /@ (c[[#]]& /@ inci);
 		shapes = OpenCascadeShape /@ poly;
-		If[ Union[ OpenCascadeShapeExpressionQ /@ shapes] == {True},
+		If[ Union[ OpenCascadeShapeExpressionQ /@ shapes] === {True},
 			OpenCascadeShapeSewing[ shapes]
 		, (* else *)
 			Return[ $Failed, Module]
