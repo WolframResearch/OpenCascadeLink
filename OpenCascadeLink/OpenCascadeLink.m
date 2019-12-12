@@ -509,6 +509,19 @@ Module[{c, inci, sewenFaces},
 ]
 
 
+OpenCascadeShape[Parallelepiped[base_, {c1_, c2_, v_}]] /;
+		VectorQ[base, NumericQ] && (Length[ base] === 3) && 
+		VectorQ[c1, NumericQ] && (Length[ c1] === 3) && 
+		VectorQ[c2, NumericQ] && (Length[ c2] === 3) && 
+		VectorQ[v, NumericQ] && (Length[ v] === 3) :=
+Module[{polygon, shape, sweep},
+	polygon = Polygon[{base, c1, c1 + c2, c2}];
+	shape = OpenCascadeShape[polygon];
+	sweep = OpenCascadeShapeLinearSweep[shape, {base, v}];
+	sweep
+]
+
+
 OpenCascadeShape[p_Polyhedron] :=
 Module[{cp, op, ip, s1, s2, shape, pc, pi, ipp},
 	cp = CanonicalizePolyhedron[p];
