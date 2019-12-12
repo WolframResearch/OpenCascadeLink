@@ -28,6 +28,7 @@ OpenCascadeShapeBooleanRegion::usage = "OpenCascadeShape[ expr] returns a new in
 
 OpenCascadeShapeFillet::usage = "OpenCascadeShapeFillet[ shape, r] returns a new instance of an OpenCascade expression with edges filleted with radius r.";
 OpenCascadeShapeChamfer::usage = "OpenCascadeShapeChamfer[ shape, d] returns a new instance of an OpenCascade expression with edges chamfered with distance d.";
+OpenCascadeShapeShelling::usage = "OpenCascadeShapeShelling[ shape, t, {face1, ..}] returns a new instance of an OpenCascade expression with faces thickened by t and faces1,.. removed.";
 
 OpenCascadeShapeSewing::usage = "OpenCascadeShapeSewing[ {shape1, shape2,..}] returns a new instance of an OpenCascade expression with sewn shape1, shape2,...";
 OpenCascadeShapeRotationalSweep::usage = "OpenCascadeShapeRotationalSweep[ shape, {p1, p2}, angle] returns a new instance of an OpenCascade expression that rotates shape by angle radians around the axis between p1 and p2.";
@@ -38,6 +39,7 @@ OpenCascadeShapeSurfaceMeshCoordinates::usage = "OpenCascadeShapeSurfaceMeshCoor
 OpenCascadeShapeSurfaceMeshElements::usage = "OpenCascadeShapeSurfaceMeshElements[ shape] returns the meshed shape's surface elements.";
 OpenCascadeShapeSurfaceMeshElementOffsets::usage = "OpenCascadeShapeSurfaceMeshElementOffsets[ shape] returns the meshed shape's element offsets.";
 
+OpenCascadeShapeNumberOfFaces::usage = "OpenCascadeShapeNumberOfFaces[ shape] returns the number of faces in a shape.";
 OpenCascadeShapeNumberOfEdges::usage = "OpenCascadeShapeNumberOfEdges[ shape] returns the number of edges in a shape.";
 OpenCascadeShapeType::usage = "OpenCascadeShapeType[ shape] returns the shape type.";
 
@@ -121,12 +123,14 @@ Module[{libDir, oldpath, preLoadLibs, success},
 
 	makeFilletFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeFillet", {Integer, Integer, Real, {Integer, 1, "Shared"}}, Integer];
 	makeChamferFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeChamfer", {Integer, Integer, Real, {Integer, 1, "Shared"}}, Integer];
+	makeShellingFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeShelling", {Integer, Integer, Real, {Integer, 1, "Shared"}}, Integer];
 
 	makeSurfaceMeshFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSurfaceMesh", {Integer, {Real, 1, "Shared"}, {Integer, 1, "Shared"}}, Integer];
 	getSurfaceMeshCoordinatesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getSurfaceMeshCoordinates", {Integer}, {Real, 2}];
 	getSurfaceMeshElementsFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getSurfaceMeshElements", {Integer}, {Integer, 2}];
 	getSurfaceMeshElementOffsetsFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getSurfaceMeshElementOffsets", {Integer}, {Integer, 1}];
 
+	getShapeNumberOfFacesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeNumberOfFaces", {Integer}, Integer];
 	getShapeNumberOfEdgesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeNumberOfEdges", {Integer}, Integer];
 	getShapeTypeFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeType", {Integer}, Integer];
 
@@ -797,6 +801,8 @@ Module[
 ]
 
 
+OpenCascadeShapeNumberOfFaces[shape_] /; OpenCascadeShapeExpressionQ[shape] :=
+getShapeNumberOfFacesFun[ instanceID[ shape]]
 
 OpenCascadeShapeNumberOfEdges[shape_] /; OpenCascadeShapeExpressionQ[shape] :=
 getShapeNumberOfEdgesFun[ instanceID[ shape]]
@@ -826,7 +832,8 @@ Module[{type},
 OpenCascadeShapeFillet[shape_, radius_, edgeIDs_] /; 
 		OpenCascadeShapeExpressionQ[shape] &&
 		NumericQ[ radius] &&
-		(edgeIDs === All || VectorQ[edgeIDs, NumericQ]) := Module[
+		(edgeIDs === All || VectorQ[edgeIDs, NumericQ]) :=
+Module[
 	{instance, numEdges, id1, res, r, eIDs = edgeIDs},
 
 	r = N[ radius];
@@ -856,7 +863,8 @@ OpenCascadeShapeFillet[shape_, radius_] :=
 OpenCascadeShapeChamfer[shape_, distance_, edgeIDs_] /; 
 		OpenCascadeShapeExpressionQ[shape] &&
 		NumericQ[ distance] &&
-		(edgeIDs === All || VectorQ[edgeIDs, NumericQ]) := Module[
+		(edgeIDs === All || VectorQ[edgeIDs, NumericQ]) :=
+Module[
 	{instance, numEdges, id1, res, d, eIDs = edgeIDs},
 
 	d = N[ distance];
@@ -882,6 +890,32 @@ OpenCascadeShapeChamfer[shape_, distance_, edgeIDs_] /;
 OpenCascadeShapeChamfer[shape_, distance_] :=
 	OpenCascadeShapeChamfer[ shape, distance, All] 
 
+
+OpenCascadeShapeShelling[shape_, thickness_, faceIDs_] /; 
+		OpenCascadeShapeExpressionQ[shape] &&
+		NumericQ[ thickness] &&
+		VectorQ[faceIDs, NumericQ] :=
+Module[
+	{instance, numFaces, id1, res, t, fIDs = faceIDs},
+
+	t = N[ thickness];
+	If[ t < $MachineEpsilon, Return[ shape, Module]; ];
+
+	numFaces = getShapeNumberOfFacesFun[ instanceID[ shape]];
+
+	fIDs = Sort[ pack[ fIDs]];
+	If[ fIDs === {}, Return[ shape, Module]; ];
+
+	If[ Max[ fIDs] > numFaces, Return[ shape, Module]; ];
+
+	instance = OpenCascadeShapeCreate[];
+	id1 = instanceID[ shape];
+	(* - 1 since C uses 0 index start *)
+	res = makeShellingFun[ instanceID[ instance], id1, t, fIDs - 1];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instance
+]
 
 
 

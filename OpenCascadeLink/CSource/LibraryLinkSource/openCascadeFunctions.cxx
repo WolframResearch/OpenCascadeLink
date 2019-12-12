@@ -21,6 +21,7 @@
 
 #include <BRepFilletAPI_MakeFillet.hxx>
 #include <BRepFilletAPI_MakeChamfer.hxx>
+#include <BRepOffsetAPI_MakeThickSolid.hxx>
 
 #include <BRepBuilderAPI_MakePolygon.hxx>
 #include <BRepBuilderAPI_MakeFace.hxx>
@@ -65,12 +66,14 @@ extern "C" {
 
 	DLLEXPORT int makeFillet(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeChamfer(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+	DLLEXPORT int makeShelling(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int makeSurfaceMesh(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int getSurfaceMeshCoordinates(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int getSurfaceMeshElements(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int getSurfaceMeshElementOffsets(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
+	DLLEXPORT int getShapeNumberOfFaces(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int getShapeNumberOfEdges(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int getShapeType(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
@@ -737,6 +740,59 @@ DLLEXPORT int makeChamfer(WolframLibraryData libData, mint Argc, MArgument *Args
 }
 
 
+DLLEXPORT int makeShelling(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+
+	Standard_Real tol = Precision::Confusion();
+
+	mint id  = MArgument_getInteger(Args[0]);
+	mint id1 = MArgument_getInteger(Args[1]);
+	double thickness = MArgument_getReal(Args[2]);
+
+	/* these are assumed to be sorted */
+	MTensor p = MArgument_getMTensor(Args[3]);
+	int type = libData->MTensor_getType(p);
+	int rank = libData->MTensor_getRank(p);
+	const mint* dims = libData->MTensor_getDimensions(p);
+
+	TopoDS_Shape *instance  = get_ocShapeInstance( id);
+	TopoDS_Shape *instance1 = get_ocShapeInstance( id1);
+
+	if (instance == NULL || instance1 == NULL ||
+			type != MType_Integer || rank != 1 || dims[0] < 1) {
+		libData->MTensor_disown(p);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	mint* indices = libData->MTensor_getIntegerData(p);
+
+	TopTools_ListOfShape lof;
+	TopExp_Explorer explore(*instance1, TopAbs_FACE);
+	mint i = 0, iter = 0;
+    while (explore.More() && (i < dims[0])) {
+		if ( indices[i] == iter) {
+			TopoDS_Face face = TopoDS::Face(explore.Current());
+			lof.Append(face);		
+			i++;
+		};
+		iter++;
+		explore.Next();
+	}
+
+	BRepOffsetAPI_MakeThickSolid shell;
+	shell.MakeThickSolidByJoin(*instance1, lof, thickness, tol);
+	if (!shell.IsDone()) {
+		*instance = *instance1;
+		MArgument_setInteger(res, 1);
+		return 0;
+	}
+
+	*instance = shell.Shape();
+	MArgument_setInteger(res, 0);
+	return 0;
+}
+
 
 
 DLLEXPORT int makeSurfaceMesh(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
@@ -1046,6 +1102,28 @@ DLLEXPORT int getSurfaceMeshElementOffsets(WolframLibraryData libData, mint Argc
 	return 0;
 }
 
+/* the getShapeNumberOf_XYZ could probably be unified */
+DLLEXPORT int getShapeNumberOfFaces(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	mint id  = MArgument_getInteger(Args[0]);
+	mint count = 0;
+
+	TopoDS_Shape *instance  = get_ocShapeInstance( id);
+
+	if (instance == NULL) {
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	TopExp_Explorer explore(*instance, TopAbs_FACE);
+    while (explore.More()) {
+		count++;
+		explore.Next();
+	}
+
+	MArgument_setInteger(res, count);
+	return 0;
+}
 
 DLLEXPORT int getShapeNumberOfEdges(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
 {

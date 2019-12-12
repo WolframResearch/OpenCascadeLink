@@ -82,10 +82,10 @@ BuildOpenCascadeLink[assoc_?AssociationQ] := Module[
 	   , "IncludeDirectories" -> {includeDir}
 	   , "LibraryDirectories" -> {libDir}
 	   , "Libraries" -> libs
-	   (*,"Debug"\[Rule]True*)
+	   (*, "Debug" -> True *)
 	   , "CompileOptions" -> coptions
-	   (*,"ShellOutputFunction"\[Rule]Print*)
-	   (*,"ShellCommandFunction"\[Rule]Print*)
+	   (*, "ShellOutputFunction" -> Print *)
+	   (*, "ShellCommandFunction" -> Print *)
 	   ]
 
 ]
