@@ -509,6 +509,40 @@ Module[{c, inci, sewenFaces},
 ]
 
 
+OpenCascadeShape[p_Polyhedron] :=
+Module[{cp, op, ip, s1, s2, shape, pc, pi, ipp},
+	cp = CanonicalizePolyhedron[p];
+	op = OuterPolyhedron[cp];
+	ip = InnerPolyhedron[cp];
+
+	If[ Head[op] =!= Polyhedron, Return[$Failed, Module]];
+
+	s1 = OpenCascadeShape[Polygon @@ op];
+	If[ !OpenCascadeShapeExpressionQ[ s1], Return[$Failed, Module]];
+
+	Switch[ Head[ip],
+		Polyhedron,
+			If[ Length[ip] =!= 2, Return[$Failed, Module]];
+			pc = ip[[1]];
+			pi = ip[[2]];
+			(* ip needs to be reversed *)
+			ipp = Polyhedron[pc, Reverse /@ pi];
+			s2 = OpenCascadeShape[Polygon @@ ipp];
+			If[ !OpenCascadeShapeExpressionQ[ s2], Return[$Failed, Module]];
+			shape = OpenCascadeShapeDifference[s1, s2];
+			If[ !OpenCascadeShapeExpressionQ[ shape], Return[$Failed, Module]];
+		,
+		EmptyRegion,
+			shape = s1;
+		,
+		_,
+			Return[$Failed, Module];
+		];
+
+	shape
+]
+
+
 OpenCascadeShape[Pyramid[p_]] /;
 		MatrixQ[p, NumericQ] && (Dimensions[ p] == {5, 3}) :=
 Module[{c, inci, sewenFaces},
