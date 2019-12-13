@@ -18,9 +18,11 @@
 #include <BRepAlgoAPI_Cut.hxx>
 #include <BRepAlgoAPI_Common.hxx>
 #include <BRepAlgoAPI_Fuse.hxx>
+#include <BRepAlgoAPI_Defeaturing.hxx>
 
 #include <BRepFilletAPI_MakeFillet.hxx>
 #include <BRepFilletAPI_MakeChamfer.hxx>
+
 #include <BRepOffsetAPI_MakeThickSolid.hxx>
 
 #include <BRepBuilderAPI_MakePolygon.hxx>
@@ -63,6 +65,7 @@ extern "C" {
 	DLLEXPORT int makeDifference(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeIntersection(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeUnion(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+	DLLEXPORT int makeDefeaturing(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int makeFillet(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeChamfer(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
@@ -637,6 +640,62 @@ DLLEXPORT int makeUnion(WolframLibraryData libData, mint Argc, MArgument *Args, 
 	return 0;
 }
 
+
+DLLEXPORT int makeDefeaturing(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+
+	Standard_Real tol = Precision::Confusion();
+
+	mint id  = MArgument_getInteger(Args[0]);
+	mint id1 = MArgument_getInteger(Args[1]);
+
+	/* these are assumed to be sorted */
+	MTensor p = MArgument_getMTensor(Args[2]);
+	int type = libData->MTensor_getType(p);
+	int rank = libData->MTensor_getRank(p);
+	const mint* dims = libData->MTensor_getDimensions(p);
+
+	TopoDS_Shape *instance  = get_ocShapeInstance( id);
+	TopoDS_Shape *instance1 = get_ocShapeInstance( id1);
+
+	if (instance == NULL || instance1 == NULL ||
+			type != MType_Integer || rank != 1 || dims[0] < 1) {
+		libData->MTensor_disown(p);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	mint* indices = libData->MTensor_getIntegerData(p);
+
+	TopTools_ListOfShape lof;
+	TopExp_Explorer explore(*instance1, TopAbs_FACE);
+	mint i = 0, iter = 0;
+    while (explore.More() && (i < dims[0])) {
+		if ( indices[i] == iter) {
+			TopoDS_Face face = TopoDS::Face(explore.Current());
+			lof.Append(face);		
+			i++;
+		};
+		iter++;
+		explore.Next();
+	}
+
+	BRepAlgoAPI_Defeaturing defeaturing;
+	defeaturing.SetShape(*instance1);
+	defeaturing.AddFacesToRemove(lof);
+	//defeaturing.SetRunParallel();
+	//defeaturing.SetToFillHistory();
+	defeaturing.Build();
+	if (!defeaturing.IsDone()) {
+		*instance = *instance1;
+		MArgument_setInteger(res, 1);
+		return 0;
+	}
+
+	*instance = defeaturing.Shape();
+	MArgument_setInteger(res, 0);
+	return 0;
+}
 
 
 DLLEXPORT int makeFillet(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)

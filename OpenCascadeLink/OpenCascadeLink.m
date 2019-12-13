@@ -25,6 +25,7 @@ OpenCascadeShapeDifference::usage = "OpenCascadeShapeDifference[ shape1, shape2]
 OpenCascadeShapeIntersection::usage = "OpenCascadeShapeIntersection[ shape1, shape2] returns a new instance of an OpenCascade expression representing the intersection of the shapes shape1 and shape2.";
 OpenCascadeShapeUnion::usage = "OpenCascadeShapeUnion[ shape1, shape2] returns a new instance of an OpenCascade expression representing the union of the shapes shape1 and shape2.";
 OpenCascadeShapeBooleanRegion::usage = "OpenCascadeShape[ expr] returns a new instance of an OpenCascade expression representing the BooleanRegion expr.";
+OpenCascadeShapeDefeaturing::usage = "OpenCascadeShapeDefeaturing[ shape, {face1, ..}] returns a new instance of an OpenCascade expression with faces faces1,.. removed.";
 
 OpenCascadeShapeFillet::usage = "OpenCascadeShapeFillet[ shape, r] returns a new instance of an OpenCascade expression with edges filleted with radius r.";
 OpenCascadeShapeChamfer::usage = "OpenCascadeShapeChamfer[ shape, d] returns a new instance of an OpenCascade expression with edges chamfered with distance d.";
@@ -120,6 +121,7 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	makeDifferenceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeDifference", {Integer, Integer, Integer}, Integer];
 	makeIntersectionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeIntersection", {Integer, Integer, Integer}, Integer];
 	makeUnionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeUnion", {Integer, Integer, Integer}, Integer];
+	makeDefeaturingFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeDefeaturing", {Integer, Integer, {Integer, 1, "Shared"}}, Integer];
 
 	makeFilletFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeFillet", {Integer, Integer, Real, {Integer, 1, "Shared"}}, Integer];
 	makeChamferFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeChamfer", {Integer, Integer, Real, {Integer, 1, "Shared"}}, Integer];
@@ -798,6 +800,29 @@ Module[
 	(* TODO: check that all regions valid *)
 
 	booleanFunction @@ regions
+]
+
+
+OpenCascadeShapeDefeaturing[shape_, faceIDs_] /; 
+		OpenCascadeShapeExpressionQ[shape] &&
+		VectorQ[faceIDs, NumericQ] :=
+Module[
+	{instance, numFaces, id1, res, t, fIDs = faceIDs},
+
+	numFaces = getShapeNumberOfFacesFun[ instanceID[ shape]];
+
+	fIDs = Sort[ pack[ fIDs]];
+	If[ fIDs === {}, Return[ shape, Module]; ];
+
+	If[ Max[ fIDs] > numFaces, Return[ shape, Module]; ];
+
+	instance = OpenCascadeShapeCreate[];
+	id1 = instanceID[ shape];
+	(* - 1 since C uses 0 index start *)
+	res = makeDefeaturingFun[ instanceID[ instance], id1, fIDs - 1];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instance
 ]
 
 
