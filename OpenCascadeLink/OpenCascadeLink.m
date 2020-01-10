@@ -356,8 +356,8 @@ Module[{res, fileOperation, fileName, fileWithExtension,
 		Message[ OpenCascadeShapeExport::file, form, fileWithExtension];
 		$Failed
 		,
-		Null
-	];
+		fileWithExtension
+	]
 ]
 
 
