@@ -995,6 +995,8 @@ DLLEXPORT int getSurfaceMeshCoordinates(WolframLibraryData libData, mint Argc, M
 		Handle(Poly_Triangulation) aTriangulation =
 			BRep_Tool::Triangulation (TopoDS::Face (aFace), aLoc);
 
+		if (aTriangulation.IsNull()) continue;
+
 		const TColgp_Array1OfPnt& aNodes = aTriangulation->Nodes();
 
 		// copy nodes
