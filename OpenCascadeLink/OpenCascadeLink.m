@@ -710,6 +710,30 @@ Module[{mesh, c, cells, inci, poly, shapes},
 	]
 ]
 
+
+OpenCascadeShape[mesh_] /;
+	!NDSolve`FEM`BoundaryElementMeshQ[ mesh] && NDSolve`FEM`ElementMeshQ[mesh] :=
+OpenCascadeShape[ NDSolve`FEM`ToBoundaryMesh[ mesh]]
+
+OpenCascadeShape[bmesh_] /;
+	NDSolve`FEM`BoundaryElementMeshQ[ bmesh] :=
+Module[{coords, faces, polygons, faceCoords},
+	coords = bmesh["Coordinates"];
+	faces = NDSolve`FEM`ElementIncidents[bmesh["BoundaryElements"]];
+	polygons = {};
+	Do[
+		faceCoords = NDSolve`FEM`GetElementCoordinates[coords, f];
+		Do[
+			polygons = {polygons, OpenCascadeShape[Polygon[p]]};
+		, {p, faceCoords}
+		];
+	, {f, faces}
+	];
+	polygons = Flatten[polygons];
+	OpenCascadeShapeSewing[polygons]
+]
+
+
 (*
 	open cascde boolean operation
 *)
