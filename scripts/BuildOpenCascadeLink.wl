@@ -3,8 +3,11 @@
 (* Load the compiler diver package and set the project directory: *)
 Needs["CCompilerDriver`"];
 
-BuildOpenCascadeLink[assoc_?AssociationQ] := Module[
-	{},
+BuildOpenCascadeLink[assoc_?AssociationQ] :=
+Module[
+	{projectDir, buildDir, ocProjectDir, sourceDir, includeDir, targetDir,
+	prebuiltLibDir, targetLibDir, systemTargetLibDir, outputName, files,
+	libDirName, libDir, libs, occtLink},
 
 	projectDir = assoc["BaseDirectory"];
 	buildDir = assoc["BuildDirectory"];
@@ -18,29 +21,19 @@ BuildOpenCascadeLink[assoc_?AssociationQ] := Module[
 	  FileNameJoin[{ocProjectDir, "CSource", "OpenCascadeSource", "include"}];
 
 
-	(* clean up and set up of target build dir *)
+	(* set up of target build dir *)
 	targetDir = FileNameJoin[{buildDir, "OpenCascadeLink"}];
-	If[ DirectoryQ[targetDir], 
-	  DeleteDirectory[targetDir, DeleteContents -> True]];
-	CreateDirectory[targetDir];
+	If[ !DirectoryQ[targetDir], CreateDirectory[targetDir]; ];
 
-
-	(* copy stuff *)
-(*
-	CopyDirectory[ FileNameJoin[ {ocProjectDir, "Kernel"}],
-		FileNameJoin[{targetDir, "Kernel"}]];
-	CopyDirectory[ FileNameJoin[ {ocProjectDir, "ExampleData"}],
-		FileNameJoin[{targetDir, "ExampleData"}]];
-	CopyFile[ FileNameJoin[ {projectDir, "PacletInfo.m"}],
-		FileNameJoin[{targetDir, "PacletInfo.m"}]];
-*)
 
 	(* Copy the shiped prebuilt OpenCascade libraries into their final place *)
 	prebuiltLibDir = FileNameJoin[{projectDir, "PrebuiltLibraries", $SystemID}];
 	targetLibDir = FileNameJoin[{targetDir, "LibraryResources"}];
-	CreateDirectory[targetLibDir];
 	systemTargetLibDir = FileNameJoin[{targetLibDir, $SystemID}];
-	CopyDirectory[prebuiltLibDir, systemTargetLibDir];
+	If[ !DirectoryQ[targetLibDir],
+		CreateDirectory[targetLibDir];
+		CopyDirectory[prebuiltLibDir, systemTargetLibDir];
+	];
 
 
 	(* documentation needs to be done in a separate process *)

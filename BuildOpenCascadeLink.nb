@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     40901,        934]
-NotebookOptionsPosition[     31918,        790]
-NotebookOutlinePosition[     32357,        807]
-CellTagsIndexPosition[     32314,        804]
+NotebookDataLength[     47323,       1087]
+NotebookOptionsPosition[     36312,        910]
+NotebookOutlinePosition[     36753,        927]
+CellTagsIndexPosition[     36710,        924]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -58,8 +58,8 @@ Cell[BoxData[
     RowBox[{"{", 
      RowBox[{
       RowBox[{"NotebookDirectory", "[", "]"}], ",", 
-      "\"\<OpenCascadeLink.nb\>\""}], "}"}], "]"}], "]"}], ";"}]], "Input",Exp\
-ressionUUID->"f126382f-88f0-41bc-835d-be6655701752"],
+      "\"\<OpenCascadeLink.nb\>\""}], "}"}], "]"}], "]"}], ";"}]], "Input",
+ CellLabel->"In[17]:=",ExpressionUUID->"f126382f-88f0-41bc-835d-be6655701752"],
 
 Cell[CellGroupData[{
 
@@ -85,13 +85,20 @@ not get applied\
 
 Cell["Copy the library into this directory:", "Text",ExpressionUUID->"09ab2ace-c0f4-42f9-842b-14a39797767f"],
 
+Cell[CellGroupData[{
+
 Cell[BoxData[
  RowBox[{"FileNameJoin", "[", 
   RowBox[{"{", 
    RowBox[{
     RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<PrebuiltLibraries\>\"",
-     ",", "$SystemID", ",", "\"\<lib\>\""}], "}"}], "]"}]], "Input",Expression\
-UUID->"851031e9-9744-4464-9523-84716ed41ee9"],
+     ",", "$SystemID", ",", "\"\<lib\>\""}], "}"}], "]"}]], "Input",
+ CellLabel->"In[9]:=",ExpressionUUID->"851031e9-9744-4464-9523-84716ed41ee9"],
+
+Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/PrebuiltLibraries/\
+Linux-x86-64/lib\"\>"], "Output",
+ CellLabel->"Out[9]=",ExpressionUUID->"0e68c967-9709-4964-871c-1cb8e1274d3c"]
+}, Open  ]],
 
 Cell["\<\
 $ cp build/install/lib/* \
@@ -217,61 +224,78 @@ Cell[CellGroupData[{
 
 Cell["Build the OpenCascadeLink", "Subsubsection",ExpressionUUID->"7ab88f83-cbf5-4b2c-adf6-aaf116615d3f"],
 
-Cell[BoxData["Quit"], "Input",
- CellLabel->"In[5]:=",ExpressionUUID->"7c99dfc1-a6db-4f91-adeb-eac5153332a7"],
+Cell["\<\
+Set up the build directories where the build paclet should go. The build \
+directory will eventually contain the paclet:\
+\>", "Text",ExpressionUUID->"dd56c300-38a3-4d24-8475-fd6a3a22ed23"],
 
-Cell[BoxData[
+Cell[BoxData[{
  RowBox[{
-  RowBox[{"(*", " ", 
-   RowBox[{"load", " ", "the", " ", "BuildOpenCascadeLink", " ", "command"}], 
-   " ", "*)"}], "\[IndentingNewLine]", 
-  RowBox[{"Get", "[", 
+  RowBox[{"baseDir", "=", 
+   RowBox[{"NotebookDirectory", "[", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"buildDir", "=", 
    RowBox[{"FileNameJoin", "[", 
     RowBox[{"{", 
-     RowBox[{
-      RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<scripts\>\"", ",", 
-      "\"\<BuildOpenCascadeLink.wl\>\""}], "}"}], "]"}], "]"}]}]], "Input",
- CellLabel->"In[39]:=",ExpressionUUID->"e32adc6d-106e-4512-8755-767bbbbc4792"],
+     RowBox[{"baseDir", ",", "\"\<build\>\""}], "}"}], "]"}]}], 
+  ";"}]}], "Input",
+ CellLabel->"In[1]:=",ExpressionUUID->"1d7cb5b8-b9ef-4d83-b69e-7e6d9aa1bf6c"],
+
+Cell["Create an empty build directory:", "Text",ExpressionUUID->"42559dad-2c76-4949-9747-fb96754b651c"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"If", "[", 
+  RowBox[{
+   RowBox[{"DirectoryQ", "[", "buildDir", "]"}], ",", " ", 
+   RowBox[{"DeleteDirectory", "[", 
+    RowBox[{"buildDir", ",", 
+     RowBox[{"DeleteContents", "\[Rule]", "True"}]}], "]"}]}], "]"}], "\n", 
+ RowBox[{"CreateDirectory", "[", "buildDir", "]"}]}], "Input",
+ CellLabel->"In[3]:=",ExpressionUUID->"405c7967-b349-47b1-8e27-5e028c8719f1"],
+
+Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/build\"\>"], "Output",
+ CellLabel->"Out[4]=",ExpressionUUID->"4f7532b4-ad25-4a36-8ece-8ab01bb67990"]
+}, Open  ]],
+
+Cell["Load the build script:", "Text",ExpressionUUID->"ed0f6cd1-df62-4727-8f52-b94ea7934eaa"],
+
+Cell[BoxData[
+ RowBox[{"Get", "[", 
+  RowBox[{"FileNameJoin", "[", 
+   RowBox[{"{", 
+    RowBox[{
+    "baseDir", ",", "\"\<scripts\>\"", ",", 
+     "\"\<BuildOpenCascadeLink.wl\>\""}], "}"}], "]"}], "]"}]], "Input",
+ CellLabel->"In[5]:=",ExpressionUUID->"e32adc6d-106e-4512-8755-767bbbbc4792"],
+
+Cell["Specify where the build should go:", "Text",ExpressionUUID->"6bd89636-53d6-4318-894e-63ddefce951a"],
 
 Cell[BoxData[
  RowBox[{
-  RowBox[{"(*", " ", 
-   RowBox[{
-   "where", " ", "are", " ", "the", " ", "sources", " ", "and", " ", "where", 
-    " ", "should", " ", "we", " ", "build", " ", "go", " ", 
-    RowBox[{"to", "?"}]}], " ", "*)"}], "\[IndentingNewLine]", 
-  RowBox[{
-   RowBox[{"setup", "=", 
-    RowBox[{"Association", "[", 
-     RowBox[{"{", "\[IndentingNewLine]", 
-      RowBox[{
-       RowBox[{"\"\<BaseDirectory\>\"", "\[Rule]", 
-        RowBox[{"NotebookDirectory", "[", "]"}]}], ",", 
-       RowBox[{"\"\<BuildDirectory\>\"", "\[Rule]", 
-        RowBox[{"FileNameJoin", "[", 
-         RowBox[{"{", 
-          RowBox[{
-           RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<build\>\""}], 
-          "}"}], "]"}]}]}], "\[IndentingNewLine]", "}"}], "]"}]}], 
-   ";"}]}]], "Input",ExpressionUUID->"1053d118-7213-4dbb-b4dc-8e215810c459"],
+  RowBox[{"setup", "=", 
+   RowBox[{"Association", "[", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"\"\<BaseDirectory\>\"", "\[Rule]", "baseDir"}], ",", 
+      RowBox[{"\"\<BuildDirectory\>\"", "\[Rule]", "buildDir"}]}], "}"}], 
+    "]"}]}], ";"}]], "Input",
+ CellLabel->"In[6]:=",ExpressionUUID->"1053d118-7213-4dbb-b4dc-8e215810c459"],
+
+Cell["Build the library link binary", "Text",ExpressionUUID->"3a3d1bd2-9121-4f36-ba0e-1cf44a925878"],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
- RowBox[{
-  RowBox[{"(*", " ", 
-   RowBox[{"Do", " ", "the", " ", "build"}], " ", "*)"}], 
-  "\[IndentingNewLine]", 
-  RowBox[{"BuildOpenCascadeLink", "[", "setup", "]"}]}]], "Input",
- CellLabel->"In[41]:=",ExpressionUUID->"3ab5f839-05ca-4d29-9724-761dd7084782"],
+ RowBox[{"BuildOpenCascadeLink", "[", "setup", "]"}]], "Input",
+ CellLabel->"In[7]:=",ExpressionUUID->"3ab5f839-05ca-4d29-9724-761dd7084782"],
 
 Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/\
 OpenCascadeLink/LibraryResources/Linux-x86-64/openCascadeWolframDLL.so\"\>"], \
 "Output",
- CellLabel->"Out[41]=",ExpressionUUID->"8d644654-fe84-4571-9797-23410f08d958"]
-}, Open  ]],
-
-Cell["This concludes the build process of the link.", "Text",ExpressionUUID->"f6205e64-67b4-40ec-a65d-e513848f2501"]
+ CellLabel->"Out[7]=",ExpressionUUID->"8991ff13-4e0f-46d5-b51b-51963a823a0f"]
+}, Open  ]]
 }, Closed]],
 
 Cell[CellGroupData[{
@@ -331,205 +355,301 @@ Cell["Build the OpenCascadeLink Documentation", "Subsubsection",ExpressionUUID->
 
 Cell[CellGroupData[{
 
-Cell["Build the OpenCascadeLink Paclet", "Subsubsection",ExpressionUUID->"c8ab5b56-b2c1-4f79-be2e-1e7d87abc227"],
-
-Cell["Next we create the OpenCascadeLink-X.Y.Z.paclet.", "Text",ExpressionUUID->"08f6297e-0175-418d-a615-cfdce1d8b2c4"],
+Cell["Build the OpenCascadeLink paclet layout", "Subsubsection",ExpressionUUID->"34ed6358-b785-4f7b-af0d-f08c986028cd"],
 
 Cell["\<\
-Get the distribution directory by using this notebook\[CloseCurlyQuote]s \
-directory:\
-\>", "Text",
- CellChangeTimes->{{3.732944842358487*^9, 3.7329448518941183`*^9}, {
-  3.7329449184862823`*^9, 3.732944918814848*^9}, {3.732944980198971*^9, 
-  3.732945006940672*^9}},ExpressionUUID->"dd56c300-38a3-4d24-8475-\
-fd6a3a22ed23"],
+To complete the paclet we need to copy files from the source directory into \
+the build directory.\
+\>", "Text",ExpressionUUID->"d79707bb-c1b2-4b2e-b3f9-07448c83f563"],
+
+Cell["Set up the paclet directory:", "Text",ExpressionUUID->"4a6b0479-b5d2-4c39-82f2-96ebfc40847f"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"pacletDir", "=", 
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{"buildDir", ",", "\"\<OpenCascadeLink\>\""}], "}"}], "]"}]}], 
+  ";"}]], "Input",
+ CellLabel->"In[8]:=",ExpressionUUID->"2d65b802-6846-4d06-8c24-7927a619ad36"],
+
+Cell["Copy the kernel files:", "Text",ExpressionUUID->"559e7e0d-04e8-4844-932a-aaba0ab44de9"],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
- RowBox[{"source", "=", 
-  RowBox[{"NotebookDirectory", "[", "]"}]}]], "Input",
- CellChangeTimes->{{3.732942634931942*^9, 3.732942643657571*^9}, {
-   3.7329426921927347`*^9, 3.732942693057613*^9}, 3.732942771911601*^9, 
-   3.732943589633453*^9, {3.732945015988736*^9, 3.7329450167560043`*^9}},
- CellLabel->
-  "(MR1) In[1]:=",ExpressionUUID->"1d7cb5b8-b9ef-4d83-b69e-7e6d9aa1bf6c"],
+ RowBox[{"CopyDirectory", "[", 
+  RowBox[{
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{
+     "baseDir", ",", "\"\<OpenCascadeLink\>\"", ",", "\"\<Kernel\>\""}], 
+     "}"}], "]"}], ",", 
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{"pacletDir", ",", "\"\<Kernel\>\""}], "}"}], "]"}]}], 
+  "]"}]], "Input",
+ CellLabel->"In[9]:=",ExpressionUUID->"389119e3-c06d-4348-a14c-18c1dff54203"],
 
-Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/\"\>"], "Output",
- CellLabel->
-  "(MR1) Out[1]=",ExpressionUUID->"793f7eb8-269b-4d3b-94f9-23c363f1623e"]
+Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/\
+OpenCascadeLink/Kernel\"\>"], "Output",
+ CellLabel->"Out[9]=",ExpressionUUID->"65d6751e-7ea3-47ae-87a6-646e0326fc24"]
 }, Open  ]],
+
+Cell["Copy the example data files:", "Text",ExpressionUUID->"4c134813-261d-4d20-a011-4b67af6f9bc1"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"CopyDirectory", "[", 
+  RowBox[{
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{
+     "baseDir", ",", "\"\<OpenCascadeLink\>\"", ",", "\"\<ExampleData\>\""}], 
+     "}"}], "]"}], ",", 
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{"pacletDir", ",", "\"\<ExampleData\>\""}], "}"}], "]"}]}], 
+  "]"}]], "Input",
+ CellLabel->"In[10]:=",ExpressionUUID->"34f8c02e-b928-48f8-8523-f821fb0aada1"],
+
+Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/\
+OpenCascadeLink/ExampleData\"\>"], "Output",
+ CellLabel->"Out[10]=",ExpressionUUID->"4208f3f6-2bc3-412d-a956-0dde1bccf78d"]
+}, Open  ]],
+
+Cell["Copy the OpenCascadeLink.m file:", "Text",ExpressionUUID->"a322e256-7cf3-4bbc-8dec-88c9225a13fb"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"CopyFile", "[", 
+  RowBox[{
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{
+     "baseDir", ",", "\"\<OpenCascadeLink\>\"", ",", 
+      "\"\<OpenCascadeLink.m\>\""}], "}"}], "]"}], ",", 
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{"pacletDir", ",", "\"\<OpenCascadeLink.m\>\""}], "}"}], "]"}], 
+   ",", 
+   RowBox[{"OverwriteTarget", "\[Rule]", "True"}]}], "]"}]], "Input",
+ CellLabel->"In[11]:=",ExpressionUUID->"704a1be5-c475-44f6-8987-f5adca69b06e"],
+
+Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/\
+OpenCascadeLink/OpenCascadeLink.m\"\>"], "Output",
+ CellLabel->"Out[11]=",ExpressionUUID->"1adec3fd-1e11-456f-b94b-34880238c521"]
+}, Open  ]],
+
+Cell["Copy the PacletInfo.m file:", "Text",ExpressionUUID->"073fa7c7-5e7a-42e7-9129-e4c33035745e"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"CopyFile", "[", 
+  RowBox[{
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{"baseDir", ",", "\"\<PacletInfo.m\>\""}], "}"}], "]"}], ",", 
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{"pacletDir", ",", "\"\<PacletInfo.m\>\""}], "}"}], "]"}], ",", 
+   RowBox[{"OverwriteTarget", "\[Rule]", "True"}]}], "]"}]], "Input",
+ CellLabel->"In[12]:=",ExpressionUUID->"d7b697c0-482d-4e4e-8563-fcbc91610247"],
+
+Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/\
+OpenCascadeLink/PacletInfo.m\"\>"], "Output",
+ CellLabel->"Out[12]=",ExpressionUUID->"653f5227-7027-4364-b699-19a4a3e244af"]
+}, Open  ]]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Build the OpenCascadeLink Paclet", "Subsubsection",ExpressionUUID->"c8ab5b56-b2c1-4f79-be2e-1e7d87abc227"],
+
+Cell["Next we create the OpenCascadeLink-X.Y.Z.paclet.", "Text",ExpressionUUID->"08f6297e-0175-418d-a615-cfdce1d8b2c4"],
 
 Cell["Load the paclet manager to create the paclet", "Text",ExpressionUUID->"74ecbd42-5f55-43cc-a593-f4a0c257a6a2"],
 
 Cell[BoxData[
  RowBox[{"Needs", "[", "\"\<PacletManager`\>\"", "]"}]], "Input",
  CellChangeTimes->{{3.732945903851519*^9, 3.732945916339141*^9}},
- CellLabel->
-  "(MR1) In[4]:=",ExpressionUUID->"0faf7db5-2f0e-46bf-a9e6-1b9a2212b2a1"],
+ CellLabel->"In[13]:=",ExpressionUUID->"0faf7db5-2f0e-46bf-a9e6-1b9a2212b2a1"],
 
-Cell["Change into the build directory:", "Text",
- CellChangeTimes->{{3.732945987661828*^9, 
-  3.732945995056522*^9}},ExpressionUUID->"89faa0ba-0451-418e-a96e-\
-c0e50817fb69"],
+Cell["Check that the OpenCascadeLink directory is there:", "Text",ExpressionUUID->"02dfa579-ff87-44ac-b061-3f4ca122f816"],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
- RowBox[{"SetDirectory", "[", 
-  RowBox[{"FileNameJoin", "[", 
-   RowBox[{"{", 
-    RowBox[{"source", ",", "\"\<build\>\""}], "}"}], "]"}], "]"}]], "Input",
- CellChangeTimes->{{3.732945938938427*^9, 3.732945981731555*^9}},
- CellLabel->
-  "(MR1) In[5]:=",ExpressionUUID->"b5fe0bf6-9c8e-4081-bdef-c5762f423147"],
+ RowBox[{"FileNames", "[", 
+  RowBox[{"All", ",", "buildDir"}], "]"}]], "Input",
+ CellLabel->"In[14]:=",ExpressionUUID->"64b18ca9-49ac-487d-b48a-495f6d8fd8b1"],
 
-Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/build\"\>"], "Output",
- CellLabel->
-  "(MR1) Out[5]=",ExpressionUUID->"4845681f-a08b-4200-a9dc-19a3c7fdd960"]
+Cell[BoxData[
+ RowBox[{"{", \
+"\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/OpenCascadeLink\"\>", 
+  "}"}]], "Output",
+ CellLabel->"Out[14]=",ExpressionUUID->"56277313-9297-4d85-a8ff-c63e28725ec3"]
 }, Open  ]],
 
-Cell["Check that this is the right directory:", "Text",
- CellChangeTimes->{{3.732946057524028*^9, 
-  3.732946074123659*^9}},ExpressionUUID->"02dfa579-ff87-44ac-b061-\
-3f4ca122f816"],
+Cell["\<\
+Add the paclet directory. This is convenient for development as \
+PacletDirectoryAdd wins ties if the paclet version is the same as the paclet \
+the Wolfram language ships with:\
+\>", "Text",ExpressionUUID->"fda6454b-195a-4b34-b1c5-a7963f0c2a90"],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
- RowBox[{"FileNames", "[", "]"}]], "Input",
- CellChangeTimes->{{3.732946002511554*^9, 3.732946005096506*^9}, {
-   3.7329460452370453`*^9, 3.732946052858246*^9}, 3.732946545740027*^9},
- CellLabel->
-  "(MR1) In[6]:=",ExpressionUUID->"64b18ca9-49ac-487d-b48a-495f6d8fd8b1"],
+ RowBox[{"PacletDirectoryAdd", "[", "pacletDir", "]"}]], "Input",
+ CellLabel->"In[15]:=",ExpressionUUID->"d12b597f-8f33-4c92-b0d6-12b60d5fb449"],
 
 Cell[BoxData[
- RowBox[{"{", "\<\"OpenCascadeLink\"\>", "}"}]], "Output",
- CellLabel->
-  "(MR1) Out[6]=",ExpressionUUID->"793947fd-6868-443b-97da-52125ec3201a"]
+ RowBox[{"{", \
+"\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/OpenCascadeLink\"\>", 
+  "}"}]], "Output",
+ CellLabel->"Out[15]=",ExpressionUUID->"d88cafe4-4325-4ee2-8173-dc0b498a6bf4"]
 }, Open  ]],
 
-Cell["Create the paclet:", "Text",
- CellChangeTimes->{{3.732946080939755*^9, 
-  3.732946086394417*^9}},ExpressionUUID->"d0a94687-6a60-48d2-8fa9-\
-2c69e0a8d395"],
+Cell["If you like you can create the paclet:", "Text",ExpressionUUID->"d0a94687-6a60-48d2-8fa9-2c69e0a8d395"],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
- RowBox[{"pacletPath", "=", 
-  RowBox[{"PackPaclet", "[", "\"\<OpenCascadeLink\>\"", "]"}]}]], "Input",
- CellLabel->
-  "(MR1) In[7]:=",ExpressionUUID->"263402d4-9eb2-4f2f-9d5b-4c46bbdb3569"],
+ RowBox[{"paclet", "=", 
+  RowBox[{"PackPaclet", "[", "pacletDir", "]"}]}]], "Input",
+ CellLabel->"In[16]:=",ExpressionUUID->"263402d4-9eb2-4f2f-9d5b-4c46bbdb3569"],
 
 Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/\
-OpenCascadeLink-0.1.0.paclet\"\>"], "Output",
- CellLabel->
-  "(MR1) Out[7]=",ExpressionUUID->"e7b212e3-d953-4ab0-a92c-fd0b4bdd3db3"]
-}, Open  ]],
-
-Cell["Uninstall a possibly old version", "Text",
- CellChangeTimes->{{3.732946133335067*^9, 
-  3.732946163507997*^9}},ExpressionUUID->"eecb0b2b-c965-4e8e-89e2-\
-a40d596ba86f"],
-
-Cell[BoxData[
- RowBox[{"If", "[", " ", 
-  RowBox[{
-   RowBox[{
-    RowBox[{"PacletFind", "[", "\"\<OpenCascadeLink\>\"", "]"}], "=!=", 
-    RowBox[{"{", "}"}]}], ",", 
-   RowBox[{"PacletUninstall", "[", "\"\<OpenCascadeLink\>\"", "]"}]}], 
-  "]"}]], "Input",
- CellLabel->
-  "(MR1) In[8]:=",ExpressionUUID->"174d1c8b-f5be-48ae-a7a8-5618958fe27d"],
-
-Cell["Install the paclet", "Text",
- CellChangeTimes->{{3.732946133335067*^9, 
-  3.732946137932844*^9}},ExpressionUUID->"862b56d1-00c4-436c-93db-\
-99a36e31e630"],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"PacletInstall", "[", "pacletPath", "]"}]], "Input",
- CellChangeTimes->{{3.732946116281004*^9, 3.732946130491419*^9}},
- CellLabel->
-  "(MR1) In[9]:=",ExpressionUUID->"160a4aba-9faa-46bb-8136-f890b9e8fc1c"],
-
-Cell[BoxData[
- InterpretationBox[
-  RowBox[{
-  "PacletObject", "[", "\<\"OpenCascadeLink\"\>", ",", "\<\"0.1.0\"\>", ",", "<>",
-    "]"}],
-  PacletObject[
-   Association[
-   "Name" -> "OpenCascadeLink", "Version" -> "0.1.0", "MathematicaVersion" -> 
-    "12+", "Extensions" -> {{
-      "Application", "Context" -> "OpenCascadeLink`"}, {
-      "Documentation", "Language" -> All, "MainPage" -> 
-       "Tutorials/UsingOpenCascadeLink"}}, "Location" -> 
-    "/home/ruebenko/.Mathematica/Paclets/Repository/OpenCascadeLink-0.1.0"]]]]\
-, "Output",
- CellLabel->
-  "(MR1) Out[9]=",ExpressionUUID->"dd8e67d5-332e-42b5-9a37-b7f1198792aa"]
-}, Open  ]],
-
-Cell["Rebuild the paclet data:", "Text",
- CellChangeTimes->{{3.7329470926436987`*^9, 
-  3.732947099341428*^9}},ExpressionUUID->"1b27b8c1-6c1c-4367-af1c-\
-94162dccc3b7"],
-
-Cell[BoxData[
- RowBox[{"RebuildPacletData", "[", "]"}]], "Input",
- CellChangeTimes->{{3.732946265347781*^9, 3.732946267713866*^9}, 
-   3.732946345253234*^9},
- CellLabel->
-  "(MR1) In[10]:=",ExpressionUUID->"f49164ef-d4bb-49ba-a0a5-425ee30fc101"]
+OpenCascadeLink-0.2.0.paclet\"\>"], "Output",
+ CellLabel->"Out[16]=",ExpressionUUID->"ada42845-8eb8-48ec-b946-5e5381047ecb"]
+}, Open  ]]
 }, Closed]],
 
 Cell[CellGroupData[{
 
-Cell["Basics Tests", "Subsubsection",ExpressionUUID->"fc7167bb-4fc5-4e85-a613-33f5b4ead6a6"],
+Cell["Development setup", "Subsubsection",ExpressionUUID->"15f26c59-6d19-4abb-8b3a-929d6494e0fc"],
 
-Cell[BoxData["Quit"], "Input",
- CellLabel->"In[1]:=",ExpressionUUID->"b0fb6180-9f21-4ba4-a7be-bc786d304bf5"],
+Cell["\<\
+To quickly develop an test new OpenCascadeLink functionality two steps are \
+most important. First, copy a modified OpenCascadeLink.m file into the paclet \
+and second recompile the library link binary. You may omit this last step if \
+if no changes to the C code were made.
+To do so the following set up seems useful:\
+\>", "Text",ExpressionUUID->"df904a15-942d-4fd6-b8a9-646909e176f6"],
 
-Cell[BoxData[
- RowBox[{"Needs", "[", "\"\<OpenCascadeLink`\>\"", "]"}]], "Input",
- CellLabel->"In[1]:=",ExpressionUUID->"1c5134cd-1298-4e20-81a2-7ba2522a2ac3"],
-
-Cell[BoxData[
- RowBox[{"(*", 
-  RowBox[{"Get", "[", 
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"baseDir", "=", 
+   RowBox[{"NotebookDirectory", "[", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"buildDir", "=", 
    RowBox[{"FileNameJoin", "[", 
     RowBox[{"{", 
+     RowBox[{"baseDir", ",", "\"\<build\>\""}], "}"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"pacletDir", "=", 
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{"buildDir", ",", "\"\<OpenCascadeLink\>\""}], "}"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"PacletDirectoryAdd", "[", "pacletDir", "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"CopyFile", "[", 
+   RowBox[{
+    RowBox[{"FileNameJoin", "[", 
+     RowBox[{"{", 
+      RowBox[{
+      "baseDir", ",", "\"\<OpenCascadeLink\>\"", ",", 
+       "\"\<OpenCascadeLink.m\>\""}], "}"}], "]"}], ",", 
+    RowBox[{"FileNameJoin", "[", 
+     RowBox[{"{", 
+      RowBox[{"pacletDir", ",", "\"\<OpenCascadeLink.m\>\""}], "}"}], "]"}], 
+    ",", 
+    RowBox[{"OverwriteTarget", "\[Rule]", "True"}]}], "]"}], ";"}], "\n", 
+ RowBox[{"Get", "[", 
+  RowBox[{"FileNameJoin", "[", 
+   RowBox[{"{", 
+    RowBox[{
+    "baseDir", ",", "\"\<scripts\>\"", ",", 
+     "\"\<BuildOpenCascadeLink.wl\>\""}], "}"}], "]"}], "]"}], "\n", 
+ RowBox[{
+  RowBox[{"setup", "=", 
+   RowBox[{"Association", "[", 
+    RowBox[{"{", 
      RowBox[{
-      RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<OpenCascadeLink\>\"",
-       ",", "\"\<OpenCascadeLink.m\>\""}], "}"}], "]"}], "]"}], 
-  "*)"}]], "Input",
- CellLabel->"In[2]:=",ExpressionUUID->"163720c4-48b2-44be-adc3-e64281609de7"],
+      RowBox[{"\"\<BaseDirectory\>\"", "\[Rule]", "baseDir"}], ",", 
+      RowBox[{"\"\<BuildDirectory\>\"", "\[Rule]", "buildDir"}]}], "}"}], 
+    "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"BuildOpenCascadeLink", "[", "setup", "]"}], ";"}]}], "Input",
+ CellLabel->"In[1]:=",ExpressionUUID->"5495cc52-950c-4795-90dc-4d3e2b722627"],
+
+Cell["\<\
+If the C code was changes and a new library build then the kernel needs to be \
+quit and restarted in order to load the changes otherwise a reloading the \
+\[OpenCurlyDoubleQuote]OpenCascadeLink.m\[CloseCurlyDoubleQuote] file is \
+sufficient.\
+\>", "Text",ExpressionUUID->"e02e80c6-332e-4b84-b5ad-309fb2b94771"],
+
+Cell[BoxData["Quit"], "Input",
+ CellLabel->"In[11]:=",ExpressionUUID->"29027f99-4065-427d-a57c-28fb15456f1b"],
+
+Cell[BoxData[
+ RowBox[{"Get", "[", 
+  RowBox[{"FileNameJoin", "[", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<OpenCascadeLink\>\"", 
+     ",", "\"\<OpenCascadeLink.m\>\""}], "}"}], "]"}], "]"}]], "Input",
+ CellLabel->"In[11]:=",ExpressionUUID->"3255c058-aca5-465c-b567-9b51c0b53e7c"],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"inst", "=", 
   RowBox[{"OpenCascadeShapeCreate", "[", "]"}]}]], "Input",
- CellLabel->"In[3]:=",ExpressionUUID->"203492d9-8576-4ae4-82c6-8a9c7ca2e53c"],
+ CellLabel->"In[10]:=",ExpressionUUID->"e281ad8c-bfab-4e5a-aa80-5d3e982e9ccd"],
 
 Cell[BoxData[
  RowBox[{"OpenCascadeShapeExpression", "[", "1", "]"}]], "Output",
- CellLabel->"Out[3]=",ExpressionUUID->"d70081d3-a0aa-4c53-ac43-dee7e97492a8"]
+ CellLabel->"Out[10]=",ExpressionUUID->"44d531a3-803c-46a9-94e6-79ebf14c6e6c"]
+}, Open  ]]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Basics Tests", "Subsubsection",ExpressionUUID->"fc7167bb-4fc5-4e85-a613-33f5b4ead6a6"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<OpenCascadeLink`\>\"", "]"}]], "Input",
+ CellLabel->"In[1]:=",ExpressionUUID->"1c5134cd-1298-4e20-81a2-7ba2522a2ac3"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"inst", "=", 
+  RowBox[{"OpenCascadeShapeCreate", "[", "]"}]}]], "Input",
+ CellLabel->"In[2]:=",ExpressionUUID->"203492d9-8576-4ae4-82c6-8a9c7ca2e53c"],
+
+Cell[BoxData[
+ RowBox[{"OpenCascadeShapeExpression", "[", "1", "]"}]], "Output",
+ CellLabel->"Out[2]=",ExpressionUUID->"291609ca-8951-498e-888b-5776d9823510"]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"OpenCascadeShapeExpressionQ", "[", "inst", "]"}]], "Input",
- CellLabel->"In[4]:=",ExpressionUUID->"05def6ba-91a0-4e69-92bb-ffae9b68a1cb"],
+ CellLabel->"In[3]:=",ExpressionUUID->"05def6ba-91a0-4e69-92bb-ffae9b68a1cb"],
 
 Cell[BoxData["True"], "Output",
- CellLabel->"Out[4]=",ExpressionUUID->"a863b6aa-3d46-4c86-a828-effeaf720138"]
+ CellLabel->"Out[3]=",ExpressionUUID->"8c9e9677-65c1-4501-abee-3e019f03b9b2"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -537,12 +657,12 @@ Cell[CellGroupData[{
 Cell[BoxData[
  RowBox[{"oce", "=", 
   RowBox[{"OpenCascadeShapeExpressions", "[", "]"}]}]], "Input",
- CellLabel->"In[5]:=",ExpressionUUID->"0ed5ab37-9075-4dc7-8d7c-520c5d1e783e"],
+ CellLabel->"In[4]:=",ExpressionUUID->"0ed5ab37-9075-4dc7-8d7c-520c5d1e783e"],
 
 Cell[BoxData[
  RowBox[{"{", 
   RowBox[{"OpenCascadeShapeExpression", "[", "1", "]"}], "}"}]], "Output",
- CellLabel->"Out[5]=",ExpressionUUID->"e0445595-e60f-432e-987a-b4f3d91fd726"]
+ CellLabel->"Out[4]=",ExpressionUUID->"1ecc3def-931f-4c59-9e14-a20f39be2a8d"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -551,21 +671,21 @@ Cell[BoxData[
  RowBox[{"OpenCascadeShapeDelete", "[", 
   RowBox[{"oce", "[", 
    RowBox[{"[", "1", "]"}], "]"}], "]"}]], "Input",
- CellLabel->"In[6]:=",ExpressionUUID->"33c9e9bb-130a-4a08-84b4-d582f6157ab1"],
+ CellLabel->"In[5]:=",ExpressionUUID->"33c9e9bb-130a-4a08-84b4-d582f6157ab1"],
 
 Cell[BoxData["0"], "Output",
- CellLabel->"Out[6]=",ExpressionUUID->"cacd85d7-007d-4e1e-9dd0-cc77d8768114"]
+ CellLabel->"Out[5]=",ExpressionUUID->"fb150138-5b60-403e-9cb9-64d18c2afbdc"]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"OpenCascadeShapeExpressions", "[", "]"}]], "Input",
- CellLabel->"In[7]:=",ExpressionUUID->"df18c87f-76a7-432a-970b-a8333cf21d36"],
+ CellLabel->"In[6]:=",ExpressionUUID->"df18c87f-76a7-432a-970b-a8333cf21d36"],
 
 Cell[BoxData[
  RowBox[{"{", "}"}]], "Output",
- CellLabel->"Out[7]=",ExpressionUUID->"37f22db2-d365-4abf-a84c-a48badd4e872"]
+ CellLabel->"Out[6]=",ExpressionUUID->"7ce22f3c-f007-45df-bae3-15c47eb65892"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -576,11 +696,11 @@ Cell[BoxData[
    RowBox[{"Ball", "[", 
     RowBox[{"{", 
      RowBox[{"1", ",", "0", ",", "0"}], "}"}], "]"}], "]"}]}]], "Input",
- CellLabel->"In[8]:=",ExpressionUUID->"b8b5a512-4e15-4e4f-ad99-13b555b1ad95"],
+ CellLabel->"In[7]:=",ExpressionUUID->"b8b5a512-4e15-4e4f-ad99-13b555b1ad95"],
 
 Cell[BoxData[
  RowBox[{"OpenCascadeShapeExpression", "[", "2", "]"}]], "Output",
- CellLabel->"Out[8]=",ExpressionUUID->"cdd2a4c9-d7aa-497a-ac62-1fdedb4484a2"]
+ CellLabel->"Out[7]=",ExpressionUUID->"218426c0-b2aa-42e6-ab47-aa7fafd1d838"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -589,7 +709,7 @@ Cell[BoxData[
  RowBox[{"bmesh1", "=", 
   RowBox[{
   "OpenCascadeShapeSurfaceMeshToBoundaryMesh", "[", "s1", "]"}]}]], "Input",
- CellLabel->"In[9]:=",ExpressionUUID->"be8ec323-b075-4811-9207-b242f9d1ebc0"],
+ CellLabel->"In[8]:=",ExpressionUUID->"be8ec323-b075-4811-9207-b242f9d1ebc0"],
 
 Cell[BoxData[
  TagBox[
@@ -609,14 +729,14 @@ Cell[BoxData[
   False,
   Editable->False,
   SelectWithContents->True]], "Output",
- CellLabel->"Out[9]=",ExpressionUUID->"862c93fc-7ba0-43e6-aa1a-46c686c2e181"]
+ CellLabel->"Out[8]=",ExpressionUUID->"1d531b08-b290-45f6-891b-d0ce33fadbf5"]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"bmesh1", "[", "\"\<Wireframe\>\"", "]"}]], "Input",
- CellLabel->"In[10]:=",ExpressionUUID->"eaf9a799-5635-4822-b6b7-c76a8d5f1385"],
+ CellLabel->"In[9]:=",ExpressionUUID->"eaf9a799-5635-4822-b6b7-c76a8d5f1385"],
 
 Cell[BoxData[
  Graphics3DBox[
@@ -783,15 +903,15 @@ csu9oG8742uc6IzbruHZHc9v4ETP77iGZ3c9v4Xv0Hd9Puh75j+Nn/bsnu+F
 Z/fcu+v+Xc/+A0uvcYs=
      "]]]},
   Boxed->False]], "Output",
- CellLabel->"Out[10]=",ExpressionUUID->"58f3155a-4443-4253-8006-bcf474604248"]
+ CellLabel->"Out[9]=",ExpressionUUID->"44bb710d-15c6-41a3-bfee-630d25b6be37"]
 }, Open  ]]
 }, Closed]]
 }, Open  ]]
 },
-WindowSize->{717., 780.75},
+WindowSize->{718.5, 780.75},
 WindowMargins->{{Automatic, 1.5}, {Automatic, 13.5}},
 TaggingRules->{"TryRealOnly" -> False},
-FrontEndVersion->"12.1 for Linux x86 (64-bit) (January 9, 2020)",
+FrontEndVersion->"12.1 for Linux x86 (64-bit) (January 14, 2020)",
 StyleDefinitions->"Default.nb",
 ExpressionUUID->"7edc8073-c067-4d3d-b40a-daac57e462d0"
 ]
@@ -811,128 +931,161 @@ Cell[580, 22, 101, 0, 55, "Subsection",ExpressionUUID->"a128afc6-35b7-43fd-8da5-
 Cell[684, 24, 200, 3, 58, "Text",ExpressionUUID->"c9b067a2-feea-4117-b6e3-e6f4a3bf44eb"],
 Cell[887, 29, 796, 14, 150, "Text",ExpressionUUID->"52a6be59-d057-4dff-ac5f-649bbd860d2f"],
 Cell[1686, 45, 421, 6, 104, "Text",ExpressionUUID->"e21568a7-49e2-4d72-9316-e293ea9ac070"],
-Cell[2110, 53, 306, 8, 29, "Input",ExpressionUUID->"f126382f-88f0-41bc-835d-be6655701752"],
+Cell[2110, 53, 328, 8, 29, "Input",ExpressionUUID->"f126382f-88f0-41bc-835d-be6655701752"],
 Cell[CellGroupData[{
-Cell[2441, 65, 109, 0, 45, "Subsubsection",ExpressionUUID->"01eb8fd8-c499-4c8f-9e67-9ddeddada0a2"],
-Cell[2553, 67, 103, 0, 35, "Text",ExpressionUUID->"e8ed6464-ce1e-4767-945a-c42b4dbc23b1"],
-Cell[2659, 69, 325, 5, 81, "Text",ExpressionUUID->"7972f68a-5bed-4af1-93a7-67f10e8776c8"],
-Cell[2987, 76, 319, 7, 127, "Text",ExpressionUUID->"5df075dc-faef-49cf-9440-19389036420e"],
-Cell[3309, 85, 108, 0, 35, "Text",ExpressionUUID->"09ab2ace-c0f4-42f9-842b-14a39797767f"],
-Cell[3420, 87, 277, 6, 29, "Input",ExpressionUUID->"851031e9-9744-4464-9523-84716ed41ee9"],
-Cell[3700, 95, 166, 3, 35, "Text",ExpressionUUID->"7503b866-b0a4-4acb-b2fd-393b92fe8d25"]
+Cell[2463, 65, 109, 0, 45, "Subsubsection",ExpressionUUID->"01eb8fd8-c499-4c8f-9e67-9ddeddada0a2"],
+Cell[2575, 67, 103, 0, 35, "Text",ExpressionUUID->"e8ed6464-ce1e-4767-945a-c42b4dbc23b1"],
+Cell[2681, 69, 325, 5, 127, "Text",ExpressionUUID->"7972f68a-5bed-4af1-93a7-67f10e8776c8"],
+Cell[3009, 76, 319, 7, 173, "Text",ExpressionUUID->"5df075dc-faef-49cf-9440-19389036420e"],
+Cell[3331, 85, 108, 0, 35, "Text",ExpressionUUID->"09ab2ace-c0f4-42f9-842b-14a39797767f"],
+Cell[CellGroupData[{
+Cell[3464, 89, 298, 6, 51, "Input",ExpressionUUID->"851031e9-9744-4464-9523-84716ed41ee9"],
+Cell[3765, 97, 188, 2, 55, "Output",ExpressionUUID->"0e68c967-9709-4964-871c-1cb8e1274d3c"]
+}, Open  ]],
+Cell[3968, 102, 166, 3, 81, "Text",ExpressionUUID->"7503b866-b0a4-4acb-b2fd-393b92fe8d25"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[3903, 103, 226, 4, 37, "Subsubsection",ExpressionUUID->"908f8e5f-bc54-4208-8a69-ecf9579b2f53"],
-Cell[4132, 109, 492, 12, 196, "Text",ExpressionUUID->"1a4193e5-fb63-400b-8691-792a6c097d32"],
-Cell[4627, 123, 108, 0, 35, "Text",ExpressionUUID->"e796235c-e110-4cb9-91dd-c87fb18d02b4"],
-Cell[4738, 125, 277, 6, 29, "Input",ExpressionUUID->"1c71c351-07cb-41af-8594-77304b03d5a9"],
-Cell[5018, 133, 175, 3, 35, "Text",ExpressionUUID->"ca8e8830-c482-40f1-bc33-430e79381ac6"]
+Cell[4171, 110, 226, 4, 37, "Subsubsection",ExpressionUUID->"908f8e5f-bc54-4208-8a69-ecf9579b2f53"],
+Cell[4400, 116, 492, 12, 196, "Text",ExpressionUUID->"1a4193e5-fb63-400b-8691-792a6c097d32"],
+Cell[4895, 130, 108, 0, 35, "Text",ExpressionUUID->"e796235c-e110-4cb9-91dd-c87fb18d02b4"],
+Cell[5006, 132, 277, 6, 29, "Input",ExpressionUUID->"1c71c351-07cb-41af-8594-77304b03d5a9"],
+Cell[5286, 140, 175, 3, 35, "Text",ExpressionUUID->"ca8e8830-c482-40f1-bc33-430e79381ac6"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[5230, 141, 276, 4, 37, "Subsubsection",ExpressionUUID->"63e1cb79-991c-436b-82ec-1ff2cdd2dbb1"],
-Cell[5509, 147, 1193, 24, 288, "Text",ExpressionUUID->"db0d407a-2da6-41d0-9b86-662594e6a593"],
-Cell[6705, 173, 443, 9, 150, "Text",ExpressionUUID->"6aa9c6d4-a8cb-4393-aadc-f9301cab6d50"],
-Cell[7151, 184, 252, 6, 35, "Text",ExpressionUUID->"cf597b56-bf0f-4364-80dc-96c6dd295f41"],
-Cell[7406, 192, 280, 6, 29, "Input",ExpressionUUID->"f515f3a3-5269-47e9-871c-254a6f157d3c"],
-Cell[7689, 200, 205, 4, 58, "Text",ExpressionUUID->"a179c6c5-1f8f-46f4-b65a-193df61f6870"],
-Cell[7897, 206, 277, 6, 29, "Input",ExpressionUUID->"f6b15d5f-b417-42f4-9cfa-a6ffb2c95ed0"]
+Cell[5498, 148, 276, 4, 37, "Subsubsection",ExpressionUUID->"63e1cb79-991c-436b-82ec-1ff2cdd2dbb1"],
+Cell[5777, 154, 1193, 24, 380, "Text",ExpressionUUID->"db0d407a-2da6-41d0-9b86-662594e6a593"],
+Cell[6973, 180, 443, 9, 219, "Text",ExpressionUUID->"6aa9c6d4-a8cb-4393-aadc-f9301cab6d50"],
+Cell[7419, 191, 252, 6, 58, "Text",ExpressionUUID->"cf597b56-bf0f-4364-80dc-96c6dd295f41"],
+Cell[7674, 199, 280, 6, 51, "Input",ExpressionUUID->"f515f3a3-5269-47e9-871c-254a6f157d3c"],
+Cell[7957, 207, 205, 4, 81, "Text",ExpressionUUID->"a179c6c5-1f8f-46f4-b65a-193df61f6870"],
+Cell[8165, 213, 277, 6, 29, "Input",ExpressionUUID->"f6b15d5f-b417-42f4-9cfa-a6ffb2c95ed0"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[8211, 217, 105, 0, 37, "Subsubsection",ExpressionUUID->"7ab88f83-cbf5-4b2c-adf6-aaf116615d3f"],
-Cell[8319, 219, 108, 1, 29, "Input",ExpressionUUID->"7c99dfc1-a6db-4f91-adeb-eac5153332a7"],
-Cell[8430, 222, 484, 11, 92, "Input",ExpressionUUID->"e32adc6d-106e-4512-8755-767bbbbc4792"],
-Cell[8917, 235, 852, 20, 174, "Input",ExpressionUUID->"1053d118-7213-4dbb-b4dc-8e215810c459"],
+Cell[8479, 224, 105, 0, 37, "Subsubsection",ExpressionUUID->"7ab88f83-cbf5-4b2c-adf6-aaf116615d3f"],
+Cell[8587, 226, 199, 3, 58, "Text",ExpressionUUID->"dd56c300-38a3-4d24-8475-fd6a3a22ed23"],
+Cell[8789, 231, 380, 10, 51, "Input",ExpressionUUID->"1d7cb5b8-b9ef-4d83-b69e-7e6d9aa1bf6c"],
+Cell[9172, 243, 103, 0, 35, "Text",ExpressionUUID->"42559dad-2c76-4949-9747-fb96754b651c"],
 Cell[CellGroupData[{
-Cell[9794, 259, 276, 6, 51, "Input",ExpressionUUID->"3ab5f839-05ca-4d29-9724-761dd7084782"],
-Cell[10073, 267, 233, 3, 75, "Output",ExpressionUUID->"8d644654-fe84-4571-9797-23410f08d958"]
+Cell[9300, 247, 390, 8, 51, "Input",ExpressionUUID->"405c7967-b349-47b1-8e27-5e028c8719f1"],
+Cell[9693, 257, 157, 1, 33, "Output",ExpressionUUID->"4f7532b4-ad25-4a36-8ece-8ab01bb67990"]
 }, Open  ]],
-Cell[10321, 273, 116, 0, 35, "Text",ExpressionUUID->"f6205e64-67b4-40ec-a65d-e513848f2501"]
+Cell[9865, 261, 93, 0, 35, "Text",ExpressionUUID->"ed0f6cd1-df62-4727-8f52-b94ea7934eaa"],
+Cell[9961, 263, 293, 7, 29, "Input",ExpressionUUID->"e32adc6d-106e-4512-8755-767bbbbc4792"],
+Cell[10257, 272, 105, 0, 35, "Text",ExpressionUUID->"6bd89636-53d6-4318-894e-63ddefce951a"],
+Cell[10365, 274, 364, 9, 29, "Input",ExpressionUUID->"1053d118-7213-4dbb-b4dc-8e215810c459"],
+Cell[10732, 285, 100, 0, 35, "Text",ExpressionUUID->"3a3d1bd2-9121-4f36-ba0e-1cf44a925878"],
+Cell[CellGroupData[{
+Cell[10857, 289, 155, 2, 29, "Input",ExpressionUUID->"3ab5f839-05ca-4d29-9724-761dd7084782"],
+Cell[11015, 293, 232, 3, 55, "Output",ExpressionUUID->"8991ff13-4e0f-46d5-b51b-51963a823a0f"]
+}, Open  ]]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[10474, 278, 121, 0, 37, "Subsubsection",ExpressionUUID->"b437757f-5b61-48c5-b963-5a18c409fc8f"],
-Cell[10598, 280, 142, 2, 58, "Text",ExpressionUUID->"2832ab4c-4450-4532-a309-d073e178598d"],
-Cell[10743, 284, 290, 6, 51, "Input",ExpressionUUID->"97d9e24d-f028-438d-9609-649c61d97148"],
-Cell[11036, 292, 161, 3, 58, "Text",ExpressionUUID->"c9af4357-8880-45ec-95dc-f565a3194766"],
-Cell[11200, 297, 306, 6, 81, "Text",ExpressionUUID->"3a456ec6-010b-44ae-b9f4-a04ee7d32caf"],
-Cell[11509, 305, 409, 6, 173, "Text",ExpressionUUID->"c5b36d48-bb9e-4163-b537-2b6040c0304c"],
+Cell[11296, 302, 121, 0, 37, "Subsubsection",ExpressionUUID->"b437757f-5b61-48c5-b963-5a18c409fc8f"],
+Cell[11420, 304, 142, 2, 58, "Text",ExpressionUUID->"2832ab4c-4450-4532-a309-d073e178598d"],
+Cell[11565, 308, 290, 6, 51, "Input",ExpressionUUID->"97d9e24d-f028-438d-9609-649c61d97148"],
+Cell[11858, 316, 161, 3, 58, "Text",ExpressionUUID->"c9af4357-8880-45ec-95dc-f565a3194766"],
+Cell[12022, 321, 306, 6, 81, "Text",ExpressionUUID->"3a456ec6-010b-44ae-b9f4-a04ee7d32caf"],
+Cell[12331, 329, 409, 6, 150, "Text",ExpressionUUID->"c5b36d48-bb9e-4163-b537-2b6040c0304c"],
 Cell[CellGroupData[{
-Cell[11943, 315, 114, 1, 29, "Input",ExpressionUUID->"7b128005-ba0a-4b88-92bc-628975cf7968"],
-Cell[12060, 318, 109, 1, 33, "Output",ExpressionUUID->"7bbc5525-b6a6-4b8a-8944-e44948320c0f"]
+Cell[12765, 339, 114, 1, 29, "Input",ExpressionUUID->"7b128005-ba0a-4b88-92bc-628975cf7968"],
+Cell[12882, 342, 109, 1, 33, "Output",ExpressionUUID->"7bbc5525-b6a6-4b8a-8944-e44948320c0f"]
 }, Open  ]],
-Cell[12184, 322, 268, 4, 104, "Text",ExpressionUUID->"4743dd77-3517-4b8c-bd9c-8c69f09e6333"]
+Cell[13006, 346, 268, 4, 104, "Text",ExpressionUUID->"4743dd77-3517-4b8c-bd9c-8c69f09e6333"]
 }, Closed]],
-Cell[12467, 329, 119, 0, 37, "Subsubsection",ExpressionUUID->"1fb53ba5-f5fe-4be3-a17d-58f25b5d6ceb"],
+Cell[13289, 353, 119, 0, 37, "Subsubsection",ExpressionUUID->"1fb53ba5-f5fe-4be3-a17d-58f25b5d6ceb"],
 Cell[CellGroupData[{
-Cell[12611, 333, 112, 0, 37, "Subsubsection",ExpressionUUID->"c8ab5b56-b2c1-4f79-be2e-1e7d87abc227"],
-Cell[12726, 335, 119, 0, 35, "Text",ExpressionUUID->"08f6297e-0175-418d-a615-cfdce1d8b2c4"],
-Cell[12848, 337, 334, 7, 58, "Text",ExpressionUUID->"dd56c300-38a3-4d24-8475-fd6a3a22ed23"],
+Cell[13433, 357, 119, 0, 37, "Subsubsection",ExpressionUUID->"34ed6358-b785-4f7b-af0d-f08c986028cd"],
+Cell[13555, 359, 177, 3, 35, "Text",ExpressionUUID->"d79707bb-c1b2-4b2e-b3f9-07448c83f563"],
+Cell[13735, 364, 99, 0, 35, "Text",ExpressionUUID->"4a6b0479-b5d2-4c39-82f2-96ebfc40847f"],
+Cell[13837, 366, 276, 7, 29, "Input",ExpressionUUID->"2d65b802-6846-4d06-8c24-7927a619ad36"],
+Cell[14116, 375, 93, 0, 35, "Text",ExpressionUUID->"559e7e0d-04e8-4844-932a-aaba0ab44de9"],
 Cell[CellGroupData[{
-Cell[13207, 348, 394, 7, 29, "Input",ExpressionUUID->"1d7cb5b8-b9ef-4d83-b69e-7e6d9aa1bf6c"],
-Cell[13604, 357, 161, 2, 33, "Output",ExpressionUUID->"793f7eb8-269b-4d3b-94f9-23c363f1623e"]
+Cell[14234, 379, 436, 12, 51, "Input",ExpressionUUID->"389119e3-c06d-4348-a14c-18c1dff54203"],
+Cell[14673, 393, 182, 2, 33, "Output",ExpressionUUID->"65d6751e-7ea3-47ae-87a6-646e0326fc24"]
 }, Open  ]],
-Cell[13780, 362, 115, 0, 35, "Text",ExpressionUUID->"74ecbd42-5f55-43cc-a593-f4a0c257a6a2"],
-Cell[13898, 364, 232, 4, 29, "Input",ExpressionUUID->"0faf7db5-2f0e-46bf-a9e6-1b9a2212b2a1"],
-Cell[14133, 370, 174, 3, 35, "Text",ExpressionUUID->"89faa0ba-0451-418e-a96e-c0e50817fb69"],
+Cell[14870, 398, 99, 0, 35, "Text",ExpressionUUID->"4c134813-261d-4d20-a011-4b67af6f9bc1"],
 Cell[CellGroupData[{
-Cell[14332, 377, 323, 7, 29, "Input",ExpressionUUID->"b5fe0bf6-9c8e-4081-bdef-c5762f423147"],
-Cell[14658, 386, 166, 2, 33, "Output",ExpressionUUID->"4845681f-a08b-4200-a9dc-19a3c7fdd960"]
+Cell[14994, 402, 447, 12, 51, "Input",ExpressionUUID->"34f8c02e-b928-48f8-8523-f821fb0aada1"],
+Cell[15444, 416, 188, 2, 33, "Output",ExpressionUUID->"4208f3f6-2bc3-412d-a956-0dde1bccf78d"]
 }, Open  ]],
-Cell[14839, 391, 181, 3, 35, "Text",ExpressionUUID->"02dfa579-ff87-44ac-b061-3f4ca122f816"],
+Cell[15647, 421, 103, 0, 35, "Text",ExpressionUUID->"a322e256-7cf3-4bbc-8dec-88c9225a13fb"],
 Cell[CellGroupData[{
-Cell[15045, 398, 284, 5, 29, "Input",ExpressionUUID->"64b18ca9-49ac-487d-b48a-495f6d8fd8b1"],
-Cell[15332, 405, 159, 3, 33, "Output",ExpressionUUID->"793947fd-6868-443b-97da-52125ec3201a"]
+Cell[15775, 425, 513, 13, 51, "Input",ExpressionUUID->"704a1be5-c475-44f6-8987-f5adca69b06e"],
+Cell[16291, 440, 194, 2, 55, "Output",ExpressionUUID->"1adec3fd-1e11-456f-b94b-34880238c521"]
 }, Open  ]],
-Cell[15506, 411, 160, 3, 35, "Text",ExpressionUUID->"d0a94687-6a60-48d2-8fa9-2c69e0a8d395"],
+Cell[16500, 445, 98, 0, 35, "Text",ExpressionUUID->"073fa7c7-5e7a-42e7-9129-e4c33035745e"],
 Cell[CellGroupData[{
-Cell[15691, 418, 204, 4, 29, "Input",ExpressionUUID->"263402d4-9eb2-4f2f-9d5b-4c46bbdb3569"],
-Cell[15898, 424, 197, 3, 55, "Output",ExpressionUUID->"e7b212e3-d953-4ab0-a92c-fd0b4bdd3db3"]
-}, Open  ]],
-Cell[16110, 430, 174, 3, 35, "Text",ExpressionUUID->"eecb0b2b-c965-4e8e-89e2-a40d596ba86f"],
-Cell[16287, 435, 345, 9, 51, "Input",ExpressionUUID->"174d1c8b-f5be-48ae-a7a8-5618958fe27d"],
-Cell[16635, 446, 160, 3, 35, "Text",ExpressionUUID->"862b56d1-00c4-436c-93db-99a36e31e630"],
-Cell[CellGroupData[{
-Cell[16820, 453, 228, 4, 29, "Input",ExpressionUUID->"160a4aba-9faa-46bb-8136-f890b9e8fc1c"],
-Cell[17051, 459, 630, 15, 33, "Output",ExpressionUUID->"dd8e67d5-332e-42b5-9a37-b7f1198792aa"]
-}, Open  ]],
-Cell[17696, 477, 168, 3, 35, "Text",ExpressionUUID->"1b27b8c1-6c1c-4367-af1c-94162dccc3b7"],
-Cell[17867, 482, 245, 5, 29, "Input",ExpressionUUID->"f49164ef-d4bb-49ba-a0a5-425ee30fc101"]
+Cell[16623, 449, 454, 10, 51, "Input",ExpressionUUID->"d7b697c0-482d-4e4e-8563-fcbc91610247"],
+Cell[17080, 461, 189, 2, 33, "Output",ExpressionUUID->"653f5227-7027-4364-b699-19a4a3e244af"]
+}, Open  ]]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[18149, 492, 92, 0, 37, "Subsubsection",ExpressionUUID->"fc7167bb-4fc5-4e85-a613-33f5b4ead6a6"],
-Cell[18244, 494, 108, 1, 29, "Input",ExpressionUUID->"b0fb6180-9f21-4ba4-a7be-bc786d304bf5"],
-Cell[18355, 497, 159, 2, 29, "Input",ExpressionUUID->"1c5134cd-1298-4e20-81a2-7ba2522a2ac3"],
-Cell[18517, 501, 359, 9, 71, "Input",ExpressionUUID->"163720c4-48b2-44be-adc3-e64281609de7"],
+Cell[17318, 469, 112, 0, 37, "Subsubsection",ExpressionUUID->"c8ab5b56-b2c1-4f79-be2e-1e7d87abc227"],
+Cell[17433, 471, 119, 0, 35, "Text",ExpressionUUID->"08f6297e-0175-418d-a615-cfdce1d8b2c4"],
+Cell[17555, 473, 115, 0, 35, "Text",ExpressionUUID->"74ecbd42-5f55-43cc-a593-f4a0c257a6a2"],
+Cell[17673, 475, 224, 3, 29, "Input",ExpressionUUID->"0faf7db5-2f0e-46bf-a9e6-1b9a2212b2a1"],
+Cell[17900, 480, 121, 0, 35, "Text",ExpressionUUID->"02dfa579-ff87-44ac-b061-3f4ca122f816"],
 Cell[CellGroupData[{
-Cell[18901, 514, 174, 3, 29, "Input",ExpressionUUID->"203492d9-8576-4ae4-82c6-8a9c7ca2e53c"],
-Cell[19078, 519, 158, 2, 33, "Output",ExpressionUUID->"d70081d3-a0aa-4c53-ac43-dee7e97492a8"]
+Cell[18046, 484, 173, 3, 29, "Input",ExpressionUUID->"64b18ca9-49ac-487d-b48a-495f6d8fd8b1"],
+Cell[18222, 489, 201, 4, 33, "Output",ExpressionUUID->"56277313-9297-4d85-a8ff-c63e28725ec3"]
+}, Open  ]],
+Cell[18438, 496, 256, 4, 58, "Text",ExpressionUUID->"fda6454b-195a-4b34-b1c5-a7963f0c2a90"],
+Cell[CellGroupData[{
+Cell[18719, 504, 158, 2, 29, "Input",ExpressionUUID->"d12b597f-8f33-4c92-b0d6-12b60d5fb449"],
+Cell[18880, 508, 201, 4, 33, "Output",ExpressionUUID->"d88cafe4-4325-4ee2-8173-dc0b498a6bf4"]
+}, Open  ]],
+Cell[19096, 515, 109, 0, 35, "Text",ExpressionUUID->"d0a94687-6a60-48d2-8fa9-2c69e0a8d395"],
+Cell[CellGroupData[{
+Cell[19230, 519, 178, 3, 29, "Input",ExpressionUUID->"263402d4-9eb2-4f2f-9d5b-4c46bbdb3569"],
+Cell[19411, 524, 189, 2, 33, "Output",ExpressionUUID->"ada42845-8eb8-48ec-b946-5e5381047ecb"]
+}, Open  ]]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[19649, 532, 97, 0, 37, "Subsubsection",ExpressionUUID->"15f26c59-6d19-4abb-8b3a-929d6494e0fc"],
+Cell[19749, 534, 397, 6, 104, "Text",ExpressionUUID->"df904a15-942d-4fd6-b8a9-646909e176f6"],
+Cell[20149, 542, 1692, 48, 195, "Input",ExpressionUUID->"5495cc52-950c-4795-90dc-4d3e2b722627"],
+Cell[21844, 592, 321, 5, 58, "Text",ExpressionUUID->"e02e80c6-332e-4b84-b5ad-309fb2b94771"],
+Cell[22168, 599, 109, 1, 29, "Input",ExpressionUUID->"29027f99-4065-427d-a57c-28fb15456f1b"],
+Cell[22280, 602, 327, 7, 51, "Input",ExpressionUUID->"3255c058-aca5-465c-b567-9b51c0b53e7c"],
+Cell[CellGroupData[{
+Cell[22632, 613, 175, 3, 29, "Input",ExpressionUUID->"e281ad8c-bfab-4e5a-aa80-5d3e982e9ccd"],
+Cell[22810, 618, 159, 2, 33, "Output",ExpressionUUID->"44d531a3-803c-46a9-94e6-79ebf14c6e6c"]
+}, Open  ]]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[23018, 626, 92, 0, 37, "Subsubsection",ExpressionUUID->"fc7167bb-4fc5-4e85-a613-33f5b4ead6a6"],
+Cell[23113, 628, 159, 2, 29, "Input",ExpressionUUID->"1c5134cd-1298-4e20-81a2-7ba2522a2ac3"],
+Cell[CellGroupData[{
+Cell[23297, 634, 174, 3, 29, "Input",ExpressionUUID->"203492d9-8576-4ae4-82c6-8a9c7ca2e53c"],
+Cell[23474, 639, 158, 2, 33, "Output",ExpressionUUID->"291609ca-8951-498e-888b-5776d9823510"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[19273, 526, 161, 2, 29, "Input",ExpressionUUID->"05def6ba-91a0-4e69-92bb-ffae9b68a1cb"],
-Cell[19437, 530, 109, 1, 33, "Output",ExpressionUUID->"a863b6aa-3d46-4c86-a828-effeaf720138"]
+Cell[23669, 646, 161, 2, 29, "Input",ExpressionUUID->"05def6ba-91a0-4e69-92bb-ffae9b68a1cb"],
+Cell[23833, 650, 109, 1, 33, "Output",ExpressionUUID->"8c9e9677-65c1-4501-abee-3e019f03b9b2"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[19583, 536, 178, 3, 29, "Input",ExpressionUUID->"0ed5ab37-9075-4dc7-8d7c-520c5d1e783e"],
-Cell[19764, 541, 181, 3, 33, "Output",ExpressionUUID->"e0445595-e60f-432e-987a-b4f3d91fd726"]
+Cell[23979, 656, 178, 3, 29, "Input",ExpressionUUID->"0ed5ab37-9075-4dc7-8d7c-520c5d1e783e"],
+Cell[24160, 661, 181, 3, 33, "Output",ExpressionUUID->"1ecc3def-931f-4c59-9e14-a20f39be2a8d"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[19982, 549, 207, 4, 29, "Input",ExpressionUUID->"33c9e9bb-130a-4a08-84b4-d582f6157ab1"],
-Cell[20192, 555, 106, 1, 33, "Output",ExpressionUUID->"cacd85d7-007d-4e1e-9dd0-cc77d8768114"]
+Cell[24378, 669, 207, 4, 29, "Input",ExpressionUUID->"33c9e9bb-130a-4a08-84b4-d582f6157ab1"],
+Cell[24588, 675, 106, 1, 33, "Output",ExpressionUUID->"fb150138-5b60-403e-9cb9-64d18c2afbdc"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[20335, 561, 153, 2, 29, "Input",ExpressionUUID->"df18c87f-76a7-432a-970b-a8333cf21d36"],
-Cell[20491, 565, 123, 2, 33, "Output",ExpressionUUID->"37f22db2-d365-4abf-a84c-a48badd4e872"]
+Cell[24731, 681, 153, 2, 29, "Input",ExpressionUUID->"df18c87f-76a7-432a-970b-a8333cf21d36"],
+Cell[24887, 685, 123, 2, 33, "Output",ExpressionUUID->"7ce22f3c-f007-45df-bae3-15c47eb65892"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[20651, 572, 264, 6, 29, "Input",ExpressionUUID->"b8b5a512-4e15-4e4f-ad99-13b555b1ad95"],
-Cell[20918, 580, 158, 2, 33, "Output",ExpressionUUID->"cdd2a4c9-d7aa-497a-ac62-1fdedb4484a2"]
+Cell[25047, 692, 264, 6, 29, "Input",ExpressionUUID->"b8b5a512-4e15-4e4f-ad99-13b555b1ad95"],
+Cell[25314, 700, 158, 2, 33, "Output",ExpressionUUID->"218426c0-b2aa-42e6-ab47-aa7fafd1d838"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[21113, 587, 204, 4, 71, "Input",ExpressionUUID->"be8ec323-b075-4811-9207-b242f9d1ebc0"],
-Cell[21320, 593, 545, 18, 55, "Output",ExpressionUUID->"862c93fc-7ba0-43e6-aa1a-46c686c2e181"]
+Cell[25509, 707, 204, 4, 29, "Input",ExpressionUUID->"be8ec323-b075-4811-9207-b242f9d1ebc0"],
+Cell[25716, 713, 545, 18, 33, "Output",ExpressionUUID->"1d531b08-b290-45f6-891b-d0ce33fadbf5"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[21902, 616, 154, 2, 29, "Input",ExpressionUUID->"eaf9a799-5635-4822-b6b7-c76a8d5f1385"],
-Cell[22059, 620, 9819, 165, 358, "Output",ExpressionUUID->"58f3155a-4443-4253-8006-bcf474604248"]
+Cell[26298, 736, 153, 2, 29, "Input",ExpressionUUID->"eaf9a799-5635-4822-b6b7-c76a8d5f1385"],
+Cell[26454, 740, 9818, 165, 407, "Output",ExpressionUUID->"44bb710d-15c6-41a3-bfee-630d25b6be37"]
 }, Open  ]]
 }, Closed]]
 }, Open  ]]
