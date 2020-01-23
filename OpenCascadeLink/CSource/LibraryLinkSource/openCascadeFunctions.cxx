@@ -6,6 +6,11 @@
 
 #include <gp_Ax2.hxx>
 #include <gp_Vec.hxx>
+#include <gp_Pnt.hxx>
+#include <Standard_Integer.hxx>
+#include <Standard_Real.hxx>
+#include <NCollection_Array1.hxx>
+#include <NCollection_Array2.hxx>
 
 #include <TopoDS_Shape.hxx>                                                     
 #include <BRepPrimAPI_MakeBox.hxx>
@@ -26,6 +31,7 @@
 #include <BRepOffsetAPI_MakeThickSolid.hxx>
 
 #include <BRepBuilderAPI_MakePolygon.hxx>
+#include <Geom_BSplineSurface.hxx>	
 #include <BRepBuilderAPI_MakeFace.hxx>
 #include <BRepBuilderAPI_Sewing.hxx>
 #include <BRepBuilderAPI_MakeSolid.hxx>
@@ -61,6 +67,7 @@ extern "C" {
 	DLLEXPORT int makeLinearSweep(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int makePolygon(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+	DLLEXPORT int makeBSplineSurface(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int makeDifference(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeIntersection(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
@@ -563,6 +570,196 @@ DLLEXPORT int makePolygon(WolframLibraryData libData, mint Argc, MArgument *Args
 	TopoDS_Shape shape  = face.Shape();
 
 	*instance = shape;
+
+	MArgument_setInteger(res, 0);
+	return 0;
+}
+
+
+/*
+ *Geom_BSplineSurface::Geom_BSplineSurface 	(
+    	const TColgp_Array2OfPnt &  	Poles,
+		const TColStd_Array2OfReal &  	Weights,
+		const TColStd_Array1OfReal &  	UKnots,
+		const TColStd_Array1OfReal &  	VKnots,
+		const TColStd_Array1OfInteger &  	UMults,
+		const TColStd_Array1OfInteger &  	VMults,
+		const Standard_Integer  	UDegree,
+		const Standard_Integer  	VDegree,
+		const Standard_Boolean  	UPeriodic = Standard_False,
+		const Standard_Boolean  	VPeriodic = Standard_False 
+	) 	
+ */
+
+DLLEXPORT int makeBSplineSurface(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	mint error = 0;
+	mint pos;
+	mint * mintData;
+	mreal * realData;
+
+	mint id = MArgument_getInteger(Args[0]);
+
+	TopoDS_Shape *instance = get_ocShapeInstance( id);
+	if (instance == NULL) {
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	} 
+
+	MTensor poles = MArgument_getMTensor(Args[1]);
+	int type1 = libData->MTensor_getType(poles);
+	int rank1 = libData->MTensor_getRank(poles);
+	const mint* dims1 = libData->MTensor_getDimensions(poles);
+	if (type1 != MType_Real || rank1 != 3) {
+		libData->MTensor_disown(poles);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	} 
+	TColgp_Array2OfPnt Poles(1, dims1[0], 1, dims1[1]);
+
+	realData = libData->MTensor_getRealData(poles);
+	pos = 0;
+	for (int i = 1; i <= dims1[0]; i++) {
+		for (int j = 1; j <= dims1[1]; j++) {
+			Poles.SetValue(i, j, gp_Pnt(
+				(Standard_Real) realData[pos],
+				(Standard_Real) realData[pos + 1],
+				(Standard_Real) realData[pos + 2]
+			));
+			pos += 3;
+		}
+	}
+
+	MTensor weights = MArgument_getMTensor(Args[2]);
+	int type2 = libData->MTensor_getType(weights);
+	int rank2 = libData->MTensor_getRank(weights);
+	const mint* dims2 = libData->MTensor_getDimensions(weights);
+	if (type2 != MType_Real || rank2 != 2) {
+		libData->MTensor_disown(poles);
+		libData->MTensor_disown(weights);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	} 
+	TColStd_Array2OfReal Weights(1, dims2[0], 1, dims2[1]);
+	realData = libData->MTensor_getRealData(weights);
+	pos = 0;
+	for (int i = 1; i <= dims2[0]; i++) {
+		for (int j = 1; j <= dims2[1]; j++) {
+			Weights.SetValue(i, j, (Standard_Real) realData[pos]);
+			pos += 1;
+		}
+	}
+
+	MTensor uknots = MArgument_getMTensor(Args[3]);
+	int type3 = libData->MTensor_getType(uknots);
+	int rank3 = libData->MTensor_getRank(uknots);
+	const mint* dims3 = libData->MTensor_getDimensions(uknots);
+	if (type3 != MType_Real || rank3 != 1) {
+		libData->MTensor_disown(poles);
+		libData->MTensor_disown(weights);
+		libData->MTensor_disown(uknots);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+	TColStd_Array1OfReal UKnots(1, dims3[0]);
+	realData = libData->MTensor_getRealData(uknots);
+	for (int i = 0; i < dims3[0]; i++) {
+		UKnots.SetValue(i + 1, (Standard_Real) realData[i]);
+	}
+
+	MTensor vknots = MArgument_getMTensor(Args[4]);
+	int type4 = libData->MTensor_getType(vknots);
+	int rank4 = libData->MTensor_getRank(vknots);
+	const mint* dims4 = libData->MTensor_getDimensions(vknots);
+	if (type4 != MType_Real || rank4 != 1) {
+		libData->MTensor_disown(poles);
+		libData->MTensor_disown(weights);
+		libData->MTensor_disown(uknots);
+		libData->MTensor_disown(vknots);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+	TColStd_Array1OfReal VKnots(1, dims4[0]);
+	realData = libData->MTensor_getRealData(vknots);
+	for (int i = 0; i < dims4[0]; i++) {
+		VKnots.SetValue(i + 1, (Standard_Real) realData[i]);
+	}
+
+	MTensor umults = MArgument_getMTensor(Args[5]);
+	int type5 = libData->MTensor_getType(umults);
+	int rank5 = libData->MTensor_getRank(umults);
+	const mint* dims5 = libData->MTensor_getDimensions(umults);
+	if (type5 != MType_Integer || rank5 != 1) {
+		libData->MTensor_disown(poles);
+		libData->MTensor_disown(weights);
+		libData->MTensor_disown(uknots);
+		libData->MTensor_disown(vknots);
+		libData->MTensor_disown(umults);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	} 
+	TColStd_Array1OfInteger UMults(1, dims5[0]);
+	mintData = libData->MTensor_getIntegerData(umults);
+	for (int i = 0; i < dims5[0]; i++) {
+		UMults.SetValue(i + 1, (Standard_Integer) mintData[i]);
+	}
+
+	MTensor vmults = MArgument_getMTensor(Args[6]);
+	int type6 = libData->MTensor_getType(vmults);
+	int rank6 = libData->MTensor_getRank(vmults);
+	const mint* dims6 = libData->MTensor_getDimensions(vmults);
+	if (type6 != MType_Integer || rank6 != 1) {
+		libData->MTensor_disown(poles);
+		libData->MTensor_disown(weights);
+		libData->MTensor_disown(uknots);
+		libData->MTensor_disown(vknots);
+		libData->MTensor_disown(umults);
+		libData->MTensor_disown(vmults);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	} 
+	TColStd_Array1OfInteger VMults(1, dims6[0]);
+	mintData = libData->MTensor_getIntegerData(vmults);
+	for (int i = 0; i < dims6[0]; i++) {
+		VMults.SetValue(i + 1, (Standard_Integer) mintData[i]);
+	}
+
+	const Standard_Integer UDegree = (Standard_Integer) MArgument_getInteger(Args[7]);
+	const Standard_Integer VDegree = (Standard_Integer) MArgument_getInteger(Args[8]);
+
+	const Standard_Boolean UPeriodic = (Standard_Boolean) MArgument_getInteger(Args[9]); 
+	const Standard_Boolean VPeriodic = (Standard_Boolean) MArgument_getInteger(Args[10]); 
+
+	Handle(Geom_Surface) surface = new Geom_BSplineSurface(
+    	Poles,
+		Weights,
+		UKnots, VKnots,
+	 	UMults, VMults,
+		UDegree, VDegree,
+		UPeriodic, VPeriodic 
+	); 
+
+//TopoDS_Shape shape= BRepBuilderAPI_MakeShell(Handle_Geom_BSplineSurface(Surf)).Shape();
+//GeomAPI_PointsToBSplineSurface
+
+	Standard_Real tol = Precision::Confusion();
+	BRepBuilderAPI_MakeFace face(surface, tol);
+	if (!face.IsDone()) {
+		/* this leaves *instance undefined */
+		MArgument_setInteger(res, 1);
+		return 0;
+	}
+
+	TopoDS_Shape shape  = face.Shape();
+
+	*instance = shape;
+
+	libData->MTensor_disown(poles);
+	libData->MTensor_disown(weights);
+	libData->MTensor_disown(uknots);
+	libData->MTensor_disown(vknots);
+	libData->MTensor_disown(umults);
+	libData->MTensor_disown(vmults);
 
 	MArgument_setInteger(res, 0);
 	return 0;

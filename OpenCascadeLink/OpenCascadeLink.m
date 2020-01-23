@@ -117,6 +117,8 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	makeLinearSweepFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeLinearSweep", {Integer, Integer, {Real, 2, "Shared"}}, Integer];
 
 	makePolygonFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makePolygon", {Integer, {Real, 2, "Shared"}}, Integer];
+	makeBSplineSurfaceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeBSplineSurface", {Integer, {Real, 3, "Shared"}, {Real, 2, "Shared"},
+		{Real, 1, "Shared"}, {Real, 1, "Shared"}, {Integer, 1, "Shared"}, {Integer, 1, "Shared"}, Integer, Integer, Integer, Integer}, Integer];
 
 	makeDifferenceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeDifference", {Integer, Integer, Integer}, Integer];
 	makeIntersectionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeIntersection", {Integer, Integer, Integer}, Integer];
@@ -708,6 +710,136 @@ Module[{mesh, c, cells, inci, poly, shapes},
 	, (* else *)
 		Return[ $Failed, Module]
 	]
+]
+
+
+strictIncreaseQ := strictIncreaseQ = Compile[{{d, _Real, 1}},
+Module[{len = Length[d], i = 1},
+	If[len == 1, Return[True]];
+	While[i < len,
+		If[d[[i]] >= d[[i + 1]], Break[]];
+		i++;
+	];
+	If[i < (len - 1), False, True]
+	]
+]
+
+OpenCascadeShape[bss:BSplineSurface[pts_, OptionsPattern[]]] /;
+	Length[ Dimensions[ pts]] === 3 :=
+Module[
+	{poles, weights, uknots, vknots, umults, vmults, udegree, vdegree, 
+	uperiodic, vperiodic, instance, res, temp, nrows, ncols, k, w, d, c},
+
+	poles = pack[ N[ pts]];
+	{nrows, ncols} = Dimensions[poles][[{1,2}]];
+
+	{k, w, d, c} = OptionValue[BSplineSurface,
+		{SplineKnots, SplineWeights, SplineDegree, SplineClosed}];
+
+	d = d /. Automatic -> 3;
+	d = Flatten[{d, d}][[{1,2}]];
+	If[ !VectorQ[ d, (Positive[#] && IntegerQ[#]) &],
+		Return[ $Failed, Module]
+	];
+	{udegree, vdegree} = d;
+
+	If[ w === Automatic,
+		weights = ConstantArray[1., Most[Dimensions[poles]]];
+	,
+		weights = pack[ N[ w]];
+	];
+
+(*
+	c = c /. Automatic -> False;
+	c = Boole[ Flatten[{c, c}][[{1,2}]]];
+	If[ !VectorQ[ temp, IntegerQ],
+		Return[ $Failed, Module]
+	];
+	{uperiodic, vperiodic} = c;
+*)
+	(* It is not clear how periodic BSplineSurface works in OCCT, however,
+	for discretization it might not be that important. The difference will
+	be that the BSpline surface is not truly closed and will have a line
+	along the connected edge in the discretization *)
+	{uperiodic, vperiodic} = {0, 0};
+
+	If[ Length[ k] === 1, k = {k, k};];
+
+	If[ !ListQ[ k[[1]]],
+        Switch[k[[1]],
+            "Clamped" | Automatic,
+			t = 1;
+			temp = Join[
+				Table[0, {udegree + 1}],
+				Table[t++, {nrows - 1 - udegree}],
+				Table[t, {udegree + 1}]
+			];
+            k[[1]] = temp;
+		, 
+            "Unclamped", 
+			t = -udegree;
+			k[[1]] = Table[t++, {nrows + udegree + 1}];
+        ];
+	];
+
+	If[ !ListQ[ k[[2]]],
+        Switch[k[[2]],
+            "Clamped" | Automatic, 
+			t = 1;
+			temp = Join[
+				Table[0, {vdegree + 1}],
+				Table[t++, {ncols - 1 - vdegree}],
+				Table[t, {vdegree + 1}]
+			];
+            k[[2]] = temp;
+		, 
+            "Unclamped", 
+			t = -vdegree;
+			k[[2]] = Table[t++, {ncols + vdegree + 1}];
+        ];
+	]; 
+
+	{uknots, vknots} = N[ k];
+	(* TODO: check (?) WL requitement: u_i >= u_i+1 *)
+	{uknots, umults} = pack /@ Transpose[Tally[uknots]];
+	{vknots, vmults} = pack /@ Transpose[Tally[vknots]];
+	(* u_i > u_i+1: This is an OpenCascde requirement *)
+	If[ !strictIncreaseQ[ uknots] || !strictIncrease[ vknots],
+		Return[ $Failed, Module];
+	];
+
+	If[ (Length[ umults] != Length[ uknots]) ||
+		(Length[ vmults] != Length[ vknots]) ||
+		Length[ uknots] < 2 || Length[ vknots] < 2 ,
+		Return[ $Failed, Module];
+	]; 
+
+
+	(* more needs to be implemented for the u/v-periodic case
+	(SplineClosed->True) *)
+
+	If[ uperiodic == 1,
+		If[ umults[[-1]] != umults[[1]], Return[ $Failed, Module]];
+		If[ Total[ umults[[1;;-2]]] =!= nrows, Return[ $Failed, Module]];
+	,
+		(* NON periodic surface (SplineClosed -> False) *)
+		If[ (Total[umults] - udegree -1) =!= nrows, Return[ $Failed, Module]];
+	];
+
+	If[ vperiodic == 1,
+		If[ vmults[[-1]] != vmults[[1]], Return[ $Failed, Module]];
+		If[ Total[ vmults[[1;;-2]]] =!= ncols, Return[ $Failed, Module]];
+	,
+		(* NON periodic surface (SplineClosed -> False) *)
+		If[ (Total[vmults] - vdegree -1) =!= ncols, Return[ $Failed, Module]];
+	];
+
+	instance = OpenCascadeShapeCreate[];
+	res = makeBSplineSurfaceFun[ instanceID[ instance], poles, weights,
+		uknots, vknots, umults, vmults, udegree, vdegree, uperiodic, vperiodic];
+	If[ res =!= 0, Return[ $Failed, Module]];
+
+	instance
 ]
 
 
