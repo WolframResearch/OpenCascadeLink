@@ -681,8 +681,7 @@ OpenCascadeShape[Polygon[coords_]] /;
 Module[{p, instance, res},
 
 	p = pack[ N[ coords]];
-
-	If[ Length[ DeleteDuplicates[p]] =!= Length[p], Return[$Failed, Module]];
+	p = DeleteDuplicates[p];
 
 	instance = OpenCascadeShapeCreate[];
 	res = makePolygonFun[ instanceID[ instance], N[ p]];
