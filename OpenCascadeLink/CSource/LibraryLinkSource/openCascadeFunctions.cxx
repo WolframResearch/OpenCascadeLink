@@ -34,6 +34,7 @@
 #include <Geom_BSplineSurface.hxx>	
 #include <BRepBuilderAPI_MakeFace.hxx>
 #include <BRepBuilderAPI_Sewing.hxx>
+#include <BRepBuilderAPI_GTransform.hxx>
 #include <BRepBuilderAPI_MakeSolid.hxx>
 
 #include <IMeshData_Status.hxx>
@@ -65,6 +66,7 @@ extern "C" {
 	DLLEXPORT int makeSewing(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeRotationalSweep(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeLinearSweep(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+	DLLEXPORT int makeGeometicTransformation(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int makePolygon(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeBSplineSurface(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
@@ -518,6 +520,58 @@ DLLEXPORT int makeLinearSweep(WolframLibraryData libData, mint Argc, MArgument *
 	gp_Vec vec = gp_Vec(gp1, gp2);
 
 	TopoDS_Shape shape = BRepPrimAPI_MakePrism(*anID, vec).Shape();
+
+	*instance = shape;
+
+	MArgument_setInteger(res, 0);
+	return 0;
+}
+
+DLLEXPORT int makeGeometicTransformation(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	mint id = MArgument_getInteger(Args[0]);
+	mint id1 = MArgument_getInteger(Args[1]);
+
+	MTensor p1 = MArgument_getMTensor(Args[2]);
+	int type1 = libData->MTensor_getType(p1);
+	int rank1 = libData->MTensor_getRank(p1);
+	const mint* dims1 = libData->MTensor_getDimensions(p1);
+
+	TopoDS_Shape *instance = get_ocShapeInstance( id);
+	TopoDS_Shape *anID = get_ocShapeInstance( id1);
+
+	if (instance == NULL || type1 != MType_Real || rank1 != 2 ||
+			dims1[0] != 3 || dims1[1] != 4)
+	{
+		libData->MTensor_disown(p1);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	double* rawPts1 = libData->MTensor_getRealData(p1);
+
+	gp_Trsf trsf;
+	trsf.SetValues 	(
+		(Standard_Real)	rawPts1[0],
+		(Standard_Real)	rawPts1[1],
+		(Standard_Real)	rawPts1[2],
+		(Standard_Real)	rawPts1[3],
+
+		(Standard_Real)	rawPts1[4],
+		(Standard_Real)	rawPts1[5],
+		(Standard_Real)	rawPts1[6],
+		(Standard_Real)	rawPts1[7],
+
+		(Standard_Real)	rawPts1[8],
+		(Standard_Real)	rawPts1[9],
+		(Standard_Real)	rawPts1[10],
+		(Standard_Real)	rawPts1[11] 
+	);
+	libData->MTensor_disown(p1);
+
+	gp_GTrsf gtrsf(trsf);
+
+	TopoDS_Shape shape = BRepBuilderAPI_GTransform(*anID, gtrsf, Standard_True).Shape();
 
 	*instance = shape;
 

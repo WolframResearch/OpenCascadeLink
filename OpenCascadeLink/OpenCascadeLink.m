@@ -35,6 +35,10 @@ OpenCascadeShapeSewing::usage = "OpenCascadeShapeSewing[ {shape1, shape2,..}] re
 OpenCascadeShapeRotationalSweep::usage = "OpenCascadeShapeRotationalSweep[ shape, {p1, p2}, angle] returns a new instance of an OpenCascade expression that rotates shape by angle radians around the axis between p1 and p2.";
 OpenCascadeShapeLinearSweep::usage = "OpenCascadeShapeLinearSweep[ shape, {p1, p2}] returns a new instance of an OpenCascade expression that linearly sweepes shape from p1 to p2.";
 
+(* BRepBuilderAPI_GTransform seems to have issues with non-uniform scaling *)
+(* https://www.opencascade.com/content/creating-ellipsoid-sphere-transformation-function-applied *)
+(* OpenCascadeShapeGeometricTransformation::usage = "OpenCascadeShapeGeometricTransformation[ shape, tfun] returns a new instance of an OpenCascade expression that applies the transformation function tfun to the OpenCascade expression shape."; *)
+
 OpenCascadeShapeSurfaceMesh::usage = "OpenCascadeShapeSurfaceMesh[ shape] returns a new instance of an OpenCascade expression with it's surface meshed.";
 OpenCascadeShapeSurfaceMeshCoordinates::usage = "OpenCascadeShapeSurfaceMeshCoordinates[ shape] returns the meshed shape's coordinates.";
 OpenCascadeShapeSurfaceMeshElements::usage = "OpenCascadeShapeSurfaceMeshElements[ shape] returns the meshed shape's surface elements.";
@@ -115,6 +119,7 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	makeSewingFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSewing", {Integer, {Integer, 1, "Shared"}}, Integer];
 	makeRotationalSweepFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeRotationalSweep", {Integer, Integer, {Real, 2, "Shared"}, Real}, Integer];
 	makeLinearSweepFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeLinearSweep", {Integer, Integer, {Real, 2, "Shared"}}, Integer];
+	makeGeometicTransformationFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeGeometicTransformation", {Integer, Integer, {Real, 2, "Shared"}}, Integer];
 
 	makePolygonFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makePolygon", {Integer, {Real, 2, "Shared"}}, Integer];
 	makeBSplineSurfaceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeBSplineSurface", {Integer, {Real, 3, "Shared"}, {Real, 2, "Shared"},
@@ -487,9 +492,61 @@ Module[{cylinder, ball1, ball2},
 ]
 
 OpenCascadeShape[CapsuleShape[{pMin_, pMax_}]] /;
-		VectorQ[pMin, NumericQ] && (Length[ pMin] == 3) && 
-		VectorQ[pMax, NumericQ] && (Length[ pMax] == 3) :=
+	VectorQ[pMin, NumericQ] && (Length[ pMin] == 3) && 
+	VectorQ[pMax, NumericQ] && (Length[ pMax] == 3) :=
 OpenCascadeShape[CapsuleShape[{pMin, pMax}, 1]]
+
+
+OpenCascadeShape[ Ellipsoid[ center_, vec_]] /; 
+	VectorQ[center, NumericQ] && (Length[ center] == 3) && 
+	VectorQ[vec, NumericQ] && (Length[ vec] == 3) :=
+OpenCascadeShape[ Ellipsoid[ center, DiagonalMatrix[vec^2]]]
+
+OpenCascadeShape[ Ellipsoid[ center_, mat_]] /; 
+	VectorQ[center, NumericQ] && (Length[ center] == 3) && 
+	MatrixQ[mat, NumericQ] && (Dimensions[ mat] == {3, 3}) :=
+Module[
+	{temp, vals, vecs, composition, pts, pts1, pts2, pts3, pts4, bsss, 
+	bsurfs},
+
+	temp = Eigensystem[N[mat]];
+	If[ Length[ temp] =!= 2, Return[ $Failed, Module]];
+	{vals, vecs} = temp;
+
+	composition = Composition[TranslationTransform[center], 
+		AffineTransform[Transpose[vecs]], ScalingTransform[Sqrt[vals]]];
+
+	pts1 = {{{1, 0, 0}, {1, 1, 0}, {0, 1, 0}},
+		{{1, 0, 1}, {1, 1, 1}, {0, 1, 1}},
+			{{0, 0, 1}, {0, 0, 1}, {0, 0, 1}}};
+	pts2 = {{{0, 1, 0}, {-1, 1, 0}, {-1, 0, 0}},
+		{{0, 1, 1}, {-1, 1, 1}, {-1, 0, 1}},
+			{{0, 0, 1}, {0, 0, 1}, {0, 0, 1}}};
+	pts3 = {{{-1, 0, 0}, {-1, -1, 0}, {0, -1, 0}},
+		{{-1, 0, 1}, {-1, -1, 1}, {0, -1, 1}},
+			{{0, 0, 1}, {0, 0, 1}, {0, 0, 1}}};
+	pts4 = {{{0, -1, 0}, {1, -1, 0}, {1, 0, 0}},
+		{{0, -1, 1}, {1, -1, 1}, {1, 0, 1}},
+			{{0, 0, 1}, {0, 0, 1}, {0, 0, 1}}};
+	pts = {pts1, pts2, pts3, pts4, -pts1, -pts2, -pts3, -pts4};
+
+	bsss = Table[ BSplineSurface[composition /@ d,
+		SplineDegree -> 2,
+		SplineKnots -> {{0, 0, 0, 1, 1, 1}, {0, 0, 0, 1, 1, 1}},
+		SplineWeights -> {{1, 1/Sqrt[2], 1}, {1/Sqrt[2], 1/2, 1/Sqrt[2]},
+			{1, 1/Sqrt[2], 1}}
+		], {d, pts}];
+
+	bsurfs = OpenCascadeShape /@ bsss;
+
+	bsurfs = Select[bsurfs, OpenCascadeShapeExpressionQ];
+
+	If[ Length[ bsurfs] > 0,
+		OpenCascadeShapeSewing[bsurfs]
+	,
+		$Failed
+	]
+]
 
 
 OpenCascadeShape[ er:EmptyRegion[_]] := er
@@ -669,6 +726,25 @@ Module[
 	instance = OpenCascadeShapeCreate[];
 	id1 = instanceID[ shape1];
 	res = makeLinearSweepFun[ instanceID[ instance], id1, direction];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instance
+]
+
+OpenCascadeShapeGeometricTransformation[ shape1_,
+	a_TransformationFunction] /; OpenCascadeShapeExpressionQ[shape1] :=
+Module[
+	{tm, instance, id1, res},
+
+	tm = pack[ N[ TransformationMatrix[a]]];
+
+	(* OCCT can not deal with this at the moment *)
+	If[ tm[[-1]] =!= {0.,0.,0.,1.}, Return[ $Failed, Module]];
+	tm = tm[[1;;-2]];
+
+	instance = OpenCascadeShapeCreate[];
+	id1 = instanceID[ shape1];
+	res = makeGeometicTransformationFun[ instanceID[ instance], id1, tm];
 	If[ res =!= 0, Return[$Failed, Module]];
 
 	instance
