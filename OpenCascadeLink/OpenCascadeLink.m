@@ -787,6 +787,10 @@ Module[{mesh, c, cells, inci, poly, shapes},
 	]
 ]
 
+OpenCascadeShape[Triangle[coords_]] /;
+		MatrixQ[coords, NumericQ] && MatchQ[ Dimensions[coords], {_, 3}] :=
+OpenCascadeShape[Polygon[coords]]
+
 
 strictIncreaseQ := strictIncreaseQ = Compile[{{d, _Real, 1}},
 Module[{len = Length[d], i = 1},
