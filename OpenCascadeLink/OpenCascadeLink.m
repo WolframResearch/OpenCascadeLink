@@ -124,6 +124,7 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	makePolygonFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makePolygon", {Integer, {Real, 2, "Shared"}}, Integer];
 	makeBSplineSurfaceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeBSplineSurface", {Integer, {Real, 3, "Shared"}, {Real, 2, "Shared"},
 		{Real, 1, "Shared"}, {Real, 1, "Shared"}, {Integer, 1, "Shared"}, {Integer, 1, "Shared"}, Integer, Integer, Integer, Integer}, Integer];
+	makeLineFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeLine", {Integer, {Real, 2, "Shared"}}, Integer];
 
 	makeDifferenceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeDifference", {Integer, Integer, Integer}, Integer];
 	makeIntersectionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeIntersection", {Integer, Integer, Integer}, Integer];
@@ -944,6 +945,22 @@ Module[{coords, faces, polygons, faceCoords},
 	OpenCascadeShapeSewing[polygons]
 ]
 
+
+(* wires in 3D *)
+
+OpenCascadeShape[Line[coords_]] /;
+		MatrixQ[coords, NumericQ] && MatchQ[ Dimensions[coords], {_, 3}] :=
+Module[{p, instance, res},
+
+	p = pack[ N[ coords]];
+	p = DeleteDuplicates[p];
+
+	instance = OpenCascadeShapeCreate[];
+	res = makeLineFun[ instanceID[ instance], N[ p]];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instance
+]
 
 (*
 	open cascde boolean operation

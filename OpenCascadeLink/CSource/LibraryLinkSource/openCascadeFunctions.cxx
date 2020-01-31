@@ -70,6 +70,7 @@ extern "C" {
 
 	DLLEXPORT int makePolygon(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeBSplineSurface(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+	DLLEXPORT int makeLine(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int makeDifference(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeIntersection(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
@@ -613,6 +614,12 @@ DLLEXPORT int makePolygon(WolframLibraryData libData, mint Argc, MArgument *Args
 	polygon.Close();
 	libData->MTensor_disown(p1);
 
+	if (!polygon.IsDone()) {
+		/* this leaves *instance undefined */
+		MArgument_setInteger(res, 1);
+		return 0;
+	}
+
 	BRepBuilderAPI_MakeFace face;
 	face = polygon.Wire();
 	if (!face.IsDone()) {
@@ -622,6 +629,51 @@ DLLEXPORT int makePolygon(WolframLibraryData libData, mint Argc, MArgument *Args
 	}
 
 	TopoDS_Shape shape  = face.Shape();
+
+	*instance = shape;
+
+	MArgument_setInteger(res, 0);
+	return 0;
+}
+
+
+DLLEXPORT int makeLine(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	mint id = MArgument_getInteger(Args[0]);
+
+	MTensor p1 = MArgument_getMTensor(Args[1]);
+	int type1 = libData->MTensor_getType(p1);
+	int rank1 = libData->MTensor_getRank(p1);
+	const mint* dims1 = libData->MTensor_getDimensions(p1);
+
+	TopoDS_Shape *instance = get_ocShapeInstance( id);
+
+	if (instance == NULL || type1 != MType_Real ||
+		rank1 != 2 || dims1[0] < 3 || dims1[1] != 3) {
+		libData->MTensor_disown(p1);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	double* rawPts1 = libData->MTensor_getRealData(p1);
+	BRepBuilderAPI_MakePolygon polygon;
+
+	for (int i = 0; i < (dims1[0] * dims1[1]); i = i + 3) {
+ 	   polygon.Add( gp_Pnt(
+			(Standard_Real) rawPts1[i    ],
+			(Standard_Real) rawPts1[i + 1],
+			(Standard_Real) rawPts1[i + 2]
+		));
+	}
+	libData->MTensor_disown(p1);
+
+	if (!polygon.IsDone()) {
+		/* this leaves *instance undefined */
+		MArgument_setInteger(res, 1);
+		return 0;
+	}
+
+	TopoDS_Shape shape  = polygon.Shape();
 
 	*instance = shape;
 
