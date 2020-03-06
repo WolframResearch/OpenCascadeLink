@@ -101,7 +101,7 @@ Module[{libDir, oldpath, preLoadLibs, success},
 		SetEnvironment["PATH" -> oldpath <> ";" <> libDir]
 	];
 	preLoadLibs = FileNames["*.*", libDir];
-	success = Union[LibraryLoad /@ preLoadLibs] === {Null};
+	success = FreeQ[ Union[LibraryLoad /@ preLoadLibs], $Failed];
 	If[$OperatingSystem === "Windows",
 		SetEnvironment["PATH" -> oldpath]
 	];
