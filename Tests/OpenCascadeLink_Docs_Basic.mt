@@ -1,10 +1,16 @@
 (* Wolfram Language Test file *)
 
 
-TestExecute[
+Test[
 	Needs["OpenCascadeLink`"];
 	Needs["NDSolve`FEM`"];
-	
+	,
+	Null
+	,
+	TestID->"OpenCascadeLink_Docs_Basic-20200311-R2E2L2"
+]
+
+TestExecute[
 	Get[FileNameJoin[{DirectoryName[$CurrentFile], "checkGraphicsRendering.m"}]];
 ]
 
@@ -27,14 +33,14 @@ TestExecute[
              ,
              OpenCascadeShapeExpression
              ,
-             TestID -> "ShapeExpression-" <> testID
+             TestID -> "OpenCascadeLink_Docs_Basic-20200311-" <> "ShapeExpression-" <> testID
          ];
          TestMatch[
              OpenCascadeShapeType[shapeCascade]
              ,
              openCascadeShapeType
              ,
-             TestID -> "ShapeType-" <> testID
+             TestID -> "OpenCascadeLink_Docs_Basic-20200311-" <> "ShapeType-" <> testID
          ];
          If[testID === "polygonSelfIntersect", Return[]];
          ExactTest[
@@ -43,14 +49,14 @@ TestExecute[
              ,
              ElementMesh
              ,
-             TestID -> "BoundaryMesh-" <> testID
+             TestID -> "OpenCascadeLink_Docs_Basic-20200311-" <> "BoundaryMesh-" <> testID
          ];
          Test[
              checkGraphicsRendering[Head, bmesh["Wireframe"]]
              ,
              {Graphics3D, "Rendering Errors" -> {}}
              ,
-             TestID -> "WireframHead-" <> testID
+             TestID -> "OpenCascadeLink_Docs_Basic-20200311-" <> "WireframHead-" <> testID
          ];
      ]]
 
@@ -61,15 +67,16 @@ TestExecute[
 
 (* Solid 3D Primitives *)
 
-sanityCheck = Test[
- 		 		(* bug 389911 *)
-                  ball = OpenCascadeShape[Ball[{1, 0, 0}]];
-                  Head[ball]
-                  ,
-                  OpenCascadeShapeExpression
+sanityCheck = 
+Test[
+ 	(* bug 389911 *)
+	ball = OpenCascadeShape[Ball[{1, 0, 0}]];
+	Head[ball]
+	,
+	OpenCascadeShapeExpression
 	,
 	TestID->"OpenCascadeLink_Docs_Basic-20200310-J8W7M2-bug-389911"
-              ]
+]
 
 TestRequirement[
  	(* Requires the following tests to be run based on the status of the sanity test *)
@@ -84,15 +91,6 @@ TestExecute[
  		solids
  	]
 ]
-(*MapIndexed[TestMatch[
-               elementMesh = ToElementMesh[bmesh];
-               Length[elementMesh["Coordinates"]]
-               ,
-               x_Integer /; x > 1
-               ,
-               TestID -> "ElementMesh-" <> ToString[First[First[#2]]]
-           ] &, solids]
-*)
 
 (* Surfaces *)
 TestExecute[

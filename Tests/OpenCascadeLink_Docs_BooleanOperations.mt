@@ -1,10 +1,17 @@
 (* Wolfram Language Test file *)
 
-TestExecute[
+
+Test[
 	Needs["OpenCascadeLink`"];
- 	Needs["NDSolve`FEM`"];
- 	
- 	Get[FileNameJoin[{DirectoryName[$CurrentFile], "checkGraphicsRendering.m"}]];
+	Needs["NDSolve`FEM`"];
+	,
+	Null
+	,
+	TestID->"OpenCascadeLink_Docs_BooleanOperations-20200311-R2E2L2"
+]
+
+TestExecute[
+	Get[FileNameJoin[{DirectoryName[$CurrentFile], "checkGraphicsRendering.m"}]];
 ]
 
 TestExecute[
@@ -26,8 +33,8 @@ TestExecute[
  			,
           "Compound"
           ,
-          TestID -> 
-           operation <> "-ShapeType" <> 
+          TestID -> "OpenCascadeLink_Docs_BooleanOperations-20200311-"
+           <> operation <> "-ShapeType" <> 
             StringJoin["-" <> ToString[#] & /@ Keys[shapeList]]
           ];
          Test[
@@ -39,8 +46,8 @@ TestExecute[
              ,
              {Graphics3D, "Rendering Errors" -> {}}
              ,
-             TestID -> 
-              operation <> "-Rendering" <> 
+             TestID -> "OpenCascadeLink_Docs_BooleanOperations-20200311-"
+              <> operation <> "-Rendering" <> 
                StringJoin["-" <> ToString[#] & /@ Keys[shapeList]]
          ];
      ]]
@@ -50,15 +57,16 @@ TestExecute[
 
 ]
 
-sanityCheck = Test[
-  (* bug 389911 *)
-                  ball = OpenCascadeShape[Ball[{1, 0, 0}]];
-                  Head[ball]
-                  ,
-                  OpenCascadeShapeExpression
+sanityCheck = 
+Test[
+	(* bug 389911 *)
+	ball = OpenCascadeShape[Ball[{1, 0, 0}]];
+	Head[ball]
+	,
+	OpenCascadeShapeExpression
 	,
 	TestID->"OpenCascadeLink_Docs_BooleanOperations-20200310-J8W7M2-bug-389911"
-              ]
+]
 
 TestRequirement[
  	(* Requires the following tests to be run based on the status of the sanity test *)
