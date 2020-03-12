@@ -1183,6 +1183,16 @@ DLLEXPORT int makeSurfaceMesh(WolframLibraryData libData, mint Argc, MArgument *
 		return LIBRARY_FUNCTION_ERROR;
 	}
 
+	/* IncrementalMesh can only deal with shapes that have FACE or EDGE.
+	 * If a FACE is present then we also have an EDGE so testing for that
+	 * should be enough.*/
+	TopExp_Explorer ex(*instance, TopAbs_EDGE);
+	if (!ex.More()) {
+		libData->MTensor_disown(tenPts1);
+		libData->MTensor_disown(tenPts2);
+		MArgument_setInteger(res, -1);
+		return 0;
+	}
 
 	IMeshTools_Parameters meshParams;
 
