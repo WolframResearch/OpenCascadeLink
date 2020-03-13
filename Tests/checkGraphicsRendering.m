@@ -1,7 +1,5 @@
 (* Wolfram Language package *)
 
-(* Package stolen from https://stash.wolfram.com/users/robertc/repos/utilities/browse/checkGraphicsRendering/checkGraphicsRendering.m *)
-
 (* ::Package:: *)
 
 BeginPackage["checkGraphicsRendering`"];

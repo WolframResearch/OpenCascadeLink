@@ -1,5 +1,7 @@
 (* Wolfram Language Test file *)
 
+(* Tests on other operations on a single shape, requires MUnit *)
+
 TestExecute[
 	Needs["OpenCascadeLink`"];
 	Needs["NDSolve`FEM`"];

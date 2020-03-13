@@ -1,5 +1,6 @@
 (* Wolfram Language Test file *)
 
+(* Tests on boolean operations (difference, union and intersection), requires MUnit *)
 
 Test[
 	Needs["OpenCascadeLink`"];

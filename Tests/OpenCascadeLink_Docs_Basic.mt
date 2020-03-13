@@ -1,5 +1,6 @@
 (* Wolfram Language Test file *)
 
+(* Basic OpenCascadeShape tests, requires MUnit *)
 
 Test[
 	Needs["OpenCascadeLink`"];
