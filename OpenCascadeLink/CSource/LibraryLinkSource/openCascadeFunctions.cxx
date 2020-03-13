@@ -94,6 +94,7 @@ extern "C" {
 
 }
 
+#define ERROR 1
 
 static int returnZeroLengthArray( WolframLibraryData libData, mint type, mint rank, MArgument res)
 {
@@ -616,7 +617,7 @@ DLLEXPORT int makePolygon(WolframLibraryData libData, mint Argc, MArgument *Args
 
 	if (!polygon.IsDone()) {
 		/* this leaves *instance undefined */
-		MArgument_setInteger(res, 1);
+		MArgument_setInteger(res, ERROR);
 		return 0;
 	}
 
@@ -624,7 +625,7 @@ DLLEXPORT int makePolygon(WolframLibraryData libData, mint Argc, MArgument *Args
 	face = polygon.Wire();
 	if (!face.IsDone()) {
 		/* this leaves *instance undefined */
-		MArgument_setInteger(res, 1);
+		MArgument_setInteger(res, ERROR);
 		return 0;
 	}
 
@@ -669,7 +670,7 @@ DLLEXPORT int makeLine(WolframLibraryData libData, mint Argc, MArgument *Args, M
 
 	if (!polygon.IsDone()) {
 		/* this leaves *instance undefined */
-		MArgument_setInteger(res, 1);
+		MArgument_setInteger(res, ERROR);
 		return 0;
 	}
 
@@ -852,7 +853,7 @@ DLLEXPORT int makeBSplineSurface(WolframLibraryData libData, mint Argc, MArgumen
 	BRepBuilderAPI_MakeFace face(surface, tol);
 	if (!face.IsDone()) {
 		/* this leaves *instance undefined */
-		MArgument_setInteger(res, 1);
+		MArgument_setInteger(res, ERROR);
 		return 0;
 	}
 
@@ -889,9 +890,20 @@ DLLEXPORT int makeDifference(WolframLibraryData libData, mint Argc, MArgument *A
 		return LIBRARY_FUNCTION_ERROR;
 	}
 
-    TopoDS_Shape shape = BRepAlgoAPI_Cut(*instance1, *instance2).Shape();
+    BRepAlgoAPI_Cut booleanOP(*instance1, *instance2);
 
+	if (!booleanOP.IsDone() || booleanOP.HasErrors()) {
+		MArgument_setInteger(res, ERROR);
+		instance = NULL;
+	}
+
+	TopoDS_Shape shape = booleanOP.Shape();
 	*instance = shape;
+
+	if (shape.IsNull()) {
+		MArgument_setInteger(res, ERROR);
+		return 0;
+	}
 
 	MArgument_setInteger(res, 0);
 	return 0;
@@ -912,9 +924,20 @@ DLLEXPORT int makeIntersection(WolframLibraryData libData, mint Argc, MArgument 
 		return LIBRARY_FUNCTION_ERROR;
 	}
 
-    TopoDS_Shape shape = BRepAlgoAPI_Common(*instance1, *instance2).Shape();
+    BRepAlgoAPI_Common booleanOP(*instance1, *instance2);
 
+	if (!booleanOP.IsDone() || booleanOP.HasErrors()) {
+		MArgument_setInteger(res, ERROR);
+		instance = NULL;
+	}
+
+	TopoDS_Shape shape = booleanOP.Shape();
 	*instance = shape;
+
+	if (shape.IsNull()) {
+		MArgument_setInteger(res, ERROR);
+		return 0;
+	}
 
 	MArgument_setInteger(res, 0);
 	return 0;
@@ -935,9 +958,20 @@ DLLEXPORT int makeUnion(WolframLibraryData libData, mint Argc, MArgument *Args, 
 		return LIBRARY_FUNCTION_ERROR;
 	}
 
-    TopoDS_Shape shape = BRepAlgoAPI_Fuse(*instance1, *instance2).Shape();
+    BRepAlgoAPI_Fuse booleanOP(*instance1, *instance2);
 
+	if (!booleanOP.IsDone() || booleanOP.HasErrors()) {
+		MArgument_setInteger(res, ERROR);
+		instance = NULL;
+	}
+
+	TopoDS_Shape shape = booleanOP.Shape();
 	*instance = shape;
+
+	if (shape.IsNull()) {
+		MArgument_setInteger(res, ERROR);
+		return 0;
+	}
 
 	MArgument_setInteger(res, 0);
 	return 0;
@@ -991,7 +1025,7 @@ DLLEXPORT int makeDefeaturing(WolframLibraryData libData, mint Argc, MArgument *
 	defeaturing.Build();
 	if (!defeaturing.IsDone()) {
 		*instance = *instance1;
-		MArgument_setInteger(res, 1);
+		MArgument_setInteger(res, ERROR);
 		return 0;
 	}
 
@@ -1041,7 +1075,7 @@ DLLEXPORT int makeFillet(WolframLibraryData libData, mint Argc, MArgument *Args,
 	filleted.Build();
 	if (!filleted.IsDone()) {
 		*instance = *instance1;
-		MArgument_setInteger(res, 1);
+		MArgument_setInteger(res, ERROR);
 		return 0;
 	}
 
@@ -1092,7 +1126,7 @@ DLLEXPORT int makeChamfer(WolframLibraryData libData, mint Argc, MArgument *Args
 	chamfered.Build();
 	if (!chamfered.IsDone()) {
 		*instance = *instance1;
-		MArgument_setInteger(res, 1);
+		MArgument_setInteger(res, ERROR);
 		return 0;
 	}
 
@@ -1146,7 +1180,7 @@ DLLEXPORT int makeShelling(WolframLibraryData libData, mint Argc, MArgument *Arg
 	shell.MakeThickSolidByJoin(*instance1, lof, thickness, tol);
 	if (!shell.IsDone()) {
 		*instance = *instance1;
-		MArgument_setInteger(res, 1);
+		MArgument_setInteger(res, ERROR);
 		return 0;
 	}
 
