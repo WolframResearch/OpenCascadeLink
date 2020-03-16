@@ -2,17 +2,21 @@
 
 (* Tests on other operations on a single shape, requires MUnit *)
 
-TestExecute[
+(* Loading relevant package *)
+Get[FileNameJoin[{DirectoryName[$CurrentFile], "checkGraphicsRendering.m"}]];
+
+Test[
 	Needs["OpenCascadeLink`"];
 	Needs["NDSolve`FEM`"];
-	
-	Get[FileNameJoin[{DirectoryName[$CurrentFile], "checkGraphicsRendering.m"}]];
+	,
+	Null
+	,
+	TestID->"OpenCascadeLink_Docs_ShapeProcessing-20200311-R2E2L2"
 ]
 
 (* Internal boundaries *)
 
 Test[
-	(* Internal boundaries *)
 	shape1 = OpenCascadeShape[Cuboid[{-2, -2, -2}, {2, 2, 1/2}]];
 	shape2 = OpenCascadeShape[Cylinder[]];
 	union = OpenCascadeShapeUnion [shape1, shape2];

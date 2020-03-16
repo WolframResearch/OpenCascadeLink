@@ -2,24 +2,26 @@
 
 (* Basic OpenCascadeShape tests, requires MUnit *)
 
+
 Test[
-	Needs["OpenCascadeLink`"];
-	Needs["NDSolve`FEM`"];
-	,
-	Null
-	,
-	TestID->"OpenCascadeLink_Docs_Basic-20200311-R2E2L2"
+    Needs["OpenCascadeLink`"];
+    Needs["NDSolve`FEM`"];
+    ,
+    Null
+    ,
+    TestID->"OpenCascadeLink_Docs_Basic-20200311-R2E2L2"
 ]
 
-TestExecute[
-	Get[FileNameJoin[{DirectoryName[$CurrentFile], "checkGraphicsRendering.m"}]];
-]
 
-TestExecute[
- Options[basicShapeTests] = {TestIDSuffix -> "", 
-   OCShapeType -> ("Solid" | "Compound")};
- basicShapeTests[shape_, options : OptionsPattern[]] :=
-     Module[ {shapeCascade, bmesh, testID, 
+(* Loading relevant packages *)
+Get[FileNameJoin[{DirectoryName[$CurrentFile], "checkGraphicsRendering.m"}]];
+
+(* Utiltiy functions *)
+
+Options[basicShapeTests] = {TestIDSuffix -> "", OCShapeType -> ("Solid" | "Compound")};
+
+basicShapeTests[shape_, options : OptionsPattern[]] :=
+	Module[ {shapeCascade, bmesh, testID, 
        openCascadeShapeType},
          iPrint[OptionValue[TestIDSuffix], OptionValue[OCShapeType]];
          testID = If[ OptionValue[TestIDSuffix] === "",
@@ -43,7 +45,9 @@ TestExecute[
              ,
              TestID -> "OpenCascadeLink_Docs_Basic-20200311-" <> "ShapeType-" <> testID
          ];
-         If[testID === "polygonSelfIntersect", Return[]];
+         If[ testID === "polygonSelfIntersect",
+             Return[]
+         ];
          ExactTest[
              bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shapeCascade];
              Head[bmesh]
@@ -59,50 +63,51 @@ TestExecute[
              ,
              TestID -> "OpenCascadeLink_Docs_Basic-20200311-" <> "WireframHead-" <> testID
          ];
-     ]]
+     ]
+
+(* Loading relevant data *)
+Get[FileNameJoin[{DirectoryName[$CurrentFile], "Data/OpenCascadeLink_Docs_Shapes.m"}]];
 
 
-TestExecute[
-	Get[FileNameJoin[{DirectoryName[$CurrentFile], "Data/OpenCascadeLink_Docs_Shapes.m"}]];
-]
+(* Tests *)
+
 
 (* Solid 3D Primitives *)
 
 sanityCheck = 
 Test[
- 	(* bug 389911 *)
-	ball = OpenCascadeShape[Ball[{1, 0, 0}]];
-	Head[ball]
-	,
-	OpenCascadeShapeExpression
-	,
-	TestID->"OpenCascadeLink_Docs_Basic-20200310-J8W7M2-bug-389911"
+     (* bug 389911 *)
+    ball = OpenCascadeShape[Ball[{1, 0, 0}]];
+    Head[ball]
+    ,
+    OpenCascadeShapeExpression
+    ,
+    TestID->"OpenCascadeLink_Docs_Basic-20200310-J8W7M2-bug-389911"
 ]
 
 TestRequirement[
- 	(* Requires the following tests to be run based on the status of the sanity test *)
- 	FailureMode[sanityCheck] === "Success"
+     (* Requires the following tests to be run based on the status of the sanity test *)
+     FailureMode[sanityCheck] === "Success"
 ]
 
 (* Solids *)
 
-TestExecute[
- 	MapIndexed[
- 		basicShapeTests[#, TestIDSuffix -> ToString[First[First[#2]]]] &,
- 		solids
- 	]
+MapIndexed[
+     basicShapeTests[#, TestIDSuffix -> ToString[First[First[#2]]]] &,
+     solids
 ]
 
 (* Surfaces *)
-TestExecute[
-	MapIndexed[
-		basicShapeTests[#, OCShapeType -> 
-			If[MemberQ[{polygonWithHole, openMesh, closedMesh}, First[First[#2]]],
-			 	"Solid",
-			 	"Face"], TestIDSuffix -> ToString[First[First[#2]]]] &,
-		surfaces
-	]
+
+MapIndexed[
+    basicShapeTests[#, OCShapeType -> 
+        If[ MemberQ[{polygonWithHole, openMesh, closedMesh}, First[First[#2]]],
+            "Solid",
+            "Face"
+        ], TestIDSuffix -> ToString[First[First[#2]]]] &,
+    surfaces
 ]
+
 
 (* Edges *)
 
@@ -127,8 +132,8 @@ Test[
     Length[ele = OpenCascadeShapeSurfaceMeshElements[cone]]
     ,
     247
-	,
-	TestID->"OpenCascadeLink_Docs_Basic-20200310-C0T2W0"
+    ,
+    TestID->"OpenCascadeLink_Docs_Basic-20200310-C0T2W0"
 ]
 
 (* Sewing *)
@@ -145,40 +150,36 @@ Test[
     OpenCascadeShapeType[sewenFaces]
     ,
     "Solid"
-	,
-	TestID->"OpenCascadeLink_Docs_Basic-20200310-B3T8H7"
+    ,
+    TestID->"OpenCascadeLink_Docs_Basic-20200310-B3T8H7"
 ]
 
 Test[
     bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[sewenFaces];
     checkGraphicsRendering[Head, ToElementMesh[bmesh]["Wireframe"]]
-	,
-	{Graphics3D, "Rendering Errors" -> {}}
-	,
-	TestID->"OpenCascadeLink_Docs_Basic-20200310-Y0F9U2"
+    ,
+    {Graphics3D, "Rendering Errors" -> {}}
+    ,
+    TestID->"OpenCascadeLink_Docs_Basic-20200310-Y0F9U2"
 ]
 
-TestExecute[
- parametrizeCurve[pts_List, a : (_?NumericQ) : 1/2] :=
-     FoldList[Plus, 0, Normalize[(Norm /@ Differences[pts])^a, Total]] /;
+parametrizeCurve[pts_List, a : (_?NumericQ) : 1/2] :=
+	FoldList[Plus, 0, Normalize[(Norm /@ Differences[pts])^a, Total]] /;
        MatrixQ[pts, NumericQ];
- ]
+
 
 (* BSplineSurface *)
 
-TestExecute[
-	 pp = PolarPlot[1 + 0.5 Sin[2 \[Theta]], {\[Theta], 0, 2 \[Pi]}, 
-	   MaxRecursion -> 1, PlotPoints -> 45];
-	 coordinates = First[Cases[Normal[pp], Line[l_] :> l, \[Infinity]]];
-	 tvals = parametrizeCurve[coordinates, 1];
-	 bottom = ArrayPad[coordinates, {{0, 0}, {0, 1}}, -1.];
-	 top = ArrayPad[coordinates, {{0, 0}, {0, 1}}, 2.];
-	 knots = Join[{0., 0.}, tvals[[2 ;; -2]], {1., 1.}];
-	 bss = BSplineSurface[Transpose[{bottom, top}], SplineDegree -> 1, 
-	   SplineKnots -> {knots, {0, 0, 1, 1}}];
- ]
-
 Test[
+	pp = PolarPlot[1 + 0.5 Sin[2 \[Theta]], {\[Theta], 0, 2 \[Pi]}, 
+   		MaxRecursion -> 1, PlotPoints -> 45];
+	coordinates = First[Cases[Normal[pp], Line[l_] :> l, \[Infinity]]];
+	tvals = parametrizeCurve[coordinates, 1];
+	bottom = ArrayPad[coordinates, {{0, 0}, {0, 1}}, -1.];
+	top = ArrayPad[coordinates, {{0, 0}, {0, 1}}, 2.];
+	knots = Join[{0., 0.}, tvals[[2 ;; -2]], {1., 1.}];
+	bss = BSplineSurface[Transpose[{bottom, top}], SplineDegree -> 1, 
+	   SplineKnots -> {knots, {0, 0, 1, 1}}];
     surface = OpenCascadeShape[bss];
     p1 = OpenCascadeShape[Polygon[top]];
     p2 = OpenCascadeShape[Polygon[bottom]];
@@ -186,8 +187,8 @@ Test[
     OpenCascadeShapeType[bSplineSurface]
     ,
     "Solid"
-	,
-	TestID->"OpenCascadeLink_Docs_Basic-20200310-Q8B0K9"
+    ,
+    TestID->"OpenCascadeLink_Docs_Basic-20200310-Q8B0K9"
 ]
 
 Test[
@@ -195,52 +196,50 @@ Test[
     checkGraphicsRendering[Head, bmesh["Wireframe"]]
     ,
     {Graphics3D, "Rendering Errors" -> {}}
-	,
-	TestID->"OpenCascadeLink_Docs_Basic-20200310-J6O9F2"
+    ,
+    TestID->"OpenCascadeLink_Docs_Basic-20200310-J6O9F2"
 ]
 
 (* Sewing Ellipsoid from BSplineSurface *)
 
-TestExecute[
-	center = {0, 1, -1/2};
-	sigma = {{5, 2, 3}, {2, 3, 2}, {3, 2, 5}};
-	el = Ellipsoid[center, sigma];
-	matrix = If[ VectorQ[sigma],
-             DiagonalMatrix[sigma^2],
-             sigma
-         ];
-	{vals, vecs} = Eigensystem[N[matrix]];
-	composition = 
-		Composition[TranslationTransform[center], 
-		AffineTransform[Transpose[vecs]], ScalingTransform[Sqrt[vals]]];
-	pts1 = {{{1, 0, 0}, {1, 1, 0}, {0, 1, 0}},
-  		{{1, 0, 1}, {1, 1, 1}, {0, 1, 1}},
-  		{{0, 0, 1}, {0, 0, 1}, {0, 0, 1}}};
-	pts2 = {{{0, 1, 0}, {-1, 1, 0}, {-1, 0, 0}},
-  		{{0, 1, 1}, {-1, 1, 1}, {-1, 0, 1}},
-  		{{0, 0, 1}, {0, 0, 1}, {0, 0, 1}}};
-	pts3 = {{{-1, 0, 0}, {-1, -1, 0}, {0, -1, 0}},
-  		{{-1, 0, 1}, {-1, -1, 1}, {0, -1, 1}},
-  		{{0, 0, 1}, {0, 0, 1}, {0, 0, 1}}};
-	pts4 = {{{0, -1, 0}, {1, -1, 0}, {1, 0, 0}},
-  		{{0, -1, 1}, {1, -1, 1}, {1, 0, 1}},
-  		{{0, 0, 1}, {0, 0, 1}, {0, 0, 1}}};
-	pts = {pts1, -pts1, pts2, -pts2, pts3, -pts3, pts4, -pts4};
-	bsss = Table[
-  		BSplineSurface[composition /@ d, SplineDegree -> 2, 
-  		SplineKnots -> {{0, 0, 0, 1, 1, 1}, {0, 0, 0, 1, 1, 1}}, 
-  		SplineWeights -> {{1, 1/Sqrt[2], 1}, {1/Sqrt[2], 1/2, 
-  		1/Sqrt[2]}, {1, 1/Sqrt[2], 1}}], {d, pts}];
-]
-
 Test[
+    center = {0, 1, -1/2};
+    sigma = {{5, 2, 3}, {2, 3, 2}, {3, 2, 5}};
+    el = Ellipsoid[center, sigma];
+    matrix = If[ VectorQ[sigma],
+                 DiagonalMatrix[sigma^2],
+                 sigma
+             ];
+    {vals, vecs} = Eigensystem[N[matrix]];
+    composition = 
+        Composition[TranslationTransform[center], 
+        AffineTransform[Transpose[vecs]], ScalingTransform[Sqrt[vals]]];
+    pts1 = {{{1, 0, 0}, {1, 1, 0}, {0, 1, 0}},
+          {{1, 0, 1}, {1, 1, 1}, {0, 1, 1}},
+          {{0, 0, 1}, {0, 0, 1}, {0, 0, 1}}};
+    pts2 = {{{0, 1, 0}, {-1, 1, 0}, {-1, 0, 0}},
+          {{0, 1, 1}, {-1, 1, 1}, {-1, 0, 1}},
+          {{0, 0, 1}, {0, 0, 1}, {0, 0, 1}}};
+    pts3 = {{{-1, 0, 0}, {-1, -1, 0}, {0, -1, 0}},
+          {{-1, 0, 1}, {-1, -1, 1}, {0, -1, 1}},
+          {{0, 0, 1}, {0, 0, 1}, {0, 0, 1}}};
+    pts4 = {{{0, -1, 0}, {1, -1, 0}, {1, 0, 0}},
+          {{0, -1, 1}, {1, -1, 1}, {1, 0, 1}},
+          {{0, 0, 1}, {0, 0, 1}, {0, 0, 1}}};
+    pts = {pts1, -pts1, pts2, -pts2, pts3, -pts3, pts4, -pts4};
+    bsss = Table[
+          BSplineSurface[composition /@ d, SplineDegree -> 2, 
+          SplineKnots -> {{0, 0, 0, 1, 1, 1}, {0, 0, 0, 1, 1, 1}}, 
+          SplineWeights -> {{1, 1/Sqrt[2], 1}, {1/Sqrt[2], 1/2, 
+          1/Sqrt[2]}, {1, 1/Sqrt[2], 1}}], {d, pts}];
+
     bsurfs = OpenCascadeShape /@ bsss;
     ellipsoidalBSpline = OpenCascadeShapeSewing[bsurfs];
     OpenCascadeShapeType[ellipsoidalBSpline]
     ,
     "Solid"
-	,
-	TestID->"OpenCascadeLink_Docs_Basic-20200310-G6M7P1"
+    ,
+    TestID->"OpenCascadeLink_Docs_Basic-20200310-G6M7P1"
 ]
 
 Test[
@@ -248,8 +247,8 @@ Test[
     checkGraphicsRendering[Head, bmesh["Wireframe"]]
     ,
     {Graphics3D, "Rendering Errors" -> {}}
-	,
-	TestID->"OpenCascadeLink_Docs_Basic-20200310-W4P5E9"
+    ,
+    TestID->"OpenCascadeLink_Docs_Basic-20200310-W4P5E9"
 ]
 
 Test[
@@ -259,8 +258,8 @@ Test[
     checkGraphicsRendering[Head, OpenCascadeShapeSurfaceMeshToBoundaryMesh[union]["Wireframe"]]
     ,
     {Graphics3D, "Rendering Errors" -> {}}
-	,
-	TestID->"OpenCascadeLink_Docs_Basic-20200310-U4F2O4"
+    ,
+    TestID->"OpenCascadeLink_Docs_Basic-20200310-U4F2O4"
 ]
 
 (* RotationalSweep *)
@@ -273,8 +272,8 @@ Test[
     OpenCascadeShapeType[sweep]
     ,
     "Solid"
-	,
-	TestID->"OpenCascadeLink_Docs_Basic-20200310-O7Y3K3"
+    ,
+    TestID->"OpenCascadeLink_Docs_Basic-20200310-O7Y3K3"
 ]
 
 Test[
@@ -282,8 +281,8 @@ Test[
     checkGraphicsRendering[Head, bmesh["Wireframe"]]
     ,
     {Graphics3D, "Rendering Errors" -> {}}
-	,
-	TestID->"OpenCascadeLink_Docs_Basic-20200310-M5J9A5"
+    ,
+    TestID->"OpenCascadeLink_Docs_Basic-20200310-M5J9A5"
 ]
 
 Test[
@@ -294,8 +293,8 @@ Test[
     OpenCascadeShapeType[sweep]
     ,
     "Shell"
-	,
-	TestID->"OpenCascadeLink_Docs_Basic-20200310-P9L6B1"
+    ,
+    TestID->"OpenCascadeLink_Docs_Basic-20200310-P9L6B1"
 ]
 
 (* LinearSweep *)
@@ -307,8 +306,8 @@ Test[
     OpenCascadeShapeType[sweep]
     ,
     "Solid"
-	,
-	TestID->"OpenCascadeLink_Docs_Basic-20200310-A6Z4U7"
+    ,
+    TestID->"OpenCascadeLink_Docs_Basic-20200310-A6Z4U7"
 ]
 
 Test[
@@ -319,23 +318,23 @@ Test[
     OpenCascadeShapeType[sweep]
     ,
     "Shell"
-	,
-	TestID->"OpenCascadeLink_Docs_Basic-20200310-F4L5O0"
+    ,
+    TestID->"OpenCascadeLink_Docs_Basic-20200310-F4L5O0"
 ]
 
 (* Boolean Region *)
 Test[
-	booleanShape = OpenCascadeShapeBooleanRegion[
- 		 BooleanRegion[Or, {Cuboid[], Ball[{1, 1, 1}]}]];
- 	bmeshBooleanShape = OpenCascadeShapeSurfaceMeshToBoundaryMesh[booleanShape];
- 	groups = bmeshBooleanShape["BoundaryElementMarkerUnion"];
-	temp = Most[Range[0, 1, 1/(Length[groups])]];
-	colors = ColorData["BrightBands"][#] & /@ temp;
-	checkGraphicsRendering[Head, bmeshBooleanShape["Wireframe"["MeshElementStyle" -> FaceForm /@ colors]]]
+    booleanShape = OpenCascadeShapeBooleanRegion[
+          BooleanRegion[Or, {Cuboid[], Ball[{1, 1, 1}]}]];
+    bmeshBooleanShape = OpenCascadeShapeSurfaceMeshToBoundaryMesh[booleanShape];
+    groups = bmeshBooleanShape["BoundaryElementMarkerUnion"];
+    temp = Most[Range[0, 1, 1/(Length[groups])]];
+    colors = ColorData["BrightBands"][#] & /@ temp;
+    checkGraphicsRendering[Head, bmeshBooleanShape["Wireframe"["MeshElementStyle" -> FaceForm /@ colors]]]
     ,
     {Graphics3D, "Rendering Errors" -> {}}
-	,
-	TestID->"OpenCascadeLink_Docs_Basic-20200310-A5N0X5"
+    ,
+    TestID->"OpenCascadeLink_Docs_Basic-20200310-A5N0X5"
 ]
 
 EndRequirement[]

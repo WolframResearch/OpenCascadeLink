@@ -2,6 +2,7 @@
 
 (* Tests on boolean operations (difference, union and intersection), requires MUnit *)
 
+
 Test[
 	Needs["OpenCascadeLink`"];
 	Needs["NDSolve`FEM`"];
@@ -11,11 +12,12 @@ Test[
 	TestID->"OpenCascadeLink_Docs_BooleanOperations-20200311-R2E2L2"
 ]
 
-TestExecute[
-	Get[FileNameJoin[{DirectoryName[$CurrentFile], "checkGraphicsRendering.m"}]];
-]
 
-TestExecute[
+(* Loading relevant packages *)
+Get[FileNameJoin[{DirectoryName[$CurrentFile], "checkGraphicsRendering.m"}]];
+
+(* Utility functions *)
+
  boolOperationTest[shapeAssoc_Association, operation_, testID_ : ""] :=
      Block[ {shapeList, shape, bmesh, groups, temp, colors},
          shapeList = Sort[shapeAssoc, RegionMeasure[#1] > RegionMeasure[#2] &];
@@ -51,12 +53,14 @@ TestExecute[
               <> operation <> "-Rendering" <> 
                StringJoin["-" <> ToString[#] & /@ Keys[shapeList]]
          ];
-     ]]
+     ]
      
-TestExecute[
-	Get[FileNameJoin[{DirectoryName[$CurrentFile], "Data/OpenCascadeLink_Docs_Shapes.m"}]];
+(* Loading relevant data *)
+Get[FileNameJoin[{DirectoryName[$CurrentFile], "Data/OpenCascadeLink_Docs_Shapes.m"}]];
 
-]
+
+(* Tests *)
+
 
 sanityCheck = 
 Test[
@@ -77,28 +81,26 @@ TestRequirement[
 
 (* Boolean operations *)
 
-TestExecute[
 (* excludes SphercialShell since the resulting region may be too complicated *)
- combinationsIndices = Subsets[Drop[Range[Length[solids]], 
+combinationsIndices = Subsets[Drop[Range[Length[solids]], 
     Flatten[Position[Keys[solids], SphericalShell]]], {2}];
- combinations = solids[[#]] & /@ combinationsIndices;
+combinations = solids[[#]] & /@ combinationsIndices;
  
- MapIndexed[
+(* Difference *)
+MapIndexed[
   boolOperationTest[#, "Difference"] &,
   combinations]
- ]
 
-TestExecute[
+
+(* Union *)
  MapIndexed[
   boolOperationTest[#, "Union"] &,
   combinations]
- ]
 
-TestExecute[
+(* Intersection *)
  MapIndexed[
   boolOperationTest[#, "Intersection"] &,
   combinations]
- ]
 
 EndRequirement[]
 
