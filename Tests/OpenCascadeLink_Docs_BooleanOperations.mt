@@ -18,7 +18,7 @@ Get[FileNameJoin[{DirectoryName[$CurrentFile], "checkGraphicsRendering.m"}]];
 
 (* Utility functions *)
 
- boolOperationTest[shapeAssoc_Association, operation_, testID_ : ""] :=
+ boolOperationTest[shapeAssoc_Association, operation_, bugID_ : ""] :=
      Block[ {shapeList, shape, bmesh, groups, temp, colors},
          shapeList = Sort[shapeAssoc, RegionMeasure[#1] > RegionMeasure[#2] &];
           Test[
@@ -38,7 +38,7 @@ Get[FileNameJoin[{DirectoryName[$CurrentFile], "checkGraphicsRendering.m"}]];
           ,
           TestID -> "OpenCascadeLink_Docs_BooleanOperations-20200311-"
            <> operation <> "-ShapeType" <> 
-            StringJoin["-" <> ToString[#] & /@ Keys[shapeList]]
+            StringJoin["-" <> ToString[#] & /@ Keys[shapeList]] <> bugID
           ];
          Test[
              bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shape];
@@ -51,7 +51,7 @@ Get[FileNameJoin[{DirectoryName[$CurrentFile], "checkGraphicsRendering.m"}]];
              ,
              TestID -> "OpenCascadeLink_Docs_BooleanOperations-20200311-"
               <> operation <> "-Rendering" <> 
-               StringJoin["-" <> ToString[#] & /@ Keys[shapeList]]
+               StringJoin["-" <> ToString[#] & /@ Keys[shapeList]] <> bugID
          ];
      ]
      
@@ -98,8 +98,11 @@ MapIndexed[
   combinations]
 
 (* Intersection *)
+bugIDIntersection = <|{Ellipsoid, Ball} -> "-bug-390059"|>;
+
  MapIndexed[
-  boolOperationTest[#, "Intersection"] &,
+  boolOperationTest[#, "Intersection", 
+  	If[KeyExistsQ[bugIDIntersection, Keys[#]], Lookup[bugIDIntersection,Key[Keys[#]]], ""]] &,
   combinations]
 
 EndRequirement[]
