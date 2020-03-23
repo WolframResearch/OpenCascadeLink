@@ -98,7 +98,7 @@ MapIndexed[
   combinations]
 
 (* Intersection *)
-bugIDIntersection = <|{Ellipsoid, Ball} -> "-bug-390059"|>;
+bugIDIntersection = <|{Ball, Ellipsoid} -> "-bug-390059"|>;
 
  MapIndexed[
   boolOperationTest[#, "Intersection", 
