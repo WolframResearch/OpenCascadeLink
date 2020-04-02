@@ -42,9 +42,11 @@ TestRequirement[
 (* Boolean operations *)
 
 (* excludes SphercialShell since the resulting region may be too complicated *)
-combinationsIndices = Subsets[Drop[Range[Length[solids]], 
-    Flatten[Position[Keys[solids], SphericalShell]]], {2}];
+combinationsIndices = Subsets[Range[Length[solids]], {2}];
 combinations = solids[[#]] & /@ combinationsIndices;
+
+(* Union of SphericalShell and Tetrahedron hangs, see 391160 *)
+combinations = DeleteCases[combinations, <|SphericalShell -> _, Tetrahedron -> _|>];
 
 
 (* Union *)

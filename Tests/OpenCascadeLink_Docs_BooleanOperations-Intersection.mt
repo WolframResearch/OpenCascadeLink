@@ -42,10 +42,13 @@ TestRequirement[
 
 (* Boolean operations *)
 
-(* excludes SphercialShell since the resulting region may be too complicated *)
-combinationsIndices = Subsets[Drop[Range[Length[solids]], 
-    Flatten[Position[Keys[solids], SphericalShell]]], {2}];
+(* excludes regionUnionPolyhedron since it hangs. *)
+combinationsIndices = Subsets[Range[Length[solids]], {2}];
 combinations = solids[[#]] & /@ combinationsIndices;
+
+(* Union of Ball and regionUnionPolyhedron hangs, see 391160 *)
+combinations = DeleteCases[combinations, <|Ball -> _, regionUnionPolyhedron -> _|>];
+
 (* Intersection *)
 bugIDIntersection = <|{Ball, Ellipsoid} -> "-bug-390059"|>;
 
