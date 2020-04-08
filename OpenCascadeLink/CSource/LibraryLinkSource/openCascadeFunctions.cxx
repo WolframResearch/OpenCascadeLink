@@ -1628,6 +1628,8 @@ DLLEXPORT int fileOperation(WolframLibraryData libData, MLINK mlp)
 		}
 	}
 	else if ( strcmp( opType, "load_stl") == 0) {
+		/* TODO: replace with RWStl::ReadFile() */
+		/* https://www.opencascade.com/comment/21450#comment-21450 */
 		StlAPI_Reader stl_reader;
 		if ( !stl_reader.Read(*instance, (char*)fName)) {
 			resStr = "False";
