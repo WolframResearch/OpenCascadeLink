@@ -396,7 +396,8 @@ OpenCascadeShape[Ball[#, r]]& /@ p
 
 OpenCascadeShape[Cone[{pMin_, pMax_}, r_]] /;
 		VectorQ[pMin, NumericQ] && (Length[ pMin] == 3) && 
-		VectorQ[pMax, NumericQ] && (Length[ pMax] == 3) :=
+		VectorQ[pMax, NumericQ] && (Length[ pMax] == 3) &&
+		NumericQ[r] :=
 Module[{instance, res, origin, h},
 
 	p1 = pack[ N[ pMin]];
@@ -405,7 +406,7 @@ Module[{instance, res, origin, h},
 	h = Norm[p1 - p2];
 
 	instance = OpenCascadeShapeCreate[];
-	res = makeConeFun[ instanceID[ instance], p1, p2, r, h];
+	res = makeConeFun[ instanceID[ instance], p1, p2 - p1, N[ r], h];
 	If[ res =!= 0, Return[$Failed, Module]];
 
 	instance
@@ -416,9 +417,22 @@ OpenCascadeShape[Cone[{pMin_, pMax_}]] /;
 		VectorQ[pMax, NumericQ] && (Length[ pMax] == 3) :=
 OpenCascadeShape[Cone[{pMin, pMax}, 1.]]
 
+OpenCascadeShape[Cone[{pMin_, pMax_}]] /;
+		MatrixQ[pMin, NumericQ] && (Last[ Dimensions[ pMin]] == 3) &&
+		MatrixQ[pMax, NumericQ] && (Last[ Dimensions[ pMax]] == 3) &&
+		Dimensions[ pMin] === Dimensions[ pMax] :=
+OpenCascadeShape /@ Thread[ Cone[{pMin, pMax}]]
+
+OpenCascadeShape[Cone[{pMin_, pMax_}, r_]] /;
+		MatrixQ[pMin, NumericQ] && (Last[ Dimensions[ pMin]] == 3) &&
+		MatrixQ[pMax, NumericQ] && (Last[ Dimensions[ pMax]] == 3) &&
+		Dimensions[ pMin] === Dimensions[ pMax] &&
+		VectorQ[ r, NumericQ] && Length[ r] === Length[ pMin]:=
+OpenCascadeShape /@ Thread[ Cone[{pMin, pMax}, r]]
+
 
 OpenCascadeShape[Cuboid[pMin_, pMax_]] /;
-		VectorQ[pMin, NumericQ] && (Length[ pMin] == 3) && 
+		VectorQ[pMin, NumericQ] && (Length[ pMin] == 3) &&
 		VectorQ[pMax, NumericQ] && (Length[ pMax] == 3) :=
 Module[{instance, res, origin, radius},
 
