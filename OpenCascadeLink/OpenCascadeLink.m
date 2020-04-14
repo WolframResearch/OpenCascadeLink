@@ -977,7 +977,7 @@ Module[{p, instance, res},
 ]
 
 (*
-	open cascde boolean operation
+	open cascade Boolean operation
 *)
 
 OpenCascadeShapeDifference[ shape1_] /; 
@@ -1002,6 +1002,10 @@ OpenCascadeShapeDifference[eN__] /;
 	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === True :=
 Fold[OpenCascadeShapeDifference, {eN}]
 
+OpenCascadeShapeDifference[{eN__}] /;
+	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === True :=
+OpenCascadeShapeDifference[eN];
+
 
 OpenCascadeShapeIntersection[ shape1_] /; 
 	OpenCascadeShapeExpressionQ[shape1] := shape1
@@ -1025,6 +1029,10 @@ OpenCascadeShapeIntersection[eN__] /;
 	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === True :=
 Fold[OpenCascadeShapeIntersection, {eN}]
 
+OpenCascadeShapeIntersection[{eN__}] /;
+	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === True :=
+OpenCascadeShapeIntersection[eN]
+
 
 OpenCascadeShapeUnion[ shape1_] /; 
 	OpenCascadeShapeExpressionQ[shape1] := shape1
@@ -1047,6 +1055,10 @@ OpenCascadeShapeUnion[shape1_, shape2_] /; And[
 OpenCascadeShapeUnion[eN__] /;
 	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === True :=
 Fold[OpenCascadeShapeUnion, {eN}]
+
+OpenCascadeShapeUnion[{eN__}] /;
+	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === True :=
+OpenCascadeShapeUnion[eN]
 
 
 OpenCascadeShapeBooleanRegion[ br_BooleanRegion] /; Length[br] == 2 :=
