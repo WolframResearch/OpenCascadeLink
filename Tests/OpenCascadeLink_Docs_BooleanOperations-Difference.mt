@@ -41,16 +41,19 @@ TestRequirement[
 
 (* Boolean operations *)
 
-(* excludes SphercialShell since the resulting region may be too complicated *)
-combinationsIndices = Subsets[Range[Length[solids]], {2}];
+combinationsIndices = DeleteCases[Tuples[Range[Length[solids]], {2}], {x_, x_}];
 combinations = solids[[#]] & /@ combinationsIndices;
 
 (* Difference of SphericalShell and Tetrahedron hangs, see 391160 *)
 combinations = DeleteCases[combinations, <|SphericalShell -> _, Tetrahedron -> _|>];
- 
+
+bugID = <|{SphericalShell, Tetrahedron} -> "-bug-391160",
+		{Cone, Ellipsoid} -> "-bug-390054"|> ;
+
 (* Difference *)
 MapIndexed[
-  boolOperationTest[#, "Difference"] &,
+  boolOperationTest[#, "Difference", 
+	If[KeyExistsQ[bugID, Keys[#]], Lookup[bugID,Key[Keys[#]]], ""]] &,
   combinations]
 
 EndRequirement[]

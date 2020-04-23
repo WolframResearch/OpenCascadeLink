@@ -43,7 +43,7 @@ TestRequirement[
 (* Boolean operations *)
 
 (* excludes regionUnionPolyhedron since it hangs. *)
-combinationsIndices = Subsets[Range[Length[solids]], {2}];
+combinationsIndices = DeleteCases[Tuples[Range[Length[solids]], {2}], {x_, x_}];
 combinations = solids[[#]] & /@ combinationsIndices;
 
 (* Union of Ball and regionUnionPolyhedron hangs, see 391160 *)
