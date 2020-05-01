@@ -43,7 +43,7 @@ basicShapeTests[shape_, options : OptionsPattern[]] :=
              ,
              openCascadeShapeType
              ,
-             TestID -> "OpenCascadeLink_Docs_Basic-20200311-" <> "ShapeType-" <> testID
+             TestID -> "OpenCascadeLink_Docs_Basic-20200501-U9S8I5" <> "ShapeType-" <> testID
          ];
          If[ testID === "polygonSelfIntersect",
              Return[]
@@ -54,14 +54,14 @@ basicShapeTests[shape_, options : OptionsPattern[]] :=
              ,
              ElementMesh
              ,
-             TestID -> "OpenCascadeLink_Docs_Basic-20200311-" <> "BoundaryMesh-" <> testID
+             TestID -> "OpenCascadeLink_Docs_Basic-20200501-W4X2X3" <> "BoundaryMesh-" <> testID
          ];
          Test[
              checkGraphicsRendering[Head, bmesh["Wireframe"]]
              ,
              {Graphics3D, "Rendering Errors" -> {}}
              ,
-             TestID -> "OpenCascadeLink_Docs_Basic-20200311-" <> "WireframHead-" <> testID
+             TestID -> "OpenCascadeLink_Docs_Basic-20200501-M5E3Y1" <> "WireframHead-" <> testID
          ];
      ]
 
@@ -335,6 +335,35 @@ Test[
     {Graphics3D, "Rendering Errors" -> {}}
     ,
     TestID->"OpenCascadeLink_Docs_Basic-20200310-A5N0X5"
+]
+
+Test[
+	Options[OpenCascadeShapeSurfaceMesh]
+	,
+	{"AngularDeflection" -> Automatic, "ComputeInParallel" -> Automatic, 
+	"LinearDeflection" -> Automatic, "RelativeDeflection" -> Automatic}
+	,
+	TestID->"OpenCascadeLink_Docs_Basic-20200501-D9P2E7-bug-391736"
+]
+
+Test[
+	Options[OpenCascadeShapeSurfaceMeshToBoundaryMesh]
+	,
+	{"ElementMeshOptions" -> Automatic, 
+ 	"ShapeSurfaceMeshOptions" -> Automatic}
+	,
+	TestID->"OpenCascadeLink_Docs_Basic-20200501-K9K6O8-bug-391736"
+]
+
+Test[
+	shape = OpenCascadeShape[Cone[{{0, 0, 0}, {0, 0, 1}}, 1]];
+	OpenCascadeShapeSurfaceMesh[shape];
+	bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shape, "ShapeSurfaceMeshOptions" -> {"LinearDeflection" -> 0.001}];
+	checkGraphicsRendering[Head, bmesh["Wireframe"]]
+	,
+	{Graphics3D, "Rendering Errors" -> {}}
+	,
+	TestID->"OpenCascadeLink_Docs_Basic-20200501-Z2B4T8-bug-391736"
 ]
 
 EndRequirement[]
