@@ -5,9 +5,7 @@
          Test[
              shape = Switch[operation,
                "Difference",
-               Print["in difference"];
                isEmpty = (Head[RegionDifference @@ shapeAssoc] === EmptyRegion);
-               Print["in difference, isEmpty = ", shapeAssoc];
                OpenCascadeShapeDifference @@ (OpenCascadeShape /@ shapeAssoc),
                "Union",
                OpenCascadeShapeUnion @@ (OpenCascadeShape /@ shapeAssoc),
