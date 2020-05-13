@@ -44,11 +44,15 @@ TestRequirement[
 combinationsIndices = DeleteCases[Tuples[Range[Length[solids]], {2}], {x_, x_}];
 combinations = solids[[#]] & /@ combinationsIndices;
 
-(* Difference of SphericalShell and Tetrahedron hangs, see 391160 *)
-combinations = DeleteCases[combinations, <|SphericalShell -> _, Tetrahedron -> _|>];
+(* SphericalShell\Tetrahedron hangs, see 391160 *)
+combinations = DeleteCases[combinations, <|SphericalShell -> _, Tetrahedron -> _|> |
+										 <|regionUnionPolyhedron -> _, Ball -> _|>];
 
-bugID = <|{SphericalShell, Tetrahedron} -> "-bug-391160",
-		{Cone, Ellipsoid} -> "-bug-390054"|> ;
+bugID = Merge[{Thread[{{SphericalShell, Tetrahedron},
+				  {CapsuleShape, Ellipsoid},
+				  {Ellipsoid, CapsuleShape},
+				  {Ellipsoid, SphericalShell}} -> "-bug-391160"],
+			  <|{Cone, Ellipsoid} -> "-bug-390054"|>}, Identity];
 
 (* Difference *)
 MapIndexed[

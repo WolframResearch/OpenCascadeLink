@@ -15,9 +15,9 @@
                True,
                Return[$Failed]
                ];
-             OpenCascadeShapeType[shape]
+             (OpenCascadeShapeType[shape] === "Compound") || shape
              ,
-             "Compound"
+             True
              ,
              TestID -> "OpenCascadeLink_Docs_BooleanOperations-20200311-"
               <> operation <> "-ShapeType" <> 
@@ -27,7 +27,7 @@
          Test[
          	 (* OpenCascadeShapeSurfaceMeshToBoundaryMesh on Empty regions will return $Failed *)
          	 bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shape];
-         	 If[isEmpty
+         	 (If[isEmpty
          	 	 ,
          	 	 bmesh
 	             ,
@@ -35,13 +35,13 @@
 	             temp = Most[Range[0, 1, 1/(Length[groups])]];
 	             colors = ColorData["BrightBands"][#] & /@ temp;
 	             checkGraphicsRendering[Head, bmesh["Wireframe"["MeshElementStyle" -> FaceForm /@ colors]]]
-         	 ]
-             ,
-             If[isEmpty
+         	 ] === If[isEmpty
              	,
              	$Failed
              	,
-             	{Graphics3D, "Rendering Errors" -> {}}]
+             	{Graphics3D, "Rendering Errors" -> {}}]) || shape
+             ,
+             True
              ,
              TestID -> "OpenCascadeLink_Docs_BooleanOperations-20200311-"
               <> operation <> "-Rendering" <> 

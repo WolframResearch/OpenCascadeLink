@@ -46,11 +46,14 @@ TestRequirement[
 combinationsIndices = DeleteCases[Tuples[Range[Length[solids]], {2}], {x_, x_}];
 combinations = solids[[#]] & /@ combinationsIndices;
 
-(* Union of Ball and regionUnionPolyhedron hangs, see 391160 *)
-combinations = DeleteCases[combinations, <|Ball -> _, regionUnionPolyhedron -> _|>];
+(* Intersection of Ball and regionUnionPolyhedron hangs, see 391160 *)
+combinations = DeleteCases[combinations, <|Ball -> _, regionUnionPolyhedron -> _|> |
+										 <|regionUnionPolyhedron -> _, Ball -> _|>];
 
 (* Intersection *)
-bugIDIntersection = <|{Ball, Ellipsoid} -> "-bug-390059"|>;
+bugIDIntersection = Merge[{Thread[{{CapsuleShape, Ellipsoid},
+							  {Ellipsoid, CapsuleShape}} -> "-bug-391160"],
+						  <|{Ball, Ellipsoid} -> "-bug-390059"|>}, Identity];
 
  MapIndexed[
   boolOperationTest[#, "Intersection", 
