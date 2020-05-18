@@ -1,7 +1,7 @@
 (* Wolfram Language package *)
 
  boolOperationTest[shapeAssoc_Association, operation_, bugID_ : ""] :=
-     Block[ {shape, bmesh, groups, temp, colors, isEmpty = False},
+     Block[ {shape, bmesh, groups, temp, colors, isEmpty = False, res},
          Test[
              shape = Switch[operation,
                "Difference",
@@ -15,7 +15,7 @@
                True,
                Return[$Failed]
                ];
-             (OpenCascadeShapeType[shape] === "Compound") || shape
+             (res = (OpenCascadeShapeType[shape] === "Compound")) || {shapeAssoc, res}
              ,
              True
              ,
@@ -27,7 +27,7 @@
          Test[
          	 (* OpenCascadeShapeSurfaceMeshToBoundaryMesh on Empty regions will return $Failed *)
          	 bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shape];
-         	 (If[isEmpty
+         	 ( res = (If[isEmpty
          	 	 ,
          	 	 bmesh
 	             ,
@@ -35,11 +35,11 @@
 	             temp = Most[Range[0, 1, 1/(Length[groups])]];
 	             colors = ColorData["BrightBands"][#] & /@ temp;
 	             checkGraphicsRendering[Head, bmesh["Wireframe"["MeshElementStyle" -> FaceForm /@ colors]]]
-         	 ] === If[isEmpty
+         	 ]) === If[isEmpty
              	,
              	$Failed
              	,
-             	{Graphics3D, "Rendering Errors" -> {}}]) || shape
+             	{Graphics3D, "Rendering Errors" -> {}}]) || {shapeAssoc, res}
              ,
              True
              ,

@@ -52,7 +52,8 @@ bugID = Merge[{Thread[{{SphericalShell, Tetrahedron},
 				  {CapsuleShape, Ellipsoid},
 				  {Ellipsoid, CapsuleShape},
 				  {Ellipsoid, SphericalShell}} -> "-bug-391160"],
-			  <|{Cone, Ellipsoid} -> "-bug-390054"|>}, Identity];
+			  <|{Cone, Ellipsoid} -> "-bug-390054",
+			    {regionUnionPolyhedron, Ellipsoid} -> "-bug-392674"|>}, Identity];
 
 (* Difference *)
 MapIndexed[

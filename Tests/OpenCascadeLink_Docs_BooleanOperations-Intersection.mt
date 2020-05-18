@@ -53,7 +53,12 @@ combinations = DeleteCases[combinations, <|Ball -> _, regionUnionPolyhedron -> _
 (* Intersection *)
 bugIDIntersection = Merge[{Thread[{{CapsuleShape, Ellipsoid},
 							  {Ellipsoid, CapsuleShape}} -> "-bug-391160"],
-						  <|{Ball, Ellipsoid} -> "-bug-390059"|>}, Identity];
+						  <|{Ball, Ellipsoid} -> "-bug-390059"|>,
+						  <|Thread[{{Ball, Prism},
+									{CapsuleShape, Prism},
+									{Ellipsoid, Ball},
+									{Prism, Ball},
+									{Prism, CapsuleShape}} -> "-bug-392674"]|>}, Identity];
 
  MapIndexed[
   boolOperationTest[#, "Intersection", 
