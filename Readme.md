@@ -1,7 +1,7 @@
 
 # OpenCascadeLink for the Wolfram Language
 
-The [Wolfram Language](https://www.wolfram.com/language/) has build in support for the Finite Element Method. OpenCascadeLink is a package that provides computational geometry functionality to generate 3D boundary meshes for the finite element method. OpenCascadeLink ships with version 12.1 and later versions of Wolfram Language deployments for the desktop, including [Wolfram Desktop](https://www.wolfram.com/desktop/) and [Mathematica](https://www.wolfram.com/mathematica/).
+The [Wolfram Language](https://www.wolfram.com/language/) has built-in support for the Finite Element Method. OpenCascadeLink is a package that provides computational geometry functionality to generate 3D boundary meshes for the finite element method. OpenCascadeLink ships with version 12.1 and later versions of Wolfram Language deployments for the desktop, including [Wolfram Desktop](https://www.wolfram.com/desktop/) and [Mathematica](https://www.wolfram.com/mathematica/).
 
 ### Installing and Updating the OpenCascadeLink release
 
