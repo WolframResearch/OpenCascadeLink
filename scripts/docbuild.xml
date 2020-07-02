@@ -134,7 +134,7 @@ or set Mathematica.DocumentationBuild.createHTML.setting to Mathematica.Document
     <target name="OpenCascadeLink">
         <antcall target="docbuild">
             <param name="docInputDir" value="OpenCascadeLink/Documentation"/>
-            <param name="docOutputDir" value="OpenCascadeLink/Documentation"/>
+            <param name="docOutputDir" value="Documentation"/>
         </antcall>
     </target>
 </project>
