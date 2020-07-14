@@ -475,6 +475,14 @@ DLLEXPORT int makeRotationalSweep(WolframLibraryData libData, mint Argc, MArgume
 	);
 	libData->MTensor_disown(p1);
 
+	/* shape must not contain solids or compund solids */
+	TopExp_Explorer exS(*anID, TopAbs_SOLID);
+	TopExp_Explorer exC(*anID, TopAbs_COMPSOLID);
+	if (exS.More() || exC.More()) {
+		MArgument_setInteger(res, -1);
+		return 0;
+	}
+
 	gp_Ax1 axis(gp1, gpD);
 	TopoDS_Shape shape = BRepPrimAPI_MakeRevol(*anID, axis, angle).Shape();
 
@@ -519,8 +527,19 @@ DLLEXPORT int makeLinearSweep(WolframLibraryData libData, mint Argc, MArgument *
 	);
 	libData->MTensor_disown(p1);
 
-	gp_Vec vec = gp_Vec(gp1, gp2);
+	/* according to the documentation linear sweeps of solids should work
+	 * in the case of a finite sweep (given by a vector), however, I do not
+	 * see how this can work 
+	 * https://www.opencascade.com/doc/occt-7.4.0/refman/html/class_b_rep_prim_a_p_i___make_prism.html */
+	/* shape must not contain solids or compund solids */
+	TopExp_Explorer exS(*anID, TopAbs_SOLID);
+	TopExp_Explorer exC(*anID, TopAbs_COMPSOLID);
+	if (exS.More() || exC.More()) {
+		MArgument_setInteger(res, -1);
+		return 0;
+	}
 
+	gp_Vec vec = gp_Vec(gp1, gp2);
 	TopoDS_Shape shape = BRepPrimAPI_MakePrism(*anID, vec).Shape();
 
 	*instance = shape;

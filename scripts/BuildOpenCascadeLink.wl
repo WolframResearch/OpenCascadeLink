@@ -61,7 +61,7 @@ Module[
 
 	(* set up system specific compiler options *)
 	coptions = Switch[$SystemID,
-	  "Linux-x86-64", "",
+	  "Linux-x86-64" | "Linux-ARM", "",
 	  "MacOSX-x86-64", "-std=c++0x",
 	  "Windows-x86-64", "/EHsc",
 	  _, $Failed
