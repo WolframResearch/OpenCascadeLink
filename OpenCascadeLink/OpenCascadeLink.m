@@ -46,7 +46,12 @@ OpenCascadeShapeSurfaceMeshElementOffsets::usage = "OpenCascadeShapeSurfaceMeshE
 
 OpenCascadeShapeNumberOfFaces::usage = "OpenCascadeShapeNumberOfFaces[ shape] returns the number of faces in a shape.";
 OpenCascadeShapeNumberOfEdges::usage = "OpenCascadeShapeNumberOfEdges[ shape] returns the number of edges in a shape.";
+OpenCascadeShapeNumberOfVertices::usage = "OpenCascadeShapeNumberOfVertices[ shape] returns the number of vertices in a shape.";
 OpenCascadeShapeType::usage = "OpenCascadeShapeType[ shape] returns the shape type.";
+
+OpenCascadeShapeFaces::usage = "OpenCascadeShapeFaces[ shape] returns the faces in a shape.";
+OpenCascadeShapeEdges::usage = "OpenCascadeShapeEdges[ shape] returns the edges in a shape.";
+OpenCascadeShapeVertices::usage = "OpenCascadeShapeVertices[ shape] returns the vertices in a shape.";
 
 OpenCascadeShapeSurfaceMeshToBoundaryMesh::usage = "OpenCascadeShapeSurfaceMeshToBoundaryMesh[ shape] returns the shape as a boundary ElementMesh.";
 
@@ -142,7 +147,12 @@ Module[{libDir, oldpath, preLoadLibs, success},
 
 	getShapeNumberOfFacesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeNumberOfFaces", {Integer}, Integer];
 	getShapeNumberOfEdgesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeNumberOfEdges", {Integer}, Integer];
+	getShapeNumberOfVerticesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeNumberOfVertices", {Integer}, Integer];
 	getShapeTypeFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeType", {Integer}, Integer];
+
+	getShapeFacesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeFaces", {{Integer, 1, "Shared"}, Integer, {Integer, 1, "Shared"}}, Integer];
+	getShapeEdgesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeEdges", {{Integer, 1, "Shared"}, Integer, {Integer, 1, "Shared"}}, Integer];
+	getShapeVerticesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeVertices", {{Integer, 1, "Shared"}, Integer, {Integer, 1, "Shared"}}, Integer];
 
 	fileOperationFun = LibraryFunctionLoad[$OpenCascadeLibrary, "fileOperation", LinkObject, LinkObject];
 
@@ -1110,6 +1120,9 @@ getShapeNumberOfFacesFun[ instanceID[ shape]]
 OpenCascadeShapeNumberOfEdges[shape_] /; OpenCascadeShapeExpressionQ[shape] :=
 getShapeNumberOfEdgesFun[ instanceID[ shape]]
 
+OpenCascadeShapeNumberOfVertices[shape_] /; OpenCascadeShapeExpressionQ[shape] :=
+getShapeNumberOfVerticesFun[ instanceID[ shape]]
+
 OpenCascadeShapeType[shape_] /; OpenCascadeShapeExpressionQ[shape] :=
 Module[{type},
 	type = getShapeTypeFun[ instanceID[ shape]];
@@ -1130,6 +1143,109 @@ Module[{type},
 	]
 ]
 
+
+OpenCascadeShapeFaces[shape_, faceIDs_] /; OpenCascadeShapeExpressionQ[shape] :=
+Module[
+	{instances, id1, numFaces, res, fIDs = faceIDs, ord},
+
+	numFaces = getShapeNumberOfFacesFun[ instanceID[ shape]];
+	If[ numFaces < 1, Return[{}, Module]];
+
+	If[ fIDs === All, fIDs = Range[ numFaces]; ];
+	fIDs = pack[fIDs];
+
+	fIDs = DeleteDuplicates[fIDs];
+	If[ Length[fIDs] < 1, Return[{}, Module]];
+	If[ !TrueQ[ Max[ fIDs] <= numFaces] || (Min[fIDs] < 1),
+		Return[$Failed, Module];
+	];
+
+	instances = Table[ OpenCascadeShapeCreate[], {Length[fIDs]}];
+
+	id1 = instanceID[ shape];
+
+	ord = Ordering[fIDs];
+	fIDs = fIDs[[ord]];
+
+	(* - 1 since C uses 0 index start *)
+	res = getShapeFacesFun[ pack[ instanceID /@ instances], id1, fIDs - 1];
+
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instances[[ord]]
+]
+
+OpenCascadeShapeFaces[shape_] :=
+	OpenCascadeShapeFaces[shape, All]
+
+OpenCascadeShapeVertices[shape_, vertexIDs_] /; OpenCascadeShapeExpressionQ[shape] :=
+Module[
+	{instances, id1, numVertices, res, vIDs = vertexIDs, ord},
+
+	numVertices = getShapeNumberOfVerticesFun[ instanceID[ shape]];
+	If[ numVertices < 1, Return[{}, Module]];
+
+	If[ vIDs === All, vIDs = Range[ numVertices ]; ];
+	vIDs = pack[vIDs];
+
+	vIDs = DeleteDuplicates[vIDs];
+	If[ Length[vIDs] < 1, Return[{}, Module]];
+	If[ !TrueQ[ Max[ vIDs] <= numVertices] || (Min[vIDs] < 1),
+		Return[$Failed, Module];
+	];
+
+	instances = Table[ OpenCascadeShapeCreate[], {Length[vIDs]}];
+
+	id1 = instanceID[ shape];
+
+	ord = Ordering[vIDs];
+	vIDs = vIDs[[ord]];
+
+	(* - 1 since C uses 0 index start *)
+	res = getShapeVerticesFun[ pack[ instanceID /@ instances], id1, vIDs - 1];
+
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instances[[ord]]
+]
+
+OpenCascadeShapeVertices[shape_] :=
+	OpenCascadeShapeVertices[shape, All]
+
+
+OpenCascadeShapeEdges[shape_, edgeIDs_] /; OpenCascadeShapeExpressionQ[shape] :=
+Module[
+	{instances, id1, numEdges, res, eIDs = edgeIDs, ord},
+
+	numEdges = getShapeNumberOfEdgesFun[ instanceID[ shape]];
+	If[ numEdges < 1, Return[{}, Module]];
+
+	If[ eIDs === All, eIDs = Range[ numEdges ]; ];
+	eIDs = pack[eIDs];
+
+	eIDs = DeleteDuplicates[eIDs];
+	If[ Length[eIDs] < 1, Return[{}, Module]];
+	If[ !TrueQ[ Max[ eIDs] <= numEdges] || (Min[eIDs] < 1),
+		Return[$Failed, Module];
+	];
+
+	instances = Table[ OpenCascadeShapeCreate[], {Length[eIDs]}];
+
+	id1 = instanceID[ shape];
+
+	ord = Ordering[eIDs];
+	eIDs = eIDs[[ord]];
+
+	(* - 1 since C uses 0 index start *)
+	res = getShapeEdgesFun[ pack[ instanceID /@ instances], id1, eIDs - 1];
+
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instances[[ord]]
+]
+
+OpenCascadeShapeEdges[shape_] :=
+	OpenCascadeShapeEdges[shape, All]
 
 
 OpenCascadeShapeFillet[shape_, radius_, edgeIDs_] /; 

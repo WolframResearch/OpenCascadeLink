@@ -88,7 +88,12 @@ extern "C" {
 
 	DLLEXPORT int getShapeNumberOfFaces(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int getShapeNumberOfEdges(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+	DLLEXPORT int getShapeNumberOfVertices(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int getShapeType(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+
+	DLLEXPORT int getShapeFaces(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+	DLLEXPORT int getShapeEdges(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+	DLLEXPORT int getShapeVertices(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int fileOperation(WolframLibraryData libData, MLINK mlp);
 
@@ -414,6 +419,11 @@ DLLEXPORT int makeSewing(WolframLibraryData libData, mint Argc, MArgument *Args,
 	TopoDS_Shape *anID;
 	for (int i = 0; i < dims1[0]; i++) {
 		anID = get_ocShapeInstance( rawP1[ i]);
+		if (anID->IsNull()) {
+			libData->MTensor_disown(p1);
+			MArgument_setInteger(res, 0);
+			return LIBRARY_FUNCTION_ERROR;
+		}
 
 		for (TopExp_Explorer faces (*anID, TopAbs_FACE);
 				faces.More(); faces.Next()) {
@@ -454,7 +464,7 @@ DLLEXPORT int makeRotationalSweep(WolframLibraryData libData, mint Argc, MArgume
 	TopoDS_Shape *instance = get_ocShapeInstance( id);
 	TopoDS_Shape *anID = get_ocShapeInstance( id1);
 
-	if (instance == NULL ||
+	if (instance == NULL || anID == NULL || anID->IsNull() ||
 			type1 != MType_Real || rank1 != 2 || dims1[0] != 2 || dims1[1] != 3
 		) {
 		libData->MTensor_disown(p1);
@@ -506,7 +516,7 @@ DLLEXPORT int makeLinearSweep(WolframLibraryData libData, mint Argc, MArgument *
 	TopoDS_Shape *instance = get_ocShapeInstance( id);
 	TopoDS_Shape *anID = get_ocShapeInstance( id1);
 
-	if (instance == NULL ||
+	if (instance == NULL || anID == NULL || anID->IsNull() ||
 			type1 != MType_Real || rank1 != 2 || dims1[0] != 2 || dims1[1] != 3
 		) {
 		libData->MTensor_disown(p1);
@@ -561,7 +571,8 @@ DLLEXPORT int makeGeometicTransformation(WolframLibraryData libData, mint Argc, 
 	TopoDS_Shape *instance = get_ocShapeInstance( id);
 	TopoDS_Shape *anID = get_ocShapeInstance( id1);
 
-	if (instance == NULL || type1 != MType_Real || rank1 != 2 ||
+	if (instance == NULL || anID == NULL || anID->IsNull() ||
+			type1 != MType_Real || rank1 != 2 ||
 			dims1[0] != 3 || dims1[1] != 4)
 	{
 		libData->MTensor_disown(p1);
@@ -904,7 +915,9 @@ DLLEXPORT int makeDifference(WolframLibraryData libData, mint Argc, MArgument *A
 	TopoDS_Shape *instance1 = get_ocShapeInstance( id1);
 	TopoDS_Shape *instance2 = get_ocShapeInstance( id2);
 
-	if (instance == NULL || instance1 == NULL || instance2 == NULL) {
+	if (instance == NULL || instance1 == NULL || instance2 == NULL ||
+		instance1->IsNull() || instance2->IsNull())
+	{
 		MArgument_setInteger(res, 0);
 		return LIBRARY_FUNCTION_ERROR;
 	}
@@ -938,7 +951,9 @@ DLLEXPORT int makeIntersection(WolframLibraryData libData, mint Argc, MArgument 
 	TopoDS_Shape *instance1 = get_ocShapeInstance( id1);
 	TopoDS_Shape *instance2 = get_ocShapeInstance( id2);
 
-	if (instance == NULL || instance1 == NULL || instance2 == NULL) {
+	if (instance == NULL || instance1 == NULL || instance2 == NULL ||
+		instance1->IsNull() || instance2->IsNull())
+	{
 		MArgument_setInteger(res, 0);
 		return LIBRARY_FUNCTION_ERROR;
 	}
@@ -972,7 +987,9 @@ DLLEXPORT int makeUnion(WolframLibraryData libData, mint Argc, MArgument *Args, 
 	TopoDS_Shape *instance1 = get_ocShapeInstance( id1);
 	TopoDS_Shape *instance2 = get_ocShapeInstance( id2);
 
-	if (instance == NULL || instance1 == NULL || instance2 == NULL) {
+	if (instance == NULL || instance1 == NULL || instance2 == NULL ||
+		instance1->IsNull() || instance2->IsNull())
+	{
 		MArgument_setInteger(res, 0);
 		return LIBRARY_FUNCTION_ERROR;
 	}
@@ -1014,7 +1031,7 @@ DLLEXPORT int makeDefeaturing(WolframLibraryData libData, mint Argc, MArgument *
 	TopoDS_Shape *instance  = get_ocShapeInstance( id);
 	TopoDS_Shape *instance1 = get_ocShapeInstance( id1);
 
-	if (instance == NULL || instance1 == NULL ||
+	if (instance == NULL || instance1 == NULL || instance1->IsNull() ||
 			type != MType_Integer || rank != 1 || dims[0] < 1) {
 		libData->MTensor_disown(p);
 		MArgument_setInteger(res, 0);
@@ -1069,7 +1086,7 @@ DLLEXPORT int makeFillet(WolframLibraryData libData, mint Argc, MArgument *Args,
 	TopoDS_Shape *instance  = get_ocShapeInstance( id);
 	TopoDS_Shape *instance1 = get_ocShapeInstance( id1);
 
-	if (instance == NULL || instance1 == NULL ||
+	if (instance == NULL || instance1 == NULL || instance1->IsNull() ||
 			type != MType_Integer || rank != 1 || dims[0] < 1) {
 		libData->MTensor_disown(p);
 		MArgument_setInteger(res, 0);
@@ -1120,7 +1137,7 @@ DLLEXPORT int makeChamfer(WolframLibraryData libData, mint Argc, MArgument *Args
 	TopoDS_Shape *instance  = get_ocShapeInstance( id);
 	TopoDS_Shape *instance1 = get_ocShapeInstance( id1);
 
-	if (instance == NULL || instance1 == NULL ||
+	if (instance == NULL || instance1 == NULL || instance1->IsNull() ||
 			type != MType_Integer || rank != 1 || dims[0] < 1) {
 		libData->MTensor_disown(p);
 		MArgument_setInteger(res, 0);
@@ -1173,7 +1190,7 @@ DLLEXPORT int makeShelling(WolframLibraryData libData, mint Argc, MArgument *Arg
 	TopoDS_Shape *instance  = get_ocShapeInstance( id);
 	TopoDS_Shape *instance1 = get_ocShapeInstance( id1);
 
-	if (instance == NULL || instance1 == NULL ||
+	if (instance == NULL || instance1 == NULL || instance1->IsNull() ||
 			type != MType_Integer || rank != 1 || dims[0] < 1) {
 		libData->MTensor_disown(p);
 		MArgument_setInteger(res, 0);
@@ -1324,7 +1341,7 @@ DLLEXPORT int getSurfaceMeshCoordinates(WolframLibraryData libData, mint Argc, M
 
 	id = MArgument_getInteger(Args[0]);
 	TopoDS_Shape *instance = get_ocShapeInstance( id);
-	if (instance == NULL) {
+	if (instance == NULL || instance->IsNull()) {
 		return LIBRARY_FUNCTION_ERROR;
 	}
 
@@ -1397,7 +1414,7 @@ DLLEXPORT int getSurfaceMeshElements(WolframLibraryData libData, mint Argc, MArg
 
 	id = MArgument_getInteger(Args[0]);
 	TopoDS_Shape *instance = get_ocShapeInstance( id);
-	if (instance == NULL) {
+	if (instance == NULL || instance->IsNull()) {
 		return LIBRARY_FUNCTION_ERROR;
 	}
 
@@ -1483,7 +1500,7 @@ DLLEXPORT int getSurfaceMeshElementOffsets(WolframLibraryData libData, mint Argc
 
 	id = MArgument_getInteger(Args[0]);
 	TopoDS_Shape *instance = get_ocShapeInstance( id);
-	if (instance == NULL) {
+	if (instance == NULL || instance->IsNull()) {
 		return LIBRARY_FUNCTION_ERROR;
 	}
 
@@ -1537,7 +1554,7 @@ DLLEXPORT int getShapeNumberOfFaces(WolframLibraryData libData, mint Argc, MArgu
 
 	TopoDS_Shape *instance  = get_ocShapeInstance( id);
 
-	if (instance == NULL) {
+	if (instance == NULL || instance->IsNull()) {
 		MArgument_setInteger(res, 0);
 		return LIBRARY_FUNCTION_ERROR;
 	}
@@ -1559,12 +1576,34 @@ DLLEXPORT int getShapeNumberOfEdges(WolframLibraryData libData, mint Argc, MArgu
 
 	TopoDS_Shape *instance  = get_ocShapeInstance( id);
 
-	if (instance == NULL) {
+	if (instance == NULL || instance->IsNull()) {
 		MArgument_setInteger(res, 0);
 		return LIBRARY_FUNCTION_ERROR;
 	}
 
 	TopExp_Explorer explore(*instance, TopAbs_EDGE);
+    while (explore.More()) {
+		count++;
+		explore.Next();
+	}
+
+	MArgument_setInteger(res, count);
+	return 0;
+}
+
+DLLEXPORT int getShapeNumberOfVertices(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	mint id  = MArgument_getInteger(Args[0]);
+	mint count = 0;
+
+	TopoDS_Shape *instance  = get_ocShapeInstance( id);
+
+	if (instance == NULL || instance->IsNull()) {
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	TopExp_Explorer explore(*instance, TopAbs_VERTEX);
     while (explore.More()) {
 		count++;
 		explore.Next();
@@ -1582,7 +1621,7 @@ DLLEXPORT int getShapeType(WolframLibraryData libData, mint Argc, MArgument *Arg
 
 	TopoDS_Shape *instance  = get_ocShapeInstance( id);
 
-	if (instance == NULL) {
+	if (instance == NULL || instance->IsNull()) {
 		MArgument_setInteger(res, 0);
 		return LIBRARY_FUNCTION_ERROR;
 	}
@@ -1592,6 +1631,147 @@ DLLEXPORT int getShapeType(WolframLibraryData libData, mint Argc, MArgument *Arg
 	MArgument_setInteger(res, type);
 	return 0;
 }
+
+
+DLLEXPORT int getShapeFaces(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+
+	MTensor resTen = MArgument_getMTensor(Args[0]);
+	int type = libData->MTensor_getType(resTen);
+	int rank = libData->MTensor_getRank(resTen);
+	const mint* dims = libData->MTensor_getDimensions(resTen);
+
+	mint id = MArgument_getInteger(Args[1]);
+	TopoDS_Shape *instance = get_ocShapeInstance( id);
+
+	/* these are assumed to be sorted */
+	MTensor p = MArgument_getMTensor(Args[2]);
+	int ptype = libData->MTensor_getType(p);
+	int prank = libData->MTensor_getRank(p);
+	const mint* pdims = libData->MTensor_getDimensions(p);
+
+	if (instance == NULL || instance->IsNull() ||
+		type != MType_Integer || rank != 1 ||
+		ptype != MType_Integer || prank != 1)
+	{
+		libData->MTensor_disown(resTen);
+		libData->MTensor_disown(p);
+		MArgument_setMTensor(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	mint* faceIDs = libData->MTensor_getIntegerData( p);
+
+	mint* ids = libData->MTensor_getIntegerData( resTen);
+
+	TopExp_Explorer explore(*instance, TopAbs_FACE);
+	int currentFace = 0;
+	for (int i = 0; explore.More(); i++, explore.Next()) {
+		if (i > faceIDs[currentFace]) break;
+		if (i < faceIDs[currentFace]) continue;
+		TopoDS_Shape *afaceinstance  = get_ocShapeInstance( ids[currentFace]);
+    	TopoDS_Face face = TopoDS::Face(explore.Current());
+		*afaceinstance = face;
+		currentFace++;
+	}
+
+	MArgument_setInteger(res, 0);
+	return 0;
+}
+
+DLLEXPORT int getShapeEdges(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+
+	MTensor resTen = MArgument_getMTensor(Args[0]);
+	int type = libData->MTensor_getType(resTen);
+	int rank = libData->MTensor_getRank(resTen);
+	const mint* dims = libData->MTensor_getDimensions(resTen);
+
+	mint id = MArgument_getInteger(Args[1]);
+	TopoDS_Shape *instance = get_ocShapeInstance( id);
+
+	/* these are assumed to be sorted */
+	MTensor p = MArgument_getMTensor(Args[2]);
+	int ptype = libData->MTensor_getType(p);
+	int prank = libData->MTensor_getRank(p);
+	const mint* pdims = libData->MTensor_getDimensions(p);
+
+	if (instance == NULL || instance->IsNull() ||
+		type != MType_Integer || rank != 1 ||
+		ptype != MType_Integer || prank != 1)
+	{
+		libData->MTensor_disown(resTen);
+		libData->MTensor_disown(p);
+		MArgument_setMTensor(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	mint* edgeIDs = libData->MTensor_getIntegerData( p);
+
+	mint* ids = libData->MTensor_getIntegerData( resTen);
+
+	TopExp_Explorer explore(*instance, TopAbs_EDGE);
+	int currentEdge = 0;
+	for (int i = 0; explore.More(); i++, explore.Next()) {
+		if (i > edgeIDs[currentEdge]) break;
+		if (i < edgeIDs[currentEdge]) continue;
+		TopoDS_Shape *aedgeinstance  = get_ocShapeInstance( ids[currentEdge]);
+    	TopoDS_Edge edge = TopoDS::Edge(explore.Current());
+		*aedgeinstance = edge;
+		currentEdge++;
+	}
+
+	MArgument_setInteger(res, 0);
+	return 0;
+}
+
+
+DLLEXPORT int getShapeVertices(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+
+	MTensor resTen = MArgument_getMTensor(Args[0]);
+	int type = libData->MTensor_getType(resTen);
+	int rank = libData->MTensor_getRank(resTen);
+	const mint* dims = libData->MTensor_getDimensions(resTen);
+
+	mint id = MArgument_getInteger(Args[1]);
+	TopoDS_Shape *instance = get_ocShapeInstance( id);
+
+	/* these are assumed to be sorted */
+	MTensor p = MArgument_getMTensor(Args[2]);
+	int ptype = libData->MTensor_getType(p);
+	int prank = libData->MTensor_getRank(p);
+	const mint* pdims = libData->MTensor_getDimensions(p);
+
+	if (instance == NULL || instance->IsNull() ||
+		type != MType_Integer || rank != 1 ||
+		ptype != MType_Integer || prank != 1)
+	{
+		libData->MTensor_disown(resTen);
+		libData->MTensor_disown(p);
+		MArgument_setMTensor(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	mint* vertexIDs = libData->MTensor_getIntegerData( p);
+
+	mint* ids = libData->MTensor_getIntegerData( resTen);
+
+	TopExp_Explorer explore(*instance, TopAbs_VERTEX);
+	int currentVertex = 0;
+    for( int i = 0; explore.More(); i++, explore.Next()) {
+		if (i > vertexIDs[currentVertex]) break;
+		if (i < vertexIDs[currentVertex]) continue;
+		TopoDS_Shape *avertexinstance  = get_ocShapeInstance( ids[currentVertex]);
+    	TopoDS_Vertex vertex = TopoDS::Vertex(explore.Current());
+		*avertexinstance = vertex;
+		currentVertex++;
+	}
+
+	MArgument_setInteger(res, 0);
+	return 0;
+}
+
 
 
 DLLEXPORT int fileOperation(WolframLibraryData libData, MLINK mlp)
@@ -1625,6 +1805,7 @@ DLLEXPORT int fileOperation(WolframLibraryData libData, MLINK mlp)
 	const char* resStr = "True";
 
 	TopoDS_Shape* instance = get_ocShapeInstance(id);
+
 	if ( strcmp( opType, "save_stl") == 0) {
 		StlAPI_Writer stl_writer;
 		/* there needs to be a mesh in the instance for this to work */
