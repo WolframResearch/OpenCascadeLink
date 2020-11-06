@@ -28,8 +28,7 @@ NTest[
 	
 	{shape1, shape2, shape3} = OpenCascadeShape /@ {reg1, reg2, reg3};
 	union = OpenCascadeShapeUnion [shape1, shape2, shape3];
-	unionOpenCascade = DiscretizeGraphics[OpenCascadeShapeSurfaceMeshToBoundaryMesh[union]["Wireframe"]];
-	RegionBounds[unionOpenCascade]
+	OpenCascadeShapeSurfaceMeshToBoundaryMesh[union]["Bounds"]
 	,
 	{{-(985/388), 985/388}, {-(985/388), 985/388}, {0, 5}}
 	, 
