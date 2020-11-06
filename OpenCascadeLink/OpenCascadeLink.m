@@ -867,7 +867,7 @@ Module[
 	along the connected edge in the discretization *)
 	{uperiodic, vperiodic} = {0, 0};
 
-	If[ Length[ k] === 1, k = {k, k};];
+	If[ Length[ k] === 1 || k === Automatic, k = {k, k};];
 
 	If[ !ListQ[ k[[1]]],
         Switch[k[[1]],
@@ -902,7 +902,7 @@ Module[
 			k[[2]] = Table[t++, {ncols + vdegree + 1}];
         ];
 	]; 
-
+Print[k];
 	{uknots, vknots} = N[ k];
 	(* TODO: check (?) WL requitement: u_i >= u_i+1 *)
 	{uknots, umults} = pack /@ Transpose[Tally[uknots]];
