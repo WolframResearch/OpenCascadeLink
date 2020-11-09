@@ -19,6 +19,7 @@
 #include <BRepPrimAPI_MakeSphere.hxx>                                           
 #include <BRepPrimAPI_MakePrism.hxx>
 #include <BRepPrimAPI_MakeRevol.hxx>
+#include <BRepPrimAPI_MakeTorus.hxx>
 
 #include <BRepAlgoAPI_Cut.hxx>
 #include <BRepAlgoAPI_Common.hxx>
@@ -62,6 +63,7 @@ extern "C" {
 	DLLEXPORT int makeCuboid(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeCylinder(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makePrism(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+	DLLEXPORT int makeTorus(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int makeSewing(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeRotationalSweep(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
@@ -391,6 +393,57 @@ DLLEXPORT int makePrism(WolframLibraryData libData, mint Argc, MArgument *Args, 
 	MArgument_setInteger(res, 0);
 	return 0;
 }
+
+
+DLLEXPORT int makeTorus(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	mint id = MArgument_getInteger(Args[0]);
+
+	MTensor p1 = MArgument_getMTensor(Args[1]);
+	int type1 = libData->MTensor_getType(p1);
+	int rank1 = libData->MTensor_getRank(p1);
+	const mint* dims1 = libData->MTensor_getDimensions(p1);
+
+	double r1 = MArgument_getReal(Args[2]);
+	double r2 = MArgument_getReal(Args[3]);
+
+	double a1 = MArgument_getReal(Args[4]);
+	double a2 = MArgument_getReal(Args[5]);
+	double angle = MArgument_getReal(Args[6]);
+
+	TopoDS_Shape *instance = get_ocShapeInstance( id);
+
+	if (instance == NULL || type1 != MType_Real || rank1 != 2 ||
+		dims1[0] != 2 || dims1[1] != 3)
+	{
+		libData->MTensor_disown(p1);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	double* rawPts1 = libData->MTensor_getRealData(p1);
+    gp_Pnt gp1 = gp_Pnt(
+		(Standard_Real) rawPts1[0],
+		(Standard_Real) rawPts1[1],
+		(Standard_Real) rawPts1[2]
+	);
+    gp_Dir gpD = gp_Dir(
+		(Standard_Real) rawPts1[3],
+		(Standard_Real) rawPts1[4],
+		(Standard_Real) rawPts1[5]
+	);
+	libData->MTensor_disown(p1);
+
+	gp_Ax2 axis(gp1, gpD);
+
+    TopoDS_Shape shape = BRepPrimAPI_MakeTorus(axis, r1, r2, a1, a2, angle).Shape();
+
+	*instance = shape;
+
+	MArgument_setInteger(res, 0);
+	return 0;
+}
+
 
 
 

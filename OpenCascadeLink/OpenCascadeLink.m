@@ -60,6 +60,8 @@ OpenCascadeShapeExport::usage = "OpenCascadeShapeExport[ \"file.ext\", expr] exp
 OpenCascadeShapeImport::usage = "OpenCascadeShapeImport[ \"file.ext\", expr] imports data from a file into a OpenCascadeShape expression. OpenCascadeShapeImport[ \"file\", expr, \"format\"] imports data in the specified format."
 
 
+OpenCascadeTorus::usage = "OpenCascadeTorus[ axis, r1, r2] represents an open cascade torus.";
+
 Options[OpenCascadeShapeExport] = {"ShapeSurfaceMeshOptions"->Automatic};
 Options[OpenCascadeShapeSurfaceMesh] = Sort[ {
 	"LinearDeflection"->Automatic,
@@ -120,6 +122,7 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	makeCuboidFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeCuboid", {Integer, {Real, 1, "Shared"}, {Real, 1, "Shared"}}, Integer];
 	makeCylinderFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeCylinder", {Integer, {Real, 1, "Shared"}, {Real, 1, "Shared"}, Real, Real}, Integer];
 	makePrismFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makePrism", {Integer, {Real, 2, "Shared"}, {Real, 2, "Shared"}}, Integer];
+	makeTorusFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeTorus", {Integer, {Real, 2, "Shared"}, Real, Real, Real, Real, Real}, Integer];
 
 	makeSewingFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSewing", {Integer, {Integer, 1, "Shared"}}, Integer];
 	makeRotationalSweepFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeRotationalSweep", {Integer, Integer, {Real, 2, "Shared"}, Real}, Integer];
@@ -501,6 +504,36 @@ Module[{instance, base, target, direcction, res},
 
 	instance
 ]
+
+OpenCascadeShape[
+	OpenCascadeTorus[{p1_, p2_}, rIn1_, rIn2_, angle_, {angle1_, angle2_}]
+	] /;
+		VectorQ[p1, NumericQ] && (Length[ p1] == 3) &&
+		VectorQ[p2, NumericQ] && (Length[ p2] == 3) &&
+		NumericQ[rIn1] && NumericQ[rIn2] && (rIn1 > rIn2) &&
+		NumericQ[angle] && (0 < angle <= 2 Pi) && 
+		NumericQ[angle1] && NumericQ[angle2] && (0 < angle2 - angle1 <= 2 Pi) := 
+Module[{instance, res, axis, r1, r2, a1, a2, a},
+
+	axis = pack[ N[{p1, p2 - p1}]];
+	r1 = N[ rIn1];
+	r2 = N[ rIn2];
+	a1 = N[ angle1];
+	a2 = N[ angle2];
+	a = N[ angle];
+
+	instance = OpenCascadeShapeCreate[];
+	res = makeTorusFun[ instanceID[ instance], axis, r1, r2, a1, a2, a];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instance
+]
+
+OpenCascadeShape[OpenCascadeTorus[{p1_, p2_}, r1_, r2_]] :=
+	OpenCascadeShape[OpenCascadeTorus[{p1, p2}, r1, r2, 2 Pi, {0, 2 Pi}]]
+ 
+OpenCascadeShape[OpenCascadeTorus[{p1_, p2_}, r1_, r2_, angle_]] :=
+	OpenCascadeShape[OpenCascadeTorus[{p1, p2}, r1, r2, angle, {0, 2 Pi}]]
 
 (**)
 (* derived 3D primitives *)
