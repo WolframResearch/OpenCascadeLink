@@ -38,6 +38,7 @@
 #include <BRepBuilderAPI_GTransform.hxx>
 #include <BRepBuilderAPI_MakeSolid.hxx>
 
+
 #include <IMeshData_Status.hxx>
 #include <IMeshTools_Parameters.hxx>
 #include <BRepMesh_IncrementalMesh.hxx>
@@ -68,7 +69,7 @@ extern "C" {
 	DLLEXPORT int makeSewing(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeRotationalSweep(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeLinearSweep(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
-	DLLEXPORT int makeGeometicTransformation(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+	DLLEXPORT int makeTransformation(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int makePolygon(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeBSplineSurface(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
@@ -614,7 +615,7 @@ DLLEXPORT int makeLinearSweep(WolframLibraryData libData, mint Argc, MArgument *
 	return 0;
 }
 
-DLLEXPORT int makeGeometicTransformation(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+DLLEXPORT int makeTransformation(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
 {
 	mint id = MArgument_getInteger(Args[0]);
 	mint id1 = MArgument_getInteger(Args[1]);
@@ -628,8 +629,7 @@ DLLEXPORT int makeGeometicTransformation(WolframLibraryData libData, mint Argc, 
 	TopoDS_Shape *anID = get_ocShapeInstance( id1);
 
 	if (instance == NULL || anID == NULL || anID->IsNull() ||
-			type1 != MType_Real || rank1 != 2 ||
-			dims1[0] != 3 || dims1[1] != 4)
+		type1 != MType_Real || rank1 != 2 || dims1[0] != 4 || dims1[1] != 4)
 	{
 		libData->MTensor_disown(p1);
 		MArgument_setInteger(res, 0);
@@ -655,10 +655,10 @@ DLLEXPORT int makeGeometicTransformation(WolframLibraryData libData, mint Argc, 
 		(Standard_Real)	rawPts1[10],
 		(Standard_Real)	rawPts1[11] 
 	);
+
 	libData->MTensor_disown(p1);
 
 	gp_GTrsf gtrsf(trsf);
-
 	TopoDS_Shape shape = BRepBuilderAPI_GTransform(*anID, gtrsf, Standard_True).Shape();
 
 	*instance = shape;
