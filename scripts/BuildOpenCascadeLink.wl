@@ -9,6 +9,10 @@ Module[
 	prebuiltLibDir, targetLibDir, systemTargetLibDir, outputName, files,
 	libDirName, libDir, libs, occtLink},
 
+	If[ !TrueQ[ Length[ CCompilers[]] >= 1],
+		Return[$Failed]
+	];
+
 	projectDir = assoc["BaseDirectory"];
 	buildDir = assoc["BuildDirectory"];
 
