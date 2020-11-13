@@ -962,7 +962,7 @@ Module[
 			k[[2]] = Table[t++, {ncols + vdegree + 1}];
         ];
 	]; 
-Print[k];
+
 	{uknots, vknots} = N[ k];
 	(* TODO: check (?) WL requitement: u_i >= u_i+1 *)
 	{uknots, umults} = pack /@ Transpose[Tally[uknots]];
