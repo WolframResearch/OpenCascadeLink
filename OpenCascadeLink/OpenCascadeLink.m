@@ -74,7 +74,8 @@ Options[OpenCascadeShapeSurfaceMesh] = Sort[ {
 
 Options[OpenCascadeShapeSurfaceMeshToBoundaryMesh] = Sort[{
 	"ShapeSurfaceMeshOptions"->Automatic,
-	"ElementMeshOptions"->Automatic
+	"ElementMeshOptions"->Automatic,
+	"MarkerMethod"->Automatic
 }];
 
 Begin["`Private`"]
@@ -1527,7 +1528,7 @@ OpenCascadeShapeSurfaceMeshToBoundaryMesh[
 ] := 
 Module[
 	{surfaceMeshOpts, ok, coords, bEle, offsets, stop, start, spans, markers,
-	markerOffset},
+	markerOffset, bMeshOpts, elementMeshOpts, markerMethod},
 
 	surfaceMeshOpts = Flatten[{ OptionValue["ShapeSurfaceMeshOptions"]}];
 	If[ surfaceMeshOpts === {Automatic}, surfaceMeshOpts = {}];
@@ -1543,30 +1544,47 @@ Module[
 	bEle = OpenCascadeShapeSurfaceMeshElements[instance];
 	If[ Length[bEle] < 1, Return[$Failed, Module]; ];
 
-	offsets = OpenCascadeShapeSurfaceMeshElementOffsets[instance];
 
-	elementMeshOpts = Flatten[{ OptionValue["ElementMeshOptions"]}];
-	If[ elementMeshOpts === {Automatic}, elementMeshOpts = {}];
-	elementMeshOpts = FilterRules[elementMeshOpts,
-		Options[NDSolve`FEM`ToBoundaryMesh]];
+	bMeshOpts = Flatten[{ OptionValue["ElementMeshOptions"]}];
+	If[ bMeshOpts === {Automatic}, bMeshOpts = {}];
+	bMeshOpts = FilterRules[bMeshOpts, Options[NDSolve`FEM`ToBoundaryMesh]];
 
-	markerOffset = OptionValue[NDSolve`FEM`ToBoundaryMesh,
-		elementMeshOpts, "MarkerOffset"];
-	If[ !MatchQ[ markerOffset, {_Integer?Positive}],
-		markerOffset = 0;
+	elementMeshOpts = FilterRules[bMeshOpts, Options[NDSolve`FEM`ElementMesh]];
+
+	markerMethod = OptionValue["MarkerMethod"];
+
+	Switch[ markerMethod,
+		None,
+			bEle = {NDSolve`FEM`TriangleElement[ bEle]};
+			bmesh = NDSolve`FEM`ElementMesh[coords, Automatic, bEle,
+				elementMeshOpts];
+		,
+		"ElementMesh",
+			bEle = {NDSolve`FEM`TriangleElement[ bEle]};
+			bmesh = NDSolve`FEM`ToBoundaryMesh["Coordinates"->coords,
+				"BoundaryElements"->bEle, bMeshOpts];
+		,
+		_,
+			markerOffset = OptionValue[NDSolve`FEM`ToBoundaryMesh,
+				bMeshOpts, "MarkerOffset"];
+			If[ !MatchQ[ markerOffset, {_Integer?Positive}],
+				markerOffset = 0;
+		];
+
+			offsets = OpenCascadeShapeSurfaceMeshElementOffsets[instance];
+			stop = FoldList[Plus, offsets];
+			start = Most[Join[{1}, stop + 1]];
+			spans = MapThread[Span, {start, stop}];
+			markers = MapThread[ ConstantArray[#1, #2]&,
+				{Range[Length[offsets]] + markerOffset, offsets}];
+			bEle = MapThread[NDSolve`FEM`TriangleElement,
+				{bEle[[#]] & /@ spans, markers}];
+
+			bmesh = NDSolve`FEM`ElementMesh[coords, Automatic, bEle,
+				elementMeshOpts];
 	];
 
-	stop = FoldList[Plus, offsets];
-	start = Most[Join[{1}, stop + 1]];
-	spans = MapThread[Span, {start, stop}];
-	markers = MapThread[ ConstantArray[#1, #2]&,
-		{Range[Length[offsets]] + markerOffset, offsets}];
-	bEle = MapThread[NDSolve`FEM`TriangleElement,
-		{bEle[[#]] & /@ spans, markers}];
-
-	elementMeshOpts = FilterRules[elementMeshOpts,
-		Options[NDSolve`FEM`ElementMesh]];
-	NDSolve`FEM`ElementMesh[coords, Automatic, bEle, elementMeshOpts]
+	bmesh
 ]
 
 End[]
