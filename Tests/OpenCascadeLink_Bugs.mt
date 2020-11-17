@@ -70,7 +70,7 @@ NTest[
 	,
 	Sort[First /@ MeshPrimitives[boxTransformed, 0]]
 	,
-	PrecisionGoal -> 5
+	AccuracyGoal -> 5
 	,
 	TestID->"OpenCascadeLink_Bugs-20201117-N9A1L2-bug-397202"
 ]
