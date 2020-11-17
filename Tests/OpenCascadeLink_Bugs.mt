@@ -60,3 +60,27 @@ Test[
 	,
 	TestID->"OpenCascadeLink_Bugs-20201117-G4W2N0-bug-398536"
 ]
+
+NTest[
+	box1 = Cuboid[{-0.0325`, 0, -0.0135`}, {0.0325`, 0.033`, 0.0135`}];
+	boxTransformed = TransformedRegion[box1, RotationTransform[10 \[Degree], {0, 1, 0}]];
+	shape = OpenCascadeShape[boxTransformed];
+	bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shape];
+	Sort[bmesh["Coordinates"]]
+	,
+	Sort[First /@ MeshPrimitives[boxTransformed, 0]]
+	,
+	PrecisionGoal -> 5
+	,
+	TestID->"OpenCascadeLink_Bugs-20201117-N9A1L2-bug-397202"
+]
+
+NTest[
+	shape = OpenCascadeShape[Parallelepiped[{0.5, 0, 0}, {{0, 1, 0}, {0, 0, 1}}]];
+	bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shape];
+	bmesh["Coordinates"]
+	,
+	{{0.5, 0., 0.}, {0.5, 1., 0.}, {0.5, 1., 1.}, {0.5, 0., 1.}}
+	,
+	TestID->"OpenCascadeLink_Bugs-20201117-H2R8O5-bug-399162"
+]
