@@ -100,3 +100,21 @@ NTest[
 	,
 	TestID->"OpenCascadeLink_Bugs-20201117-H2R8O5-bug-399162"
 ]
+
+TestMatch[
+	c1 = Cuboid[{0, 0, 0}, {0.5, 1, 1}];
+	c2 = Cuboid[{0.5, 0, 0}, {1, 1, 2}];
+	shape1 = OpenCascadeShape[c1];
+	shape2 = OpenCascadeShape[c2];
+	{s = OpenCascadeShapeIntersection[shape1, shape2],
+	OpenCascadeShapeType[s],
+	OpenCascadeShapeSolids[s],
+	OpenCascadeShapeNumberOfSolids[s]}
+	,
+	{_OpenCascadeShapeExpression,
+	"Compound",
+	{},
+	0}
+	,
+	TestID->"OpenCascadeLink_Bugs-20201120-V9G4E3-bug-400507"
+]
