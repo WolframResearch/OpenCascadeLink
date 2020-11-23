@@ -68,7 +68,7 @@ boolOperationTest[shapeAssoc_Association, operation_, bugID_ : ""] :=
              			"OpenCascadeShapeSolids" -> maskedQTest[SameQ, OpenCascadeShapeSolids[shape], {}],
              			"OpenCascadeShapeNumberOfSolids" -> maskedQTest[SameQ, OpenCascadeShapeNumberOfSolids[shape], 0]|>
              			,
-             			(* RegionDimension/DiscretizeRegion could return unevaluated.
+             			(* RegionDimension could return unevaluated.
              			Assuming the compound region is a solid. *)
              			<|"RegionDimension" -> dim,
              			"OpenCascadeShapeSolids" -> maskedQTest[MatchQ, OpenCascadeShapeSolids[shape], {_OpenCascadeShapeExpression..}],
@@ -88,20 +88,19 @@ boolOperationTest[shapeAssoc_Association, operation_, bugID_ : ""] :=
          	 (* OpenCascadeShapeSurfaceMeshToBoundaryMesh on Empty regions will return $Failed *)
          	 bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shape];
          	 {shapeAssoc,
-         	 maskedQTest[SameQ,
-         	 	If[isEmpty
+	         (maskedQTest[SameQ, #[[1]], #[[2]]])& @
+	         If[isEmpty
 	         	 	 ,
-	         	 	 bmesh
+	         	 	 {bmesh, $Failed}
 		             ,
+		             {(* Actual output *)
 		             groups = bmesh["BoundaryElementMarkerUnion"];
 		             temp = Most[Range[0, 1, 1/(Length[groups])]];
 		             colors = ColorData["BrightBands"][#] & /@ temp;
-		             checkGraphicsRendering[Head, bmesh["Wireframe"["MeshElementStyle" -> FaceForm /@ colors]]]],
-	            If[isEmpty
-	             	,
-	             	$Failed
-	             	,
-	             	{Graphics3D, "Rendering Errors" -> {}}]]}
+		             checkGraphicsRendering[Head, bmesh["Wireframe"["MeshElementStyle" -> FaceForm /@ colors]]],
+         	 		 (*Expected output*)
+         	 		 {Graphics3D, "Rendering Errors" -> {}}}]
+		             }
              ,
              {shapeAssoc, True}
              ,
