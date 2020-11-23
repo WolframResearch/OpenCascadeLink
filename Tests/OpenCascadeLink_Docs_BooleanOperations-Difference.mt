@@ -46,7 +46,8 @@ combinations = solids[[#]] & /@ combinationsIndices;
 
 (* SphericalShell\Tetrahedron hangs, see 391160 *)
 combinations = DeleteCases[combinations, <|SphericalShell -> _, Tetrahedron -> _|> |
-										 <|regionUnionPolyhedron -> _, Ball -> _|>];
+										 <|regionUnionPolyhedron -> _, Ball -> _|> |
+										 <|CapsuleShape -> _, Ellipsoid -> _|>];
 
 bugID = Merge[{Thread[{{SphericalShell, Tetrahedron},
 				  {CapsuleShape, Ellipsoid},
