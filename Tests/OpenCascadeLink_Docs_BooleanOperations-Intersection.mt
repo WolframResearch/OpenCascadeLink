@@ -48,7 +48,8 @@ combinations = solids[[#]] & /@ combinationsIndices;
 
 (* Intersection of Ball and regionUnionPolyhedron hangs, see 391160 *)
 combinations = DeleteCases[combinations, <|Ball -> _, regionUnionPolyhedron -> _|> |
-										 <|regionUnionPolyhedron -> _, Ball -> _|>];
+										 <|regionUnionPolyhedron -> _, Ball -> _|> |
+										 <|CapsuleShape -> _, Ellipsoid -> _|>];
 
 (* Intersection *)
 bugIDIntersection = Merge[{Thread[{{CapsuleShape, Ellipsoid},
