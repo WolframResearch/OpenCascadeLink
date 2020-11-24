@@ -900,6 +900,18 @@ Module[
 	{k, w, d, c} = OptionValue[BSplineSurface,
 		{SplineKnots, SplineWeights, SplineDegree, SplineClosed}];
 
+	c = c /. Automatic -> False;
+	c = Flatten[{c, c}][[{1,2}]];
+	If[ !VectorQ[ Boole[ c], IntegerQ],
+		Return[ $Failed, Module];
+	];
+
+	{uperiodic, vperiodic} = c;
+	If[ ({uperiodic, vperiodic} =!= {False, False}) && (k === Automatic),
+		(* SplineClosed -> True currently needs at least the knots specified *)
+		Return[ $Failed, Module];
+	];
+
 	d = d /. Automatic -> 3;
 	d = Flatten[{d, d}][[{1,2}]];
 	If[ !VectorQ[ d, (Positive[#] && IntegerQ[#]) &],
@@ -912,20 +924,6 @@ Module[
 	,
 		weights = pack[ N[ w]];
 	];
-
-(*
-	c = c /. Automatic -> False;
-	c = Boole[ Flatten[{c, c}][[{1,2}]]];
-	If[ !VectorQ[ temp, IntegerQ],
-		Return[ $Failed, Module]
-	];
-	{uperiodic, vperiodic} = c;
-*)
-	(* It is not clear how periodic BSplineSurface works in OCCT, however,
-	for discretization it might not be that important. The difference will
-	be that the BSpline surface is not truly closed and will have a line
-	along the connected edge in the discretization *)
-	{uperiodic, vperiodic} = {0, 0};
 
 	If[ Length[ k] === 1 || k === Automatic, k = {k, k};];
 
@@ -982,7 +980,7 @@ Module[
 	(* more needs to be implemented for the u/v-periodic case
 	(SplineClosed->True) *)
 
-	If[ uperiodic == 1,
+	If[ uperiodic === True,
 		If[ umults[[-1]] != umults[[1]], Return[ $Failed, Module]];
 		If[ Total[ umults[[1;;-2]]] =!= nrows, Return[ $Failed, Module]];
 	,
@@ -990,7 +988,7 @@ Module[
 		If[ (Total[umults] - udegree -1) =!= nrows, Return[ $Failed, Module]];
 	];
 
-	If[ vperiodic == 1,
+	If[ vperiodic == True,
 		If[ vmults[[-1]] != vmults[[1]], Return[ $Failed, Module]];
 		If[ Total[ vmults[[1;;-2]]] =!= ncols, Return[ $Failed, Module]];
 	,
@@ -1000,7 +998,8 @@ Module[
 
 	instance = OpenCascadeShapeCreate[];
 	res = makeBSplineSurfaceFun[ instanceID[ instance], poles, weights,
-		uknots, vknots, umults, vmults, udegree, vdegree, uperiodic, vperiodic];
+		uknots, vknots, umults, vmults, udegree, vdegree,
+		Boole[uperiodic], Boole[vperiodic]];
 	If[ res =!= 0, Return[ $Failed, Module]];
 
 	instance
