@@ -923,7 +923,11 @@ DLLEXPORT int makeBSplineSurface(WolframLibraryData libData, mint Argc, MArgumen
 	const Standard_Boolean UPeriodic = (Standard_Boolean) MArgument_getInteger(Args[9]); 
 	const Standard_Boolean VPeriodic = (Standard_Boolean) MArgument_getInteger(Args[10]); 
 
-	Handle(Geom_Surface) surface = new Geom_BSplineSurface(
+
+	Handle(Geom_Surface) surface;
+
+	try {
+	surface = new Geom_BSplineSurface(
     	Poles,
 		Weights,
 		UKnots, VKnots,
@@ -931,6 +935,12 @@ DLLEXPORT int makeBSplineSurface(WolframLibraryData libData, mint Argc, MArgumen
 		UDegree, VDegree,
 		UPeriodic, VPeriodic 
 	); 
+	}
+	catch (Standard_ConstructionError) {
+		/* this leaves *instance undefined */
+		MArgument_setInteger(res, ERROR);
+		return 0;
+	}
 
 //TopoDS_Shape shape= BRepBuilderAPI_MakeShell(Handle_Geom_BSplineSurface(Surf)).Shape();
 //GeomAPI_PointsToBSplineSurface
