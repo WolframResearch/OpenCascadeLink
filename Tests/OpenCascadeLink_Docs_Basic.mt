@@ -366,6 +366,37 @@ Test[
 	TestID->"OpenCascadeLink_Docs_Basic-20200501-Z2B4T8-bug-391736"
 ]
 
+NTest[
+	torus = OpenCascadeShape[OpenCascadeTorus[{{0, 0, 0}, {0, 0, 1}}, 3, 1]];
+	bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[torus];
+	bmesh["Bounds"]
+	,
+	{{-3.9794772935675806, 4.}, {-3.994866028684211, 3.994866028684211}, 
+	{-0.9927088740980543, 0.992708874098054}}
+	,
+	AccuracyGoal -> 1
+	,
+	TestID->"OpenCascadeLink_Docs_Basic-20201125-V2G0B3-bug-400852"
+]
+
+collinear[p_, q_, r_, opts___] := 
+	Block[{slopepq = p - q, sloperq = r - q},
+		Internal`CompareToPAT[slopepq, sloperq, opts]
+	];
+
+NTest[
+	seed = ToString[Take[DateList[], 3]];
+	axes = RandomReal[{0, 1}, {2, 3}];
+	torus = OpenCascadeShape[OpenCascadeTorus[axes, 3, 1]];
+	bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[torus];
+	centroid = Mean /@ bmesh["Bounds"];
+	collinear[axes[[1]], axes[[2]], centroid, AccuracyGoal -> 2]
+	,
+	True
+	,
+	TestID->"OpenCascadeLink_Docs_Basic-20201125-W3A1P0-bug-400852"
+]
+
 EndRequirement[]
 
 ClearAll["Global`*"]
