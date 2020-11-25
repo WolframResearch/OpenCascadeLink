@@ -386,7 +386,7 @@ collinear[p_, q_, r_, opts___] :=
 
 NTest[
 	seed = ToString[Take[DateList[], 3]];
-	axes = RandomReal[{0, 1}, {2, 3}];
+	axes = BlockRandom[RandomReal[{0, 1}, {2, 3}], RandomSeeding -> seed];
 	torus = OpenCascadeShape[OpenCascadeTorus[axes, 3, 1]];
 	bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[torus];
 	centroid = Mean /@ bmesh["Bounds"];
