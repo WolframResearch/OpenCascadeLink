@@ -38,6 +38,9 @@
 #include <BRepBuilderAPI_GTransform.hxx>
 #include <BRepBuilderAPI_MakeSolid.hxx>
 
+#include <gp_Circ.hxx>
+#include <Geom_Circle.hxx>
+#include <BRepBuilderAPI_MakeEdge.hxx>
 
 #include <IMeshData_Status.hxx>
 #include <IMeshTools_Parameters.hxx>
@@ -73,6 +76,8 @@ extern "C" {
 
 	DLLEXPORT int makePolygon(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeBSplineSurface(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+
+	DLLEXPORT int makeCircle(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeLine(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int makeDifference(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
@@ -551,8 +556,15 @@ DLLEXPORT int makeRotationalSweep(WolframLibraryData libData, mint Argc, MArgume
 	}
 
 	gp_Ax1 axis(gp1, gpD);
-	TopoDS_Shape shape = BRepPrimAPI_MakeRevol(*anID, axis, angle).Shape();
+	BRepPrimAPI_MakeRevol revol = BRepPrimAPI_MakeRevol(*anID, axis, angle);
 
+	if (!revol.IsDone()) {
+		/* this leaves *instance undefined */
+		MArgument_setInteger(res, ERROR);
+		return 0;
+	}
+
+	TopoDS_Shape shape = revol.Shape();
 	*instance = shape;
 
 	MArgument_setInteger(res, 0);
@@ -607,8 +619,15 @@ DLLEXPORT int makeLinearSweep(WolframLibraryData libData, mint Argc, MArgument *
 	}
 
 	gp_Vec vec = gp_Vec(gp1, gp2);
-	TopoDS_Shape shape = BRepPrimAPI_MakePrism(*anID, vec).Shape();
+	BRepPrimAPI_MakePrism prism = BRepPrimAPI_MakePrism(*anID, vec);
 
+	if (!prism.IsDone()) {
+		/* this leaves *instance undefined */
+		MArgument_setInteger(res, ERROR);
+		return 0;
+	}
+
+	TopoDS_Shape shape = prism.Shape();
 	*instance = shape;
 
 	MArgument_setInteger(res, 0);
@@ -716,6 +735,100 @@ DLLEXPORT int makePolygon(WolframLibraryData libData, mint Argc, MArgument *Args
 	}
 
 	TopoDS_Shape shape  = face.Shape();
+
+	*instance = shape;
+
+	MArgument_setInteger(res, 0);
+	return 0;
+}
+
+
+DLLEXPORT int makeCircle(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	mint id = MArgument_getInteger(Args[0]);
+
+	MTensor p1 = MArgument_getMTensor(Args[1]);
+	int type1 = libData->MTensor_getType(p1);
+	int rank1 = libData->MTensor_getRank(p1);
+	const mint* dims1 = libData->MTensor_getDimensions(p1);
+
+	double radius = MArgument_getReal(Args[2]);
+
+	mint select =  MArgument_getInteger(Args[3]);
+
+	double angle1 = MArgument_getReal(Args[4]);
+	double angle2 = MArgument_getReal(Args[5]);
+
+	MTensor p2 = MArgument_getMTensor(Args[6]);
+	int type2 = libData->MTensor_getType(p2);
+	int rank2 = libData->MTensor_getRank(p2);
+	const mint* dims2 = libData->MTensor_getDimensions(p2);
+
+
+	TopoDS_Shape *instance = get_ocShapeInstance( id);
+
+	if (instance == NULL ||
+		type1 != MType_Real || rank1 != 2 || dims1[0] != 2 || dims1[1] != 3 ||
+		type2 != MType_Real || rank2 != 2 || dims2[0] != 2 || dims2[1] != 3)
+	{
+		libData->MTensor_disown(p1);
+		libData->MTensor_disown(p2);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	double* rawPts1 = libData->MTensor_getRealData(p1);
+    gp_Pnt gp1 = gp_Pnt(
+		(Standard_Real) rawPts1[0],
+		(Standard_Real) rawPts1[1],
+		(Standard_Real) rawPts1[2]
+	);
+
+    gp_Dir gpD = gp_Dir(
+		(Standard_Real) rawPts1[3],
+		(Standard_Real) rawPts1[4],
+		(Standard_Real) rawPts1[5]
+	);
+	libData->MTensor_disown(p1);
+
+	gp_Ax2 base = gp_Ax2(gp1, gpD);
+	gp_Circ c1 = gp_Circ(base, radius);
+
+	BRepBuilderAPI_MakeEdge edge;
+	if (select == 0) {
+		edge = BRepBuilderAPI_MakeEdge(c1, angle1, angle2);
+	} else if (select == 1) {
+
+		double* rawPts2 = libData->MTensor_getRealData(p2);
+	    gp_Pnt gpp1 = gp_Pnt(
+			(Standard_Real) rawPts2[0],
+			(Standard_Real) rawPts2[1],
+			(Standard_Real) rawPts2[2]
+		);
+
+	    gp_Pnt gpp2 = gp_Pnt(
+			(Standard_Real) rawPts2[3],
+			(Standard_Real) rawPts2[4],
+			(Standard_Real) rawPts2[5]
+		);
+
+		edge = BRepBuilderAPI_MakeEdge(c1, gpp1, gpp2);
+	} else {
+		libData->MTensor_disown(p1);
+		libData->MTensor_disown(p2);
+		/* this leaves *instance undefined */
+		MArgument_setInteger(res, ERROR);
+		return 0;
+	}
+	libData->MTensor_disown(p2);
+
+	if (!edge.IsDone()) {
+		/* this leaves *instance undefined */
+		MArgument_setInteger(res, ERROR);
+		return 0;
+	}
+
+	TopoDS_Shape shape  = edge.Shape();
 
 	*instance = shape;
 

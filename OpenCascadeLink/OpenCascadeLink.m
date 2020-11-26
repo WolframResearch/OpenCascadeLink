@@ -63,6 +63,7 @@ OpenCascadeShapeImport::usage = "OpenCascadeShapeImport[ \"file.ext\", expr] imp
 
 
 OpenCascadeTorus::usage = "OpenCascadeTorus[ axis, r1, r2] represents an open cascade torus.";
+OpenCascadeCircle::usage = "OpenCascadeCircle[{center, vector}, radius, {angle1, angle2}] represents an open cascade circle.";
 
 Options[OpenCascadeShapeExport] = {"ShapeSurfaceMeshOptions"->Automatic};
 Options[OpenCascadeShapeSurfaceMesh] = Sort[ {
@@ -135,6 +136,8 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	makePolygonFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makePolygon", {Integer, {Real, 2, "Shared"}}, Integer];
 	makeBSplineSurfaceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeBSplineSurface", {Integer, {Real, 3, "Shared"}, {Real, 2, "Shared"},
 		{Real, 1, "Shared"}, {Real, 1, "Shared"}, {Integer, 1, "Shared"}, {Integer, 1, "Shared"}, Integer, Integer, Integer, Integer}, Integer];
+
+	makeCircleFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeCircle", {Integer, {Real, 2, "Shared"}, Real, Integer, Real, Real, {Real, 2, "Shared"}}, Integer];
 	makeLineFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeLine", {Integer, {Real, 2, "Shared"}}, Integer];
 
 	makeDifferenceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeDifference", {Integer, Integer, Integer}, Integer];
@@ -1030,6 +1033,39 @@ Module[{coords, faces, polygons, faceCoords},
 
 
 (* wires in 3D *)
+
+OpenCascadeShape[OpenCascadeCircle[axis:{center_, normal_}, radius_, a:{angle1_, angle2_}]] /;
+		Dimensions[axis] === {2, 3} && MatrixQ[axis, NumericQ] &&
+		NumericQ[radius] && radius > 0 && 
+		NumericQ[angle1] && NumericQ[angle2] && (0 < Abs[(angle1 - angle2)] <= 2 Pi) :=
+Module[{p, instance, res, r, a1, a2, tp, startStopCoord},
+
+	(* giving angles diretly does not work for some reason,
+		so we compute the start and end points and project to 3D *)
+	startStopCoord = (radius*{Cos[#], Sin[#], 0} + center) & /@ a;
+	tp = RotationTransform[{{0, 0, 1}, normal}, center] /@ startStopCoord;
+	tp = pack[ N[tp]];
+
+	p = pack[ N[ axis]];
+	r = N[radius];
+
+	a1 = N[angle1];
+	a2 = N[angle2];
+
+	instance = OpenCascadeShapeCreate[];
+	(* the 1 is to make use of the coordinates and not the angles *)
+	res = makeCircleFun[ instanceID[ instance], p, r, 1, a1, a2, tp];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instance
+]
+
+OpenCascadeShape[OpenCascadeCircle[axis:{center_, normal_}]] := 
+	OpenCascadeShape[OpenCascadeCircle[axis, 1, {0, 2 Pi}]]
+
+OpenCascadeShape[OpenCascadeCircle[axis:{center_, normal_}, r_]] := 
+	OpenCascadeShape[OpenCascadeCircle[axis, r, {0, 2 Pi}]]
+
 
 OpenCascadeShape[Line[coords_]] /;
 		MatrixQ[coords, NumericQ] && MatchQ[ Dimensions[coords], {_, 3}] :=
