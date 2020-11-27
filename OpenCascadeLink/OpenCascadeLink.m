@@ -35,6 +35,8 @@ OpenCascadeShapeSewing::usage = "OpenCascadeShapeSewing[ {shape1, shape2,..}] re
 OpenCascadeShapeRotationalSweep::usage = "OpenCascadeShapeRotationalSweep[ shape, {p1, p2}, angle] returns a new instance of an OpenCascade expression that rotates shape by angle radians around the axis between p1 and p2.";
 OpenCascadeShapeLinearSweep::usage = "OpenCascadeShapeLinearSweep[ shape, {p1, p2}] returns a new instance of an OpenCascade expression that linearly sweepes shape from p1 to p2.";
 
+OpenCascadeShapeLoft::usage = "OpenCascadeShapeLoft[ {shape1, shape2,..}] returns a new instance of an OpenCascade expression with a shape that is lofted through shape1, shape2,...";
+
 (* BRepBuilderAPI_GTransform seems to have issues with non-uniform scaling *)
 (* https://www.opencascade.com/content/creating-ellipsoid-sphere-transformation-function-applied *)
 OpenCascadeShapeTransformation::usage = "OpenCascadeShapeTransformation[ shape, tfun] returns a new instance of an OpenCascade expression that applies the transformation function tfun to the OpenCascade expression shape.";
@@ -66,6 +68,7 @@ OpenCascadeTorus::usage = "OpenCascadeTorus[ axis, r1, r2] represents an open ca
 OpenCascadeCircle::usage = "OpenCascadeCircle[{center, vector}, radius, {angle1, angle2}] represents an open cascade circle.";
 
 Options[OpenCascadeShapeExport] = {"ShapeSurfaceMeshOptions"->Automatic};
+
 Options[OpenCascadeShapeSurfaceMesh] = Sort[ {
 	"LinearDeflection"->Automatic,
 	"AngularDeflection"->Automatic,
@@ -77,6 +80,11 @@ Options[OpenCascadeShapeSurfaceMeshToBoundaryMesh] = Sort[{
 	"ShapeSurfaceMeshOptions"->Automatic,
 	"ElementMeshOptions"->Automatic,
 	"MarkerMethod"->Automatic
+}];
+
+Options[OpenCascadeShapeLoft] = Sort[ {
+	"BuildSolid" -> Automatic,
+	"CheckCompatibility" -> Automatic
 }];
 
 Begin["`Private`"]
@@ -148,6 +156,8 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	makeFilletFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeFillet", {Integer, Integer, Real, {Integer, 1, "Shared"}}, Integer];
 	makeChamferFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeChamfer", {Integer, Integer, Real, {Integer, 1, "Shared"}}, Integer];
 	makeShellingFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeShelling", {Integer, Integer, Real, {Integer, 1, "Shared"}}, Integer];
+
+	makeLoftFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeLoft", {Integer, {Integer, 1, "Shared"}, Integer}, Integer];
 
 	makeSurfaceMeshFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSurfaceMesh", {Integer, {Real, 1, "Shared"}, {Integer, 1, "Shared"}}, Integer];
 	getSurfaceMeshCoordinatesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getSurfaceMeshCoordinates", {Integer}, {Real, 2}];
@@ -787,8 +797,7 @@ OpenCascadeShapeSewing[oces:{e1_, e2__}] /;
 Module[{p, instance, res},
 
 	ids = pack[ instanceID /@ oces];
-
-	If[ Length[ DeleteDuplicates[ids]] =!= Length[ids], Return[$Failed, Module]];
+	ids = DeleteDuplicates[ ids];
 
 	instance = OpenCascadeShapeCreate[];
 	res = makeSewingFun[ instanceID[ instance], ids];
@@ -837,6 +846,39 @@ Module[
 
 	instance
 ]
+
+
+OpenCascadeShapeLoft[oces:{e1_, e2__}, opts:OptionsPattern[OpenCascadeShapeLoft]] /;
+	 And @@ (OpenCascadeShapeExpressionQ /@ oces) :=
+Module[{p, instance, res, optParam, temp, types},
+
+	ids = pack[ instanceID /@ oces];
+	ids = DeleteDuplicates[ ids];
+
+	optParam = 0;
+
+	temp = OptionValue["BuildSolid"];
+	types = Union[OpenCascadeShapeType /@ oces];
+	If[ temp === Automatic,
+		Switch[ types,
+			{"Wire"}, temp = False,
+			{"Face"}, temp = True,
+			_, Return[$Failed, Module];
+		];
+	];
+	If[ temp === True, optParam = BitSet[ optParam, 1]; ];
+
+	temp = OptionValue["CheckCompatibility"];
+	If[ temp === Automatic, temp = True;]
+	If[ temp === True, optParam = BitSet[ optParam, 2]; ];
+
+	instance = OpenCascadeShapeCreate[];
+	res = makeLoftFun[ instanceID[ instance], ids, optParam];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instance
+]
+
 
 (* surfaces in 3D *)
 
