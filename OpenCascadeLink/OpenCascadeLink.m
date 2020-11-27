@@ -1072,7 +1072,6 @@ OpenCascadeShape[Line[coords_]] /;
 Module[{p, instance, res},
 
 	p = pack[ N[ coords]];
-	p = DeleteDuplicates[p];
 
 	instance = OpenCascadeShapeCreate[];
 	res = makeLineFun[ instanceID[ instance], N[ p]];
