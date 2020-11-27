@@ -24,23 +24,25 @@
 #include <BRepAlgoAPI_Cut.hxx>
 #include <BRepAlgoAPI_Common.hxx>
 #include <BRepAlgoAPI_Fuse.hxx>
-#include <BRepAlgoAPI_Defeaturing.hxx>
 
+#include <BRepAlgoAPI_Defeaturing.hxx>
 #include <BRepFilletAPI_MakeFillet.hxx>
 #include <BRepFilletAPI_MakeChamfer.hxx>
-
 #include <BRepOffsetAPI_MakeThickSolid.hxx>
+#include <BRepOffsetAPI_ThruSections.hxx>
+
+#include <BRepBuilderAPI_MakeSolid.hxx>
+#include <BRepBuilderAPI_MakeFace.hxx>
+#include <BRepBuilderAPI_MakeWire.hxx>
+#include <BRepBuilderAPI_MakeEdge.hxx>
 
 #include <BRepBuilderAPI_MakePolygon.hxx>
 #include <Geom_BSplineSurface.hxx>	
-#include <BRepBuilderAPI_MakeFace.hxx>
 #include <BRepBuilderAPI_Sewing.hxx>
 #include <BRepBuilderAPI_GTransform.hxx>
-#include <BRepBuilderAPI_MakeSolid.hxx>
 
 #include <gp_Circ.hxx>
 #include <Geom_Circle.hxx>
-#include <BRepBuilderAPI_MakeEdge.hxx>
 
 #include <IMeshData_Status.hxx>
 #include <IMeshTools_Parameters.hxx>
@@ -72,6 +74,7 @@ extern "C" {
 	DLLEXPORT int makeSewing(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeRotationalSweep(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeLinearSweep(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+	DLLEXPORT int makeLoft(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeTransformation(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int makePolygon(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
@@ -634,6 +637,63 @@ DLLEXPORT int makeLinearSweep(WolframLibraryData libData, mint Argc, MArgument *
 	return 0;
 }
 
+DLLEXPORT int makeLoft(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	mint id = MArgument_getInteger(Args[0]);
+
+	MTensor p1 = MArgument_getMTensor(Args[1]);
+	int type1 = libData->MTensor_getType(p1);
+	int rank1 = libData->MTensor_getRank(p1);
+	const mint* dims1 = libData->MTensor_getDimensions(p1);
+
+	mint opt = MArgument_getInteger(Args[2]);
+
+	TopoDS_Shape *instance = get_ocShapeInstance( id);
+
+	if (instance == NULL || type1 != MType_Integer ||
+			 rank1 != 1 || dims1[0] < 1) {
+		libData->MTensor_disown(p1);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	mint * rawP1 = libData->MTensor_getIntegerData(p1);
+
+	Standard_Boolean solidQ = Standard_False;
+	if (opt & (1 << 1)) solidQ = Standard_True;
+
+	/* add tolerance options */
+	BRepOffsetAPI_ThruSections loft(solidQ, Standard_False);
+	TopoDS_Shape *anID;
+	for (int i = 0; i < dims1[0]; i++) {
+		anID = get_ocShapeInstance( rawP1[ i]);
+		if (anID->IsNull()) {
+			libData->MTensor_disown(p1);
+			MArgument_setInteger(res, 0);
+			return LIBRARY_FUNCTION_ERROR;
+		}
+
+		for (TopExp_Explorer wire (*anID, TopAbs_WIRE);
+				wire.More(); wire.Next()) {
+			loft.AddWire(TopoDS::Wire (wire.Current()));
+		}
+	}
+	libData->MTensor_disown(p1);
+
+	Standard_Boolean compatQ = Standard_False;
+	if (opt & (1 << 2)) compatQ = Standard_True;
+
+	loft.CheckCompatibility(compatQ);
+
+	TopoDS_Shape shape  = loft.Shape();
+
+	*instance = shape;
+
+	MArgument_setInteger(res, 0);
+	return 0;
+}
+
+
 DLLEXPORT int makeTransformation(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
 {
 	mint id = MArgument_getInteger(Args[0]);
@@ -828,7 +888,10 @@ DLLEXPORT int makeCircle(WolframLibraryData libData, mint Argc, MArgument *Args,
 		return 0;
 	}
 
-	TopoDS_Shape shape  = edge.Shape();
+	BRepBuilderAPI_MakeWire wire;
+	wire = BRepBuilderAPI_MakeWire(edge);
+
+	TopoDS_Shape shape  = wire.Shape();
 
 	*instance = shape;
 
