@@ -350,6 +350,7 @@ Test[
 	Options[OpenCascadeShapeSurfaceMeshToBoundaryMesh]
 	,
 	{"ElementMeshOptions" -> Automatic, 
+	"MarkerMethod" -> Automatic, 
  	"ShapeSurfaceMeshOptions" -> Automatic}
 	,
 	TestID->"OpenCascadeLink_Docs_Basic-20200501-K9K6O8-bug-391736"

@@ -77,7 +77,9 @@ boolOperationTest[shapeAssoc_Association, operation_, bugID_ : ""] :=
              res = {OpenCascadeShapeType[shape] === "Compound", 
              		MatchQ[DeleteCases[solidQ, True], <|"RegionDimension" -> _|>] || solidQ};
              iPrint["Type check" <> ToString /@ Keys[shapeAssoc]];
-             TrueQ[And @@ res] || {shapeAssoc, res}
+             TrueQ[And @@ res] || <|"Shapes" -> shapeAssoc,  
+             						"Operation" -> operation,
+             						"Result" -> res|>
              ,
              True
              ,
