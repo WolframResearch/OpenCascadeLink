@@ -39,7 +39,7 @@
 #include <BRepBuilderAPI_MakePolygon.hxx>
 #include <Geom_BSplineSurface.hxx>	
 #include <BRepBuilderAPI_Sewing.hxx>
-#include <BRepBuilderAPI_GTransform.hxx>
+#include <BRepBuilderAPI_Transform.hxx>
 
 #include <gp_Circ.hxx>
 #include <Geom_Circle.hxx>
@@ -737,8 +737,10 @@ DLLEXPORT int makeTransformation(WolframLibraryData libData, mint Argc, MArgumen
 
 	libData->MTensor_disown(p1);
 
-	gp_GTrsf gtrsf(trsf);
-	TopoDS_Shape shape = BRepBuilderAPI_GTransform(*anID, gtrsf, Standard_True).Shape();
+	//gp_GTrsf does not generate a correct mirror transform with
+	//BRepBuilderAPI_GTransform
+	//gp_GTrsf gtrsf(trsf);
+	TopoDS_Shape shape = BRepBuilderAPI_Transform(*anID, trsf, Standard_True).Shape();
 
 	*instance = shape;
 
