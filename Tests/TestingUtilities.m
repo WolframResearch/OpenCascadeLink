@@ -45,24 +45,25 @@ maskedQTest[qTest_, opts : OptionsPattern[]][actual_, expected_] :=
     ];
 
 boolOperationTest[shapeAssoc_Association, operation_, bugID_ : ""] :=
-     Block[ {shape, bmesh, groups, temp, colors, compoundRegion, isEmpty = False, solidQ, res, dim},
+     Block[ {shape, bmesh, groups, temp, colors, compoundRegion, isEmpty = False, solidQ, res, dim,
+     		timeConstrain = 20},
          Test[
              shape = Switch[operation,
                "Difference",
-               compoundRegion = RegionDifference @@ shapeAssoc;
+               compoundRegion = TimeConstrained[RegionDifference @@ shapeAssoc, timeConstrain, $timedOut];
                isEmpty = (Head[compoundRegion] === EmptyRegion);
                OpenCascadeShapeDifference @@ (OpenCascadeShape /@ shapeAssoc),
                "Union",
-               compoundRegion = RegionUnion @@ shapeAssoc;
+               compoundRegion = TimeConstrained[RegionUnion @@ shapeAssoc, timeConstrain, $timedOut];
                OpenCascadeShapeUnion @@ (OpenCascadeShape /@ shapeAssoc),
                "Intersection",
-               compoundRegion = RegionIntersection @@ shapeAssoc;
+               compoundRegion = TimeConstrained[RegionIntersection @@ shapeAssoc, timeConstrain, $timedOut];
                isEmpty = (Head[compoundRegion] === EmptyRegion);
                OpenCascadeShapeIntersection @@ (OpenCascadeShape /@ shapeAssoc),
                True,
                Return[$Failed]
                ];
-             solidQ = If[TrueQ[(dim = RegionDimension[compoundRegion]) <= 2]	
+             solidQ = If[TrueQ[(dim = TimeConstrained[RegionDimension[compoundRegion], timeConstrain]) <= 2]	
              			,
              			<|"RegionDimension" -> dim,
              			"OpenCascadeShapeSolids" -> maskedQTest[SameQ, OpenCascadeShapeSolids[shape], {}],
@@ -75,6 +76,7 @@ boolOperationTest[shapeAssoc_Association, operation_, bugID_ : ""] :=
  						"OpenCascadeShapeNumberOfSolids" -> maskedQTest[MatchQ, OpenCascadeShapeNumberOfSolids[shape], _?(# > 0 &)]|>];
              res = {OpenCascadeShapeType[shape] === "Compound", 
              		MatchQ[DeleteCases[solidQ, True], <|"RegionDimension" -> _|>] || solidQ};
+             iPrint["Type check" <> ToString /@ Keys[shapeAssoc]];
              TrueQ[And @@ res] || {shapeAssoc, res}
              ,
              True
@@ -87,6 +89,7 @@ boolOperationTest[shapeAssoc_Association, operation_, bugID_ : ""] :=
          Test[
          	 (* OpenCascadeShapeSurfaceMeshToBoundaryMesh on Empty regions will return $Failed *)
          	 bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shape];
+         	 iPrint["Rendering check" <> ToString /@ Keys[shapeAssoc]];
          	 {shapeAssoc,
 	         (maskedQTest[SameQ, #[[1]], #[[2]]])& @
 	         If[isEmpty
