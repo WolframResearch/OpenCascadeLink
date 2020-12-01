@@ -756,7 +756,7 @@ Module[{c, inci, sewenFaces},
 
 OpenCascadeShape[TransformedRegion[r_, tf:TransformationFunction[mat_]]] /;
 	MatrixQ[mat, NumericQ] && (Dimensions[mat] == {4,4}) :=
-Module[{shpae}
+Module[{shape},
 		shape = OpenCascadeShape[r];
 
 		If[ !OpenCascadeShapeExpressionQ[shape],
@@ -1075,6 +1075,28 @@ Module[{coords, faces, polygons, faceCoords},
 
 
 (* wires in 3D *)
+
+OpenCascadeShape[OpenCascadeCircle[axis:{center_, normal_}, radius_, pp:{p1_, p2_}]] /;
+		Dimensions[axis] === {2, 3} && MatrixQ[axis, NumericQ] &&
+		NumericQ[radius] && radius > 0 &&
+		Dimensions[pp] === {2, 3} && MatrixQ[pp, NumericQ] := 
+Module[{p, instance, res, r, a1, a2, tp, startStopCoord},
+
+	tp = pack[ N[pp]];
+
+	p = pack[ N[ axis]];
+	r = N[radius];
+
+	a1 = N[0];
+	a2 = N[0];
+
+	instance = OpenCascadeShapeCreate[];
+	(* the 1 is to make use of the coordinates and not the angles *)
+	res = makeCircleFun[ instanceID[ instance], p, r, 1, a1, a2, tp];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instance
+]
 
 OpenCascadeShape[OpenCascadeCircle[axis:{center_, normal_}, radius_, a:{angle1_, angle2_}]] /;
 		Dimensions[axis] === {2, 3} && MatrixQ[axis, NumericQ] &&
