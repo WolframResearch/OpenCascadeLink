@@ -26,7 +26,7 @@ maskedQTest[qTest_, opts : OptionsPattern[]][actual_, expected:List[_RepeatedNul
 		If[MatchQ[expected, List[_RepeatedNull]] && SameQ[actual, {}], Return[True]];
 		expectedPattern = First[First[expected]];
 		res = Map[If[qTest[#, expectedPattern], True, #]&, actual];
-		If[TrueQ[And @@ res],
+		If[TrueQ[And @@ res] && res =!= {},
 			True,
 			<|"actual" -> DeleteCases[res, True],
 			"expected" -> expected|>
@@ -66,20 +66,22 @@ boolOperationTest[shapeAssoc_Association, operation_, bugID_ : ""] :=
              solidQ = If[TrueQ[(dim = TimeConstrained[RegionDimension[compoundRegion], timeConstrain]) <= 2]	
              			,
              			<|"RegionDimension" -> dim,
+             			"CompoundQ" -> OpenCascadeShapeType[shape] === "Compound",
              			"OpenCascadeShapeSolids" -> maskedQTest[SameQ, OpenCascadeShapeSolids[shape], {}],
              			"OpenCascadeShapeNumberOfSolids" -> maskedQTest[SameQ, OpenCascadeShapeNumberOfSolids[shape], 0]|>
              			,
              			(* RegionDimension could return unevaluated.
              			Assuming the compound region is a solid. *)
              			<|"RegionDimension" -> dim,
+             			"CompoundQ" -> OpenCascadeShapeType[shape] === "Compound",
              			"OpenCascadeShapeSolids" -> maskedQTest[MatchQ, OpenCascadeShapeSolids[shape], {_OpenCascadeShapeExpression..}],
  						"OpenCascadeShapeNumberOfSolids" -> maskedQTest[MatchQ, OpenCascadeShapeNumberOfSolids[shape], _?(# > 0 &)]|>];
-             res = {OpenCascadeShapeType[shape] === "Compound", 
-             		MatchQ[DeleteCases[solidQ, True], <|"RegionDimension" -> _|>] || solidQ};
              iPrint["Type check" <> ToString /@ Keys[shapeAssoc]];
-             TrueQ[And @@ res] || <|"Shapes" -> shapeAssoc,  
-             						"Operation" -> operation,
-             						"Result" -> res|>
+             MatchQ[res = DeleteCases[solidQ, True], <|"RegionDimension" -> _|>] 
+            	|| 
+ 						<|"Shapes" -> shapeAssoc,  
+ 						"Operation" -> operation,
+ 						"Result" -> res|>
              ,
              True
              ,
