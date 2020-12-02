@@ -45,7 +45,7 @@ additionalSurfaces = <|polygonWithHole -> Polygon[{{0,0,0},{3,0,0},{3,3,0},{0,3,
 	openMesh -> ToBoundaryMesh[ImplicitRegion[-4 y^2-4 x y^2+y^4+4 x z^2+4 x^2 z^2+2 y^2 z^2+z^4==0,{x,y,z}],{{-1,1},{-1,1},{-1,1}}],
 	closedMesh -> ToBoundaryMesh[ImplicitRegion[x^6-5 x^4 y+3 x^4 y^2+10 x^2 y^3+3 x^2 y^4-y^5+y^6+z^2<=1,{x,y,z}]]|>;
 
-surfaceList = {bss, 
+surfaceList = {(*bss, *)
 	Polygon[{{0,0,0},{1,0,0},{1,1,0},{0,1,0}}], 
 	Triangle[{{0,0,0},{1,0,0},{1,1,0},{0,1,0}}]
 	};
