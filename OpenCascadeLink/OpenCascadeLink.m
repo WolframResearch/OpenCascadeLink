@@ -766,7 +766,13 @@ Module[{shape},
 		OpenCascadeShape[shape, tf]
 ]
 
+(* this is here for backward compatiblity *)
 OpenCascadeShape[shape_, tf:TransformationFunction[mat_]] /;
+	OpenCascadeShapeExpressionQ[shape] &&
+	MatrixQ[mat, NumericQ] && (Dimensions[mat] == {4,4}) :=
+OpenCascadeShapeTransformation[shape, tf]
+
+OpenCascadeShapeTransformation[shape_, tf:TransformationFunction[mat_]] /;
 	OpenCascadeShapeExpressionQ[shape] &&
 	MatrixQ[mat, NumericQ] && (Dimensions[mat] == {4,4}) :=
 Module[{instance, tm, res},
