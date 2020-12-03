@@ -1138,7 +1138,7 @@ Module[{p, instance, res},
 	p = pack[ N[ coords]];
 
 	instance = OpenCascadeShapeCreate[];
-	res = makeLineFun[ instanceID[ instance], N[ p]];
+	res = makeLineFun[ instanceID[ instance], p];
 	If[ res =!= 0, Return[$Failed, Module]];
 
 	instance
