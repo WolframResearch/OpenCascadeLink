@@ -914,7 +914,7 @@ DLLEXPORT int makeLine(WolframLibraryData libData, mint Argc, MArgument *Args, M
 	TopoDS_Shape *instance = get_ocShapeInstance( id);
 
 	if (instance == NULL || type1 != MType_Real ||
-		rank1 != 2 || dims1[0] < 3 || dims1[1] != 3) {
+		rank1 != 2 || dims1[0] < 2 || dims1[1] != 3) {
 		libData->MTensor_disown(p1);
 		MArgument_setInteger(res, 0);
 		return LIBRARY_FUNCTION_ERROR;
