@@ -41,6 +41,9 @@ OpenCascadeShapeLoft::usage = "OpenCascadeShapeLoft[ {shape1, shape2,..}] return
 (* https://www.opencascade.com/content/creating-ellipsoid-sphere-transformation-function-applied *)
 OpenCascadeShapeTransformation::usage = "OpenCascadeShapeTransformation[ shape, tfun] returns a new instance of an OpenCascade expression that applies the transformation function tfun to the OpenCascade expression shape.";
 
+OpenCascadeShapeSolid::usage = "OpenCascadeShapeSolid[ {shape1,..}] returns a new instance of an OpenCascade expression with a solid from shape1, ...";
+OpenCascadeShapeWire::usage = "OpenCascadeShapeWire[ {shape1,..}] returns a new instance of an OpenCascade expression with a wire from shape1, ...";
+
 OpenCascadeShapeSurfaceMesh::usage = "OpenCascadeShapeSurfaceMesh[ shape] returns a new instance of an OpenCascade expression with it's surface meshed.";
 OpenCascadeShapeSurfaceMeshCoordinates::usage = "OpenCascadeShapeSurfaceMeshCoordinates[ shape] returns the meshed shape's coordinates.";
 OpenCascadeShapeSurfaceMeshElements::usage = "OpenCascadeShapeSurfaceMeshElements[ shape] returns the meshed shape's surface elements.";
@@ -147,6 +150,9 @@ Module[{libDir, oldpath, preLoadLibs, success},
 
 	makeCircleFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeCircle", {Integer, {Real, 2, "Shared"}, Real, Integer, Real, Real, {Real, 2, "Shared"}}, Integer];
 	makeLineFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeLine", {Integer, {Real, 2, "Shared"}}, Integer];
+
+	makeSolidFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSolid", {Integer, {Integer, 1, "Shared"}}, Integer];
+	makeWireFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeWire", {Integer, {Integer, 1, "Shared"}}, Integer];
 
 	makeDifferenceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeDifference", {Integer, Integer, Integer}, Integer];
 	makeIntersectionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeIntersection", {Integer, Integer, Integer}, Integer];
@@ -832,8 +838,9 @@ Module[
 
 	instance
 ]
-OpenCascadeShapeRotationalSweep[ shape1_, {p1_, p2_}] :=
-	OpenCascadeShapeRotationalSweep[shape1,{p1, p2}, 2 Pi]
+OpenCascadeShapeRotationalSweep[ shape_, {p1_, p2_}] /;
+	OpenCascadeShapeExpressionQ[shape] :=
+OpenCascadeShapeRotationalSweep[shape, {p1, p2}, 2 Pi]
 
 
 OpenCascadeShapeLinearSweep[ shape1_, {p1_, p2_}] /;
@@ -1150,6 +1157,46 @@ Module[{p, instance, res},
 	instance
 ]
 
+
+OpenCascadeShapeSolid[oces:{e__}] /;
+	 And @@ (OpenCascadeShapeExpressionQ /@ oces) :=
+Module[{p, instance, res},
+
+	ids = pack[ instanceID /@ oces];
+	ids = DeleteDuplicates[ ids];
+
+	instance = OpenCascadeShapeCreate[];
+	res = makeSolidFun[ instanceID[ instance], ids];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instance
+]
+
+OpenCascadeShapeSolid[e__] /;
+	 And @@ (OpenCascadeShapeExpressionQ /@ {e}) :=
+OpenCascadeShapeSolid[{e}]
+
+(* OCSFace can not construct a face from wires without
+a 'reference' surface *)
+
+OpenCascadeShapeWire[oces:{e__}] /;
+	 And @@ (OpenCascadeShapeExpressionQ /@ oces) :=
+Module[{p, instance, res},
+
+	ids = pack[ instanceID /@ oces];
+	ids = DeleteDuplicates[ ids];
+
+	instance = OpenCascadeShapeCreate[];
+	res = makeWireFun[ instanceID[ instance], ids];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instance
+]
+
+OpenCascadeShapeWire[e__] /;
+	 And @@ (OpenCascadeShapeExpressionQ /@ {e}) :=
+OpenCascadeShapeWire[{e}]
+
 (*
 	open cascade Boolean operation
 *)
@@ -1344,7 +1391,7 @@ Module[
 	instances[[ord]]
 ]
 
-OpenCascadeShapeSolids[shape_] :=
+OpenCascadeShapeSolids[shape_] /; OpenCascadeShapeExpressionQ[shape] :=
 	OpenCascadeShapeSolids[shape, All]
 
 
@@ -1380,7 +1427,7 @@ Module[
 	instances[[ord]]
 ]
 
-OpenCascadeShapeFaces[shape_] :=
+OpenCascadeShapeFaces[shape_] /; OpenCascadeShapeExpressionQ[shape] :=
 	OpenCascadeShapeFaces[shape, All]
 
 OpenCascadeShapeEdges[shape_, edgeIDs_] /; OpenCascadeShapeExpressionQ[shape] :=
@@ -1415,7 +1462,7 @@ Module[
 	instances[[ord]]
 ]
 
-OpenCascadeShapeEdges[shape_] :=
+OpenCascadeShapeEdges[shape_] /; OpenCascadeShapeExpressionQ[shape] :=
 	OpenCascadeShapeEdges[shape, All]
 
 OpenCascadeShapeVertices[shape_, vertexIDs_] /; OpenCascadeShapeExpressionQ[shape] :=
@@ -1450,7 +1497,7 @@ Module[
 	instances[[ord]]
 ]
 
-OpenCascadeShapeVertices[shape_] :=
+OpenCascadeShapeVertices[shape_] /; OpenCascadeShapeExpressionQ[shape] :=
 	OpenCascadeShapeVertices[shape, All]
 
 
@@ -1482,7 +1529,7 @@ Module[
 	instance
 ]
 
-OpenCascadeShapeFillet[shape_, radius_] :=
+OpenCascadeShapeFillet[shape_, radius_] /; OpenCascadeShapeExpressionQ[shape] :=
 	OpenCascadeShapeFillet[ shape, radius, All] 
 
 
@@ -1513,7 +1560,7 @@ Module[
 	instance
 ]
 
-OpenCascadeShapeChamfer[shape_, distance_] :=
+OpenCascadeShapeChamfer[shape_, distance_] /; OpenCascadeShapeExpressionQ[shape] :=
 	OpenCascadeShapeChamfer[ shape, distance, All] 
 
 
