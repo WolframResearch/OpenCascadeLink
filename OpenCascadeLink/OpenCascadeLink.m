@@ -70,6 +70,8 @@ OpenCascadeShapeImport::usage = "OpenCascadeShapeImport[ \"file.ext\", expr] imp
 OpenCascadeTorus::usage = "OpenCascadeTorus[ axis, r1, r2] represents an open cascade torus.";
 OpenCascadeCircle::usage = "OpenCascadeCircle[{center, vector}, radius, {angle1, angle2}] represents an open cascade circle.";
 
+OpenCascadeAxis3D::usage = "OpenCascadeAxis3D[o, s] returns a Graphics3D with an axis system with origin o and possibly scaled by s."
+
 Options[OpenCascadeShapeExport] = {"ShapeSurfaceMeshOptions"->Automatic};
 
 Options[OpenCascadeShapeSurfaceMesh] = Sort[ {
@@ -187,6 +189,20 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	needInitialization = False;
 ]
 
+
+(* Utility functions *)
+
+OpenCascadeAxis3D[o_ : {0, 0, 0}, s_ : 1] := OpenCascadeAxis3D[o, {s, s, s}]
+OpenCascadeAxis3D[o_ : {0, 0, 0}, {sx_, sy_, sz_}] :=
+Graphics3D[{
+	{Red, Arrow[{o, o + {1, 0, 0}*sx}]},
+	{Green, Arrow[{o, o + {0, 1, 0}*sy}]},
+	{Blue, Arrow[{o, o + {0, 0, 1}*sz}]},
+	{	Text["X", o + {1, 0, 0}*sx],
+		Text["Y", o + {0, 1, 0}*sy],
+		Text["Z", o + {0, 0, 1}*sz]
+	}
+}, Axes -> True];
 
 (*
  Functions for working with OpenCascadeShapeExpression
