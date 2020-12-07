@@ -1293,7 +1293,7 @@ DLLEXPORT int makeDifference(WolframLibraryData libData, mint Argc, MArgument *A
 
 	if (!booleanOP.IsDone() || booleanOP.HasErrors()) {
 		MArgument_setInteger(res, ERROR);
-		instance = NULL;
+		return 0;
 	}
 
 	TopoDS_Shape shape = booleanOP.Shape();
@@ -1329,7 +1329,7 @@ DLLEXPORT int makeIntersection(WolframLibraryData libData, mint Argc, MArgument 
 
 	if (!booleanOP.IsDone() || booleanOP.HasErrors()) {
 		MArgument_setInteger(res, ERROR);
-		instance = NULL;
+		return 0;
 	}
 
 	TopoDS_Shape shape = booleanOP.Shape();
@@ -1365,7 +1365,7 @@ DLLEXPORT int makeUnion(WolframLibraryData libData, mint Argc, MArgument *Args, 
 
 	if (!booleanOP.IsDone() || booleanOP.HasErrors()) {
 		MArgument_setInteger(res, ERROR);
-		instance = NULL;
+		return 0;
 	}
 
 	TopoDS_Shape shape = booleanOP.Shape();
