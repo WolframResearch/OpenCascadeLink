@@ -587,7 +587,7 @@ Module[{cylinder, ball1, ball2},
 	cylinder = OpenCascadeShape[ Cylinder[{pMin, pMax}, r]];
 	ball1 = OpenCascadeShape[ Ball[ pMin, r]];
 	ball2 = OpenCascadeShape[ Ball[ pMax, r]];
-	OpenCascadeShapeUnion[ball1, cylinder, ball2]
+	OpenCascadeShapeSolid[ OpenCascadeShapeUnion[ball1, cylinder, ball2]]
 ]
 
 OpenCascadeShape[CapsuleShape[{pMin_, pMax_}]] /;
@@ -725,7 +725,7 @@ Module[{cp, op, ip, s1, s2, shape, pc, pi, ipp},
 			Return[$Failed, Module];
 		];
 
-	shape
+	OpenCascadeShapeSolid[ shape]
 ]
 
 
@@ -754,7 +754,7 @@ OpenCascadeShape[SphericalShell[c_, {r1_, r2_}]] /;
 		NumericQ[r1] && NumericQ[r2] :=
 Module[{balls},
 	balls = OpenCascadeShape /@ {Ball[c, r2], Ball[c, r1]};
-	OpenCascadeShapeDifference @@ balls
+	OpenCascadeShapeSolid[ OpenCascadeShapeDifference @@ balls]
 ]
 
 
