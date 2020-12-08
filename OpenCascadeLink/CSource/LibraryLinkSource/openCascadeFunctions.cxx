@@ -474,6 +474,11 @@ DLLEXPORT int makeSewing(WolframLibraryData libData, mint Argc, MArgument *Args,
 	int rank1 = libData->MTensor_getRank(p1);
 	const mint* dims1 = libData->MTensor_getDimensions(p1);
 
+	mint opt = MArgument_getInteger(Args[2]);
+
+	Standard_Boolean solidQ = Standard_False;
+	if (opt & (1 << 1)) solidQ = Standard_True;
+
 	TopoDS_Shape *instance = get_ocShapeInstance( id);
 
 	if (instance == NULL || type1 != MType_Integer ||
@@ -507,13 +512,17 @@ DLLEXPORT int makeSewing(WolframLibraryData libData, mint Argc, MArgument *Args,
 
 	TopoDS_Shape sewedshape  = sew.SewedShape();
 
-	BRepBuilderAPI_MakeSolid shape;
-	for (TopExp_Explorer anExpSF (sewedshape, TopAbs_SHELL);
-			anExpSF.More(); anExpSF.Next()) {
-		shape.Add(TopoDS::Shell (anExpSF.Current()));
+	if (solidQ) {
+		BRepBuilderAPI_MakeSolid shape;
+		for (TopExp_Explorer anExpSF (sewedshape, TopAbs_SHELL);
+				anExpSF.More(); anExpSF.Next()) {
+			shape.Add(TopoDS::Shell (anExpSF.Current()));
+		}
+		*instance = shape;
+	} else {
+		TopoDS_Shape shape = sewedshape;
+		*instance = shape;
 	}
-
-	*instance = shape;
 
 	MArgument_setInteger(res, 0);
 	return 0;

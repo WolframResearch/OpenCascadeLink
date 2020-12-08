@@ -87,6 +87,10 @@ Options[OpenCascadeShapeSurfaceMeshToBoundaryMesh] = Sort[{
 	"MarkerMethod"->Automatic
 }];
 
+Options[OpenCascadeShapeSewing] = Sort[ {
+	"BuildSolid" -> Automatic
+}];
+
 Options[OpenCascadeShapeLoft] = Sort[ {
 	"BuildSolid" -> Automatic,
 	"CheckCompatibility" -> Automatic
@@ -141,7 +145,7 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	makePrismFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makePrism", {Integer, {Real, 2, "Shared"}, {Real, 2, "Shared"}}, Integer];
 	makeTorusFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeTorus", {Integer, {Real, 2, "Shared"}, Real, Real, Real, Real, Real}, Integer];
 
-	makeSewingFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSewing", {Integer, {Integer, 1, "Shared"}}, Integer];
+	makeSewingFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSewing", {Integer, {Integer, 1, "Shared"}, Integer}, Integer];
 	makeRotationalSweepFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeRotationalSweep", {Integer, Integer, {Real, 2, "Shared"}, Real}, Integer];
 	makeLinearSweepFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeLinearSweep", {Integer, Integer, {Real, 2, "Shared"}}, Integer];
 	makeTransformationFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeTransformation", {Integer, Integer, {Real, 2, "Shared"}}, Integer];
@@ -641,7 +645,7 @@ Module[
 	bsurfs = Select[bsurfs, OpenCascadeShapeExpressionQ];
 
 	If[ Length[ bsurfs] > 0,
-		OpenCascadeShapeSewing[bsurfs]
+		OpenCascadeShapeSewing[bsurfs, "BuildSolid" -> True]
 	,
 		$Failed
 	]
@@ -667,7 +671,7 @@ Module[{c, inci, sewenFaces},
 	faces = OpenCascadeShape[Polygon[#]]& /@ (c[[#]]& /@ inci);
 
 	(* This is sewing and making it a solid *)
-	sewenFaces = OpenCascadeShapeSewing[faces];
+	sewenFaces = OpenCascadeShapeSewing[faces, "BuildSolid" -> True];
 
 	sewenFaces
 ]
@@ -704,6 +708,7 @@ Module[{cp, op, ip, s1, s2, shape, pc, pi, ipp},
 	If[ Head[op] =!= Polyhedron, Return[$Failed, Module]];
 
 	s1 = OpenCascadeShape[Polygon @@ op];
+	s1 = OpenCascadeShapeSolid[s1];
 	If[ !OpenCascadeShapeExpressionQ[ s1], Return[$Failed, Module]];
 
 	Switch[ Head[ip],
@@ -714,8 +719,10 @@ Module[{cp, op, ip, s1, s2, shape, pc, pi, ipp},
 			(* ip needs to be reversed *)
 			ipp = Polyhedron[pc, Reverse /@ pi];
 			s2 = OpenCascadeShape[Polygon @@ ipp];
+			s2 = OpenCascadeShapeSolid[s2];
 			If[ !OpenCascadeShapeExpressionQ[ s2], Return[$Failed, Module]];
 			shape = OpenCascadeShapeDifference[s1, s2];
+			shape = OpenCascadeShapeSolid[shape];
 			If[ !OpenCascadeShapeExpressionQ[ shape], Return[$Failed, Module]];
 		,
 		EmptyRegion,
@@ -725,7 +732,7 @@ Module[{cp, op, ip, s1, s2, shape, pc, pi, ipp},
 			Return[$Failed, Module];
 		];
 
-	OpenCascadeShapeSolid[ shape]
+	shape
 ]
 
 
@@ -743,7 +750,7 @@ Module[{c, inci, sewenFaces},
 	faces = OpenCascadeShape[Polygon[#]]& /@ (c[[#]]& /@ inci);
 
 	(* This is sewing and making it a solid *)
-	sewenFaces = OpenCascadeShapeSewing[faces];
+	sewenFaces = OpenCascadeShapeSewing[faces, "BuildSolid" -> True];
 
 	sewenFaces
 ]
@@ -770,7 +777,7 @@ Module[{c, inci, sewenFaces},
 
 	faces = OpenCascadeShape[Polygon[#]]& /@ (c[[#]]& /@ inci);
 	(* This is sewing and making it a solid *)
-	sewenFaces = OpenCascadeShapeSewing[faces];
+	sewenFaces = OpenCascadeShapeSewing[faces, "BuildSolid" -> True];
 
 	sewenFaces
 ]
@@ -820,20 +827,25 @@ OpenCascadeShape[ br_BooleanRegion] /; Length[br] == 2 :=
 
 (* Surface operations *)
 
-OpenCascadeShapeSewing[oces:{e1_, e2__}] /;
+OpenCascadeShapeSewing[oces:{e1_, e2__}, opts:OptionsPattern[OpenCascadeShapeSewing]] /;
 	 And @@ (OpenCascadeShapeExpressionQ /@ oces) :=
-Module[{p, instance, res},
+Module[{p, instance, res, optParam, temp},
 
 	ids = pack[ instanceID /@ oces];
 	ids = DeleteDuplicates[ ids];
 
+	optParam = 0;
+
+	temp = OptionValue["BuildSolid"];
+	If[ temp === True, optParam = BitSet[ optParam, 1]; ];
+
 	instance = OpenCascadeShapeCreate[];
-	res = makeSewingFun[ instanceID[ instance], ids];
+	res = makeSewingFun[ instanceID[ instance], ids, optParam];
 	If[ res =!= 0, Return[$Failed, Module]];
 
 	instance
 ]
-OpenCascadeShapeSewing[{e1_}] /;
+OpenCascadeShapeSewing[{e1_}, opts:OptionsPattern[OpenCascadeShapeSewing]] /;
 	 OpenCascadeShapeExpressionQ[e1] := e1
 
 OpenCascadeShapeRotationalSweep[ shape1_, {p1_, p2_}, a_] /;
