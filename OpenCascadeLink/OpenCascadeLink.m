@@ -1748,7 +1748,7 @@ Module[
 				bMeshOpts, "MarkerOffset"];
 			If[ !MatchQ[ markerOffset, {_Integer?Positive}],
 				markerOffset = 0;
-		];
+			];
 
 			offsets = OpenCascadeShapeSurfaceMeshElementOffsets[instance];
 			stop = FoldList[Plus, offsets];
