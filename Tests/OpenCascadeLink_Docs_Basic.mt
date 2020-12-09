@@ -102,7 +102,7 @@ MapIndexed[
 MapIndexed[
     basicShapeTests[#, OCShapeType -> 
         If[ MemberQ[{polygonWithHole, openMesh, closedMesh}, First[First[#2]]],
-            "Solid",
+            "Shell",
             "Face"
         ], TestIDSuffix -> ToString[First[First[#2]]]] &,
     surfaces
@@ -149,9 +149,23 @@ Test[
     sewenFaces = OpenCascadeShapeSewing[ocFaces];
     OpenCascadeShapeType[sewenFaces]
     ,
-    "Solid"
+    "Shell"
     ,
     TestID->"OpenCascadeLink_Docs_Basic-20200310-B3T8H7"
+]
+
+Test[
+    data = {Polygon[{{0, 1, 0}, {1, 0, 0}, {0, 0, 0}}], 
+      Polygon[{{0, 0, 2}, {1, 0, 0}, {0, 0, 0}}], 
+      Polygon[{{0, 0, 2}, {0, 1, 0}, {1, 0, 0}}], 
+      Polygon[{{0, 0, 2}, {0, 0, 0}, {0, 1, 0}}]};
+    ocFaces = OpenCascadeShape[#] & /@ data;
+    sewenFaces = OpenCascadeShapeSewing[ocFaces, "BuildSolid" -> True];
+    OpenCascadeShapeType[sewenFaces]
+    ,
+    "Solid"
+    ,
+    TestID->"OpenCascadeLink_Docs_Basic-20201209-B3T8H7"
 ]
 
 Test[
@@ -163,14 +177,13 @@ Test[
     TestID->"OpenCascadeLink_Docs_Basic-20200310-Y0F9U2"
 ]
 
-parametrizeCurve[pts_List, a : (_?NumericQ) : 1/2] :=
-	FoldList[Plus, 0, Normalize[(Norm /@ Differences[pts])^a, Total]] /;
-       MatrixQ[pts, NumericQ];
-
 
 (* BSplineSurface *)
 
 Test[
+	parametrizeCurve[pts_List, a : (_?NumericQ) : 1/2] :=
+		FoldList[Plus, 0, Normalize[(Norm /@ Differences[pts])^a, Total]] /;
+	       MatrixQ[pts, NumericQ];
 	pp = PolarPlot[1 + 0.5 Sin[2 \[Theta]], {\[Theta], 0, 2 \[Pi]}, 
    		MaxRecursion -> 1, PlotPoints -> 45];
 	coordinates = First[Cases[Normal[pp], Line[l_] :> l, \[Infinity]]];
@@ -183,7 +196,8 @@ Test[
     surface = OpenCascadeShape[bss];
     p1 = OpenCascadeShape[Polygon[top]];
     p2 = OpenCascadeShape[Polygon[bottom]];
-    bSplineSurface = OpenCascadeShapeSewing[{surface, p1, p2}];
+    bSplineSurface = OpenCascadeShapeSewing[{surface, p1, p2},
+		"BuildSolid"->True];
     OpenCascadeShapeType[bSplineSurface]
     ,
     "Solid"
@@ -234,7 +248,7 @@ Test[
           1/Sqrt[2]}, {1, 1/Sqrt[2], 1}}], {d, pts}];
 
     bsurfs = OpenCascadeShape /@ bsss;
-    ellipsoidalBSpline = OpenCascadeShapeSewing[bsurfs];
+    ellipsoidalBSpline = OpenCascadeShapeSewing[bsurfs, "BuildSolid"->True];
     OpenCascadeShapeType[ellipsoidalBSpline]
     ,
     "Solid"
