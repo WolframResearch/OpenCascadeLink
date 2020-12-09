@@ -44,25 +44,15 @@ maskedQTest[qTest_, opts : OptionsPattern[]][actual_, expected_] :=
         ]
     ];
 
-boolOperationTest[shapeAssoc_Association, operation_, bugID_ : ""] :=
-     Block[ {shape, bmesh, groups, temp, colors, compoundRegion, isEmpty = False, solidQ, res, dim,
-     		timeConstrain = 20},
+boolOperationTest[shapeAssoc_Association, operation_String, bugID_ : ""] :=
+With[{timeConstrain = 20, rOp = Symbol["Region"<>operation], ocOp = Symbol["OpenCascadeShape"<>operation] },
+     Block[ {shape, bmesh, groups, temp, colors, compoundRegion, isEmpty = False, solidQ, res, dim},
          Test[
-             shape = Switch[operation,
-               "Difference",
-               compoundRegion = TimeConstrained[RegionDifference @@ shapeAssoc, timeConstrain, $timedOut];
-               isEmpty = (Head[compoundRegion] === EmptyRegion);
-               OpenCascadeShapeDifference @@ (OpenCascadeShape /@ shapeAssoc),
-               "Union",
-               compoundRegion = TimeConstrained[RegionUnion @@ shapeAssoc, timeConstrain, $timedOut];
-               OpenCascadeShapeUnion @@ (OpenCascadeShape /@ shapeAssoc),
-               "Intersection",
-               compoundRegion = TimeConstrained[RegionIntersection @@ shapeAssoc, timeConstrain, $timedOut];
-               isEmpty = (Head[compoundRegion] === EmptyRegion);
-               OpenCascadeShapeIntersection @@ (OpenCascadeShape /@ shapeAssoc),
-               True,
-               Return[$Failed]
-               ];
+			shape = CompoundExpression[
+               		compoundRegion = TimeConstrained[rOp @@ #, timeConstrain, $timedOut],
+               		isEmpty = (Head[compoundRegion] === EmptyRegion),
+               		ocOp @@ (OpenCascadeShape /@ #)
+				]&[shapeAssoc];
              solidQ = If[TrueQ[(dim = TimeConstrained[RegionDimension[compoundRegion], timeConstrain]) <= 2]	
              			,
              			<|"RegionDimension" -> dim,
@@ -116,3 +106,4 @@ boolOperationTest[shapeAssoc_Association, operation_, bugID_ : ""] :=
                StringJoin["-" <> ToString[#] & /@ Keys[shapeAssoc]] <> bugID <> "-bug-400507-401678"
          ];
      ]
+]
