@@ -100,6 +100,7 @@ Begin["`Private`"]
 
 
 pack = Developer`ToPackedArray;
+packedQ = Developer`PackedArrayQ;
 
 $OpenCascadeVersion = "7.4.0"
 
@@ -1701,13 +1702,38 @@ Module[{offsets},
 	offsets
 ]
 
+
+ClearAll[uniqueEdgeMarkers];
+uniqueEdgeMarkers[l_] :=
+Module[
+	{union, newMarker, maxMarker = Max[l], lookup = <||>, value},
+	newMarker = ConstantArray[0, {Length[l]}];
+	Do[
+		(* we want the sort *)
+		union = Union[l[[i]]];
+		If[Length[union] == 1,
+			newMarker[[i]] = union[[1]];
+  		,
+			value = lookup[union];
+			If[MissingQ[value],
+				maxMarker += 1;
+				lookup[union] = maxMarker;
+			];
+  		newMarker[[i]] = lookup[union];
+  		];
+	, {i, Length[l]}];
+
+	newMarker
+]
+
 OpenCascadeShapeSurfaceMeshToBoundaryMesh[
 	instance:OpenCascadeShapeExpression[ id_]?(testOpenCascadeShapeExpression[OpenCascadeShapeSurfaceMeshToBoundaryMesh]),
 	opts:OptionsPattern[OpenCascadeShapeSurfaceMeshToBoundaryMesh]
 ] := 
 Module[
 	{surfaceMeshOpts, ok, coords, bEle, offsets, stop, start, spans, markers,
-	markerOffset, bMeshOpts, elementMeshOpts, markerMethod},
+	markerOffset, bMeshOpts, elementMeshOpts, markerMethod, bmesh, pEle, pInci,
+	vbc, allBoundaryMarker, automaticPMarker},
 
 	surfaceMeshOpts = Flatten[{ OptionValue["ShapeSurfaceMeshOptions"]}];
 	If[ surfaceMeshOpts === {Automatic}, surfaceMeshOpts = {}];
@@ -1761,6 +1787,60 @@ Module[
 
 			bmesh = NDSolve`FEM`ElementMesh[coords, Automatic, bEle,
 				elementMeshOpts];
+
+			(* acount for deleted duplicates, intersecting faces, etc *)
+			coords = bmesh["Coordinates"];
+			bEle = bmesh["BoundaryElements"];
+			pEle = bmesh["PointElements"];
+
+			pInci = NDSolve`FEM`ElementIncidents[ pEle];
+			(* We derive point markers from the automatic boundary markers;
+				in cases a node is connected to a boundaries with multiple 
+				markes then a point marker function needs to be specified 
+				to change the point markers *)
+			allBoundaryMarker = Join @@ NDSolve`FEM`ElementMarkers[bEle];
+			vbc = bmesh["VertexBoundaryConnectivity"];
+
+			bmesh = Null;
+
+			pEle = Table[
+				automaticPMarker = Extract[ allBoundaryMarker,
+					vbc[[#]]["NonzeroPositions"]] & /@ Flatten[pInci[[i]]];
+
+				(* replace points that are not on a boundary with the 
+					default 0 marker *)
+				automaticPMarker = automaticPMarker /. {} -> {0};
+
+				(* point markers that connect to several surfaces with
+					distinnct markers will get a unique marker based on
+					the surface markers such that points connected to the
+					same surfaces will get the same unique markers  *)
+				automaticPMarker = uniqueEdgeMarkers[automaticPMarker];
+
+				(* we replace everything that is not Integer or < 0 with
+					the default zero marker, this can happen when a 
+					PointElement includes a coordinate that is not on a
+					boundary, like a single point in the domain. *)
+				automaticPMarker = Replace[ automaticPMarker, 
+					x_ /; (Head[x] =!= Integer || x < 0) -> 0, {1}];
+				automaticPMarker = pack[ automaticPMarker];
+
+				If[ !packedQ[ automaticPMarker] ||
+						(Length[ pInci[[i]]] =!= Length[ automaticPMarker]),
+					automaticPMarker = Sequence[];
+				];
+
+				NDSolve`FEM`PointElement[ pInci[[i]], automaticPMarker]
+ 			, {i, Length[pEle]}
+			];
+
+			(* the structural tests have already been done above *)
+			bmesh = NDSolve`FEM`ElementMesh[coords, Automatic, bEle, pEle,
+				Flatten[{elementMeshOpts
+					, "CheckIntersections"->False
+					, "DeleteDuplicateCoordinates"->False
+					, "CheckIncidentsCompleteness"->False
+				}]];
 	];
 
 	bmesh
