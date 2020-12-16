@@ -1706,20 +1706,25 @@ Module[{offsets},
 ClearAll[uniqueEdgeMarkers];
 uniqueEdgeMarkers[l_] :=
 Module[
-	{union, newMarker, maxMarker = Max[l], lookup = <||>, value},
+	{u, order, union, newMarker, maxMarker = Max[l], lookup = <||>, value},
 	newMarker = ConstantArray[0, {Length[l]}];
+
+	(* we want the sort of union*)
+	u = Union/@l;
+	order = Ordering[u];
+	u = u[[order]];
+
 	Do[
-		(* we want the sort *)
-		union = Union[l[[i]]];
+		union = u[[i]];
 		If[Length[union] == 1,
-			newMarker[[i]] = union[[1]];
+			newMarker[[order[[i]]]] = union[[1]];
   		,
 			value = lookup[union];
 			If[MissingQ[value],
 				maxMarker += 1;
 				lookup[union] = maxMarker;
 			];
-  		newMarker[[i]] = lookup[union];
+  		newMarker[[order[[i]]]] = lookup[union];
   		];
 	, {i, Length[l]}];
 
