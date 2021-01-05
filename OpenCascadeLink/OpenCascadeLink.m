@@ -1704,9 +1704,9 @@ Module[{offsets},
 
 
 ClearAll[uniqueEdgeMarkers];
-uniqueEdgeMarkers[l_] :=
+uniqueEdgeMarkers[l_, offset_] :=
 Module[
-	{u, order, union, newMarker, maxMarker = Max[l], lookup = <||>, value},
+	{u, order, union, newMarker, maxMarkerValue = offset, lookup = <||>, value},
 	newMarker = ConstantArray[0, {Length[l]}];
 
 	(* we want the sort of union*)
@@ -1721,8 +1721,8 @@ Module[
   		,
 			value = lookup[union];
 			If[MissingQ[value],
-				maxMarker += 1;
-				lookup[union] = maxMarker;
+				maxMarkerValue += 1;
+				lookup[union] = maxMarkerValue;
 			];
   		newMarker[[order[[i]]]] = lookup[union];
   		];
@@ -1738,7 +1738,7 @@ OpenCascadeShapeSurfaceMeshToBoundaryMesh[
 Module[
 	{surfaceMeshOpts, ok, coords, bEle, offsets, stop, start, spans, markers,
 	markerOffset, bMeshOpts, elementMeshOpts, markerMethod, bmesh, pEle, pInci,
-	vbc, allBoundaryMarker, automaticPMarker},
+	vbc, allBoundaryMarker, automaticPMarker, maxMarker},
 
 	surfaceMeshOpts = Flatten[{ OptionValue["ShapeSurfaceMeshOptions"]}];
 	If[ surfaceMeshOpts === {Automatic}, surfaceMeshOpts = {}];
@@ -1808,6 +1808,8 @@ Module[
 
 			bmesh = Null;
 
+			maxMarker = Max[ElementMarkers[pEle], ElementMarkers[bEle]];
+
 			pEle = Table[
 				automaticPMarker = Extract[ allBoundaryMarker,
 					vbc[[#]]["NonzeroPositions"]] & /@ Flatten[pInci[[i]]];
@@ -1820,7 +1822,7 @@ Module[
 					distinnct markers will get a unique marker based on
 					the surface markers such that points connected to the
 					same surfaces will get the same unique markers  *)
-				automaticPMarker = uniqueEdgeMarkers[automaticPMarker];
+				automaticPMarker = uniqueEdgeMarkers[automaticPMarker, maxMarker];
 
 				(* we replace everything that is not Integer or < 0 with
 					the default zero marker, this can happen when a 
