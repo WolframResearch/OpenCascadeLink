@@ -1625,6 +1625,10 @@ Module[
 	surface meshing and meshed component extraction
 *)
 
+(* information on the OC options
+https://dev.opencascade.org/doc/overview/html/occt_user_guides__mesh.html
+*)
+
 OpenCascadeShapeSurfaceMesh[
 	OpenCascadeShapeExpression[ id_]?(testOpenCascadeShapeExpression[OpenCascadeShapeSurfaceMesh]),
 	opts:OptionsPattern[OpenCascadeShapeSurfaceMesh]
@@ -1633,8 +1637,6 @@ Module[
 	{res, realParams, boolParams, ldeflection, adeflection, parallelQ,
 	relativeQ},
 
-	(* TODO: this is an absolute value and should be scaled
-		with the shape bounds. *)
 	ldeflection = N[ OptionValue["LinearDeflection"]];
 	If[ !NumericQ[ ldeflection] || ldeflection <= 0.,
 		ldeflection = 0.01
