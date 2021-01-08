@@ -1642,7 +1642,7 @@ Module[
 		ldeflection = 0.01
 	];
 
-	adflection = N[ OptionValue["AngularDeflection"]];
+	adeflection = N[ OptionValue["AngularDeflection"]];
 	If[ !NumericQ[ adeflection] || adeflection <= 0.,
 		adeflection = 0.5
 	];	
