@@ -106,9 +106,10 @@ MapIndexed[
             polygonWithHole|openMesh, "Shell",
             _, "Face"
         ], TestIDSuffix -> ToString[First[First[#2]]]] &,
-    surfaces
+    Delete[surfaces, Key[closedMesh]]
 ]
 
+basicShapeTests[surfaces[closedMesh], OCShapeType -> "Solid", TestIDSuffix -> "closedMesh"]
 
 (* Edges *)
 
