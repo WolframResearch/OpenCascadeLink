@@ -1095,16 +1095,33 @@ Module[
 
 OpenCascadeShape[mesh_] /;
 	!NDSolve`FEM`BoundaryElementMeshQ[ mesh] && NDSolve`FEM`ElementMeshQ[mesh] :=
-OpenCascadeShape[ NDSolve`FEM`ToBoundaryMesh[ mesh]]
+OpenCascadeShapeInternal[ NDSolve`FEM`ToBoundaryMesh[ mesh], True]
 
 OpenCascadeShape[bmesh_] /;
 	NDSolve`FEM`BoundaryElementMeshQ[ bmesh] :=
-Module[{coords, faces, polygons, faceCoords},
+Module[{closedQ = False, mesh},
+
+	(* this is an expensive test to see if we have a closed surface
+		and can return a solid or a shell in case the surface is not 
+		closed *)
+	mesh = Quiet[ NDSolve`FEM`ToElementMesh[ bmesh, "MeshOrder" -> 1,
+		"MaxCellMeasure" -> Infinity]];
+	If[ Head[ mesh] === NDSolve`FEM`ElementMesh,
+		closedQ = True
+	];
+
+	OpenCascadeShapeInternal[ bmesh, closedQ]
+]
+
+OpenCascadeShapeInternal[bmesh_, closedQ_] /;
+	NDSolve`FEM`BoundaryElementMeshQ[ bmesh] :=
+Module[{coords, faces, polygons, faceCoords, shape},
 	coords = bmesh["Coordinates"];
 	faces = NDSolve`FEM`ElementIncidents[bmesh["BoundaryElements"]];
 	polygons = {};
 	Do[
-		faceCoords = NDSolve`FEM`GetElementCoordinates[coords, f];
+		(* OpenCascade uses reverse ordering *)
+		faceCoords = Reverse /@ NDSolve`FEM`GetElementCoordinates[coords, f];
 		Do[
 			polygons = {polygons, OpenCascadeShape[Polygon[p]]};
 		, {p, faceCoords}
@@ -1112,7 +1129,13 @@ Module[{coords, faces, polygons, faceCoords},
 	, {f, faces}
 	];
 	polygons = Flatten[polygons];
-	OpenCascadeShapeSewing[polygons]
+	shape = OpenCascadeShapeSewing[polygons];
+
+	If[ TrueQ[ closedQ],
+		shape = OpenCascadeShapeSolid[shape];
+	];
+
+	shape
 ]
 
 
