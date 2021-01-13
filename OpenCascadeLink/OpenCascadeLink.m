@@ -1121,7 +1121,7 @@ Module[{coords, faces, polygons, faceCoords, shape},
 	polygons = {};
 	Do[
 		(* OpenCascade uses reverse ordering *)
-		faceCoords = Reverse /@ NDSolve`FEM`GetElementCoordinates[coords, f];
+		faceCoords = NDSolve`FEM`GetElementCoordinates[coords, f];
 		Do[
 			polygons = {polygons, OpenCascadeShape[Polygon[p]]};
 		, {p, faceCoords}
