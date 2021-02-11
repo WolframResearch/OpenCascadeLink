@@ -52,14 +52,15 @@ TestMatch[
 With[{path = FileNameJoin[{DirectoryName[$CurrentFile], "Data/ClassicalMuffler.stl"}]},
 Test[
 	shape = OpenCascadeShapeImport[path];
-	elementMesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shape, 
+ 	elementMesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shape, 
  						"MarkerMethod" -> "ElementMesh"];
- 	markers = AssociationMap[elementMesh[#]&, {"PointElementMarkerUnion", "BoundaryElementMarkerUnion",
- 												"MeshElementMarkerUnion"}];
- 	(* The choice of length is arbitrarily but should be small. *)
- 	DeleteCases[markers, _?(Length[#] <= 25 &)]
+ 	markersLength = AssociationMap[Length[elementMesh[#]]&, {"PointElementMarkerUnion", "BoundaryElementMarkerUnion",
+ 												"MeshElementMarkerUnion"}]
  	,
- 	<||>
+ 	(* checks if numbers of markers are less than number of elements *)
+ 	<|"PointElementMarkerUnion" -> _?(# < Length[elementMesh["Coordinates"]] &),
+ 	"BoundaryElementMarkerUnion" -> _?(# < Length[First@First[elementMesh["BoundaryElements"]]]&),
+ 	"MeshElementMarkerUnion" -> 1|>
 	,
 	TestID->"OpenCascadeLink_Bugs-20201117-A5R3Y2-bug-398536"
 ]
