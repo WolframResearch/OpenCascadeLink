@@ -101,9 +101,10 @@ MapIndexed[
 
 MapIndexed[
     basicShapeTests[#, OCShapeType -> 
-        If[ MemberQ[{polygonWithHole, openMesh, closedMesh}, First[First[#2]]],
-            "Shell",
-            "Face"
+        Switch[ First[First[#2]],
+        	closedMesh, "Solid",
+            polygonWithHole|openMesh, "Shell",
+            _, "Face"
         ], TestIDSuffix -> ToString[First[First[#2]]]] &,
     surfaces
 ]
