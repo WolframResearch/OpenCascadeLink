@@ -147,9 +147,9 @@ Test[
 
 (* STL *)
 
+With[{fileName = FileNameJoin[{DirectoryName[$CurrentFile], "Data/test.stl"}]},
 Test[
 	shape = OpenCascadeShape[Ball[{1, 0, 0}]];
-	fileName = FileNameJoin[{DirectoryName[$CurrentFile], "Data/test.stl"}];
 	OpenCascadeShapeExport[fileName, shape];
 	If[FileExistsQ[fileName],
 		bmesh = Import[fileName, "ElementMesh"];
@@ -160,27 +160,28 @@ Test[
 	{Graphics3D, "Rendering Errors" ->{}}
 	,
 	TestID->"OpenCascadeLink_Docs_ShapeProcessing-20200311-I8W6L2"
-]
+]]
 
 TestExecute[
 	DeleteFile[fileName];
 ]
 
+With[{path = FileNameJoin[{DirectoryName[$CurrentFile], "Data/spikey.stl"}]},
 Test[
-	shape = OpenCascadeShapeImport[FileNameJoin[{DirectoryName[$CurrentFile], "Data/spikey.stl"}]];
+	shape = OpenCascadeShapeImport[path];
 	bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shape];
 	checkGraphicsRendering[Head, bmesh["Wireframe"]]
 	,
 	{Graphics3D, "Rendering Errors" ->{}}
 	,
 	TestID->"OpenCascadeLink_Docs_ShapeProcessing-20200311-X9Z5D8"
-]
+]]
 
 (* STEP *)
 
+With[{fileName = FileNameJoin[{DirectoryName[$CurrentFile], "Data/test.stp"}]},
 Test[
 	shape = OpenCascadeShape[Cone[{{0, 0, 0}, {0, 0, 1}}, 1]];
-	fileName = FileNameJoin[{DirectoryName[$CurrentFile], "Data/test.stp"}];
 	OpenCascadeShapeExport[fileName, shape];
 	If[FileExistsQ[fileName],
 		shape = OpenCascadeShapeImport[fileName];
@@ -192,17 +193,18 @@ Test[
 	{Graphics3D, "Rendering Errors" ->{}}
 	,
 	TestID->"OpenCascadeLink_Docs_ShapeProcessing-20200311-I4H4N4"
-]
+]]
 
+With[{path = FileNameJoin[{DirectoryName[$CurrentFile], "Data/screw.step"}]},
 Test[
-	shape = OpenCascadeShapeImport[FileNameJoin[{DirectoryName[$CurrentFile], "Data/screw.step"}]];
+	shape = OpenCascadeShapeImport[path];
 	bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shape];
 	checkGraphicsRendering[Head, bmesh["Wireframe"]]
 	,
 	{Graphics3D, "Rendering Errors" ->{}}
 	,
 	TestID->"OpenCascadeLink_Docs_ShapeProcessing-20200311-V8O1O7"
-]
+]]
 
 
 TestExecute[
@@ -210,9 +212,10 @@ TestExecute[
 ]
 
 (* BRep *)
+
+With[{fileName = FileNameJoin[{DirectoryName[$CurrentFile], "Data/test.brep"}]},
 Test[
 	shape = OpenCascadeShape[Cone[{{0, 0, 0}, {0, 0, 1}}, 1]];
-	fileName = FileNameJoin[{DirectoryName[$CurrentFile], "Data/test.brep"}];
 	OpenCascadeShapeExport[fileName, shape];
 	If[FileExistsQ[fileName],
 		shape = OpenCascadeShapeImport[fileName];
@@ -224,17 +227,18 @@ Test[
 	{Graphics3D, "Rendering Errors" ->{}}
 	,
 	TestID->"OpenCascadeLink_Docs_ShapeProcessing-20200311-P4I1W0"
-]
+]]
 
+With[{path = FileNameJoin[{DirectoryName[$CurrentFile], "Data/Bottom.brep"}]},
 Test[
-	shape = OpenCascadeShapeImport[FileNameJoin[{DirectoryName[$CurrentFile], "Data/Bottom.brep"}]];
+	shape = OpenCascadeShapeImport[path];
 	bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shape];
 	checkGraphicsRendering[Head, bmesh["Wireframe"]]
 	,
 	{Graphics3D, "Rendering Errors" ->{}}
 	,
 	TestID->"OpenCascadeLink_Docs_ShapeProcessing-20200311-U1I7U8"
-]
+]]
 
 
 TestExecute[

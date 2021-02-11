@@ -49,9 +49,9 @@ TestMatch[
 	TestID->"OpenCascadeLink_Bugs-20201116-M7T8X0-bug-401214"
 ]
 
-With[{currentFile = $CurrentFile},
+With[{path = FileNameJoin[{DirectoryName[$CurrentFile], "Data/ClassicalMuffler.stl"}]},
 Test[
-	shape = OpenCascadeShapeImport[FileNameJoin[{DirectoryName[currentFile], "Data/ClassicalMuffler.stl"}]];
+	shape = OpenCascadeShapeImport[path];
 	elementMesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shape, 
  						"MarkerMethod" -> "ElementMesh"];
  	markers = AssociationMap[elementMesh[#]&, {"PointElementMarkerUnion", "BoundaryElementMarkerUnion",
@@ -66,7 +66,7 @@ Test[
 ]
 
 Test[
-	(*shape = Get[FileNameJoin[{DirectoryName[$CurrentFile], "Data/ClassicalMuffler.stl"}]];*)
+	(*shape = OpenCascadeShapeImport[FileNameJoin[{DirectoryName[$CurrentFile], "Data/ClassicalMuffler.stl"}]];*)
 	elementMesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shape, 
  						"MarkerMethod" -> None];
  	AssociationMap[elementMesh[#]&, {"PointElementMarkerUnion", "BoundaryElementMarkerUnion",
