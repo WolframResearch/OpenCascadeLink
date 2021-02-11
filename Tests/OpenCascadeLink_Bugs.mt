@@ -50,7 +50,7 @@ TestMatch[
 ]
 
 With[{path = FileNameJoin[{DirectoryName[$CurrentFile], "Data/ClassicalMuffler.stl"}]},
-Test[
+TestMatch[
 	shape = OpenCascadeShapeImport[path];
  	elementMesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shape, 
  						"MarkerMethod" -> "ElementMesh"];
