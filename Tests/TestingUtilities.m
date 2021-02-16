@@ -2,10 +2,12 @@
 
 boolOperationTest[shapeAssoc_Association, operation_String, bugID_ : ""] :=
 With[
-	{timeConstrain = 20, rOp = Symbol["Region"<>operation], ocOp = Symbol["OpenCascadeShape"<>operation]},
-	{compoundRegion = TimeConstrained[rOp @@ shapeAssoc, timeConstrain]},
-	{If[ Head[ compundRegion] === rOp, compoundRegion = TimeConstrained[rOp @@ (DiscretizeRegion /@ shapeAssoc), timeConstrain]]},
-	{isEmpty = (Head[compoundRegion] === EmptyRegion), dim = TimeConstrained[RegionDimension[compoundRegion], timeConstrain]},
+	{timeConstraint = 20, rOp = Symbol["Region"<>operation], ocOp = Symbol["OpenCascadeShape"<>operation]},
+	{compoundRegion = TimeConstrained[rOp @@ shapeAssoc, timeConstraint]},
+	{compoundRegion = If[ Head[compundRegion] === rOp, 
+						TimeConstrained[rOp @@ (DiscretizeRegion /@ shapeAssoc), timeConstraint],
+						compoundRegion]},
+	{isEmpty = (Head[compoundRegion] === EmptyRegion), dim = TimeConstrained[RegionDimension[compoundRegion], timeConstraint]},
 
 	Block[ {shape, bmesh, groups, temp, colors, result},
 
