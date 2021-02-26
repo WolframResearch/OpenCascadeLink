@@ -1,0 +1,1781 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     94234,       1773]
+NotebookOptionsPosition[     84702,       1563]
+NotebookOutlinePosition[     85630,       1589]
+CellTagsIndexPosition[     85587,       1586]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[TextData[{
+ "New in: ",
+ Cell["12.3", "HistoryData",
+  CellTags->"New",ExpressionUUID->"3076e622-7af1-4275-b30b-7a773945099b"],
+ " | Modified in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Modified",ExpressionUUID->"add2ac62-8702-49f8-9d13-00e00c9e2a15"],
+ " | Obsolete in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Obsolete",ExpressionUUID->"b0809866-0579-421e-be0b-9d6d73be55ff"],
+ " | Excised in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Excised",ExpressionUUID->"38ac18ed-f8bd-408c-aa6c-46c2c81ec26e"]
+}], "History",
+ CellID->1247902091,ExpressionUUID->"e1f03e69-01bd-400b-95ea-3214d2ad1db9"],
+
+Cell["Created by: ruebenko on 02-26-2021 09:11:57", "AuthorDate",
+ CellID->1829122349,ExpressionUUID->"71034d06-b0dd-4c51-92e6-401c2ea3369a"],
+
+Cell[CellGroupData[{
+
+Cell["Categorization", "CategorizationSection",
+ CellID->1122911449,ExpressionUUID->"80f5bbf6-ac29-4386-b82b-8a629b0d4b57"],
+
+Cell["Tutorial", "Categorization",
+ CellLabel->"Entity Type",
+ CellID->686433507,ExpressionUUID->"59eb398f-2cfa-4ef0-89ef-328082fae657"],
+
+Cell["OpenCascadeLink", "Categorization",
+ CellChangeTimes->{3.8233159259950867`*^9},
+ CellLabel->"Paclet Name",
+ CellID->605800465,ExpressionUUID->"e5655a85-cb0c-4f0a-b452-2358963156e9"],
+
+Cell["OpenCascadeLink`", "Categorization",
+ CellChangeTimes->{3.82331593156385*^9},
+ CellLabel->"Context",
+ CellID->468444828,ExpressionUUID->"73775877-5234-4a88-8507-db9acfe83d4e"],
+
+Cell["OpenCascadeLink/tutorial/HelicalBevelGear", "Categorization",
+ CellChangeTimes->{3.823315935858727*^9},
+ CellLabel->"URI",ExpressionUUID->"9c5c8d93-a482-4cb6-bcc8-37b0ccd60d4f"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Synonyms", "SynonymsSection",
+ CellID->1427418553,ExpressionUUID->"782db226-017d-4ea1-a7c1-873f57d3a93d"],
+
+Cell["CAD", "Synonyms",
+ CellChangeTimes->{{3.8233162999846582`*^9, 3.8233163003451557`*^9}},
+ CellID->1251652828,ExpressionUUID->"c7de44f9-0747-4aa1-8f16-d703fb8fd8bd"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Keywords", "KeywordsSection",
+ CellID->1427428552,ExpressionUUID->"da1ed6ea-7c36-4cd6-a789-77e4dac42247"],
+
+Cell["fillet", "Keywords",
+ CellChangeTimes->{{3.82331865051213*^9, 3.8233186560810127`*^9}},
+ CellID->1251852827,ExpressionUUID->"3ac305b5-a749-44e0-b960-9465eba3639b"],
+
+Cell["chamfer", "Keywords",
+ CellChangeTimes->{{3.8233186526500807`*^9, 3.823318661454625*^9}},
+ CellID->1522199704,ExpressionUUID->"7a42dced-e926-4abe-9d84-e4accdedc865"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Details", "DetailsSection",
+ CellID->307771771,ExpressionUUID->"ca0b9c1d-1c14-4f21-872f-049356cd2eb9"],
+
+Cell["XXXX", "Details",
+ CellLabel->"Lead",
+ CellID->115134701,ExpressionUUID->"6a4fafe4-74a0-495e-beec-af65f5430ad4"],
+
+Cell["XXXX", "Details",
+ CellLabel->"Developers",
+ CellID->350963985,ExpressionUUID->"f4d3f560-1a8d-4126-9478-88d748ea43db"],
+
+Cell["XXXX", "Details",
+ CellLabel->"Authors",
+ CellID->787641479,ExpressionUUID->"3a39bb2b-7340-4b9c-a99c-3c0e38c49f0a"],
+
+Cell["XXXX", "Details",
+ CellLabel->"Feature Name",
+ CellID->489188983,ExpressionUUID->"859ce4f0-4fe5-4b41-b660-7a7f6e147485"],
+
+Cell["XXXX", "Details",
+ CellLabel->"QA",
+ CellID->267986155,ExpressionUUID->"bae5295b-9304-4509-a5fc-6f526247bb01"],
+
+Cell["XXXX", "Details",
+ CellLabel->"DA",
+ CellID->55052072,ExpressionUUID->"805a1261-cd8d-48da-aa12-3422c4eae045"],
+
+Cell["XXXX", "Details",
+ CellLabel->"Docs",
+ CellID->125741376,ExpressionUUID->"e6d11df1-7171-4bb8-97fb-9af0a9da874b"],
+
+Cell["XXXX", "Details",
+ CellLabel->"Features Page Notes",
+ CellID->31040295,ExpressionUUID->"004e5dfd-c122-4c50-96ab-faa527a9dcc2"],
+
+Cell["XXXX", "Details",
+ CellLabel->"Comments",
+ CellID->240026365,ExpressionUUID->"a4b9dd65-f6c8-42be-8299-5ee100992031"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Book Shelf Bracket", "Title",
+ CellChangeTimes->{{3.8233159723363457`*^9, 3.8233159838227787`*^9}},
+ CellID->509267359,ExpressionUUID->"77a27d44-1780-42f4-8e73-40e553c39e4f"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "The purpose of this tutorial is to illustrate the usage of the ",
+ ButtonBox["OpenCascadeLink",
+  BaseStyle->"Link",
+  ButtonData->"paclet:OpenCascadeLink/tutorial/UsingOpenCascadeLink"],
+ " to greate a book shelf bracket."
+}], "Text",
+ CellChangeTimes->{
+  3.81633366037747*^9, {3.816340427917192*^9, 3.8163404385597143`*^9}, {
+   3.816596264308414*^9, 3.8165962644590883`*^9}, {3.823316702667831*^9, 
+   3.8233167027036667`*^9}, {3.823316737713975*^9, 3.8233167499168053`*^9}},
+ CellID->1918030960,ExpressionUUID->"1813cd15-76c3-4ec4-907c-b783182ca511"],
+
+Cell[BoxData[
+ Graphics3DBox[{
+   {GrayLevel[0], GraphicsComplex3DBox[CompressedData["
+1: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
+     
+     "], {Line3DBox[{{1, 2}, {1, 4}, {2, 94}, {3, 4}, {3, 101}, {5, 6}, {5, 
+       30}, {6, 7}, {7, 8}, {8, 9}, {9, 10}, {10, 11}, {11, 12}, {12, 13}, {
+       13, 14}, {14, 15}, {15, 16}, {16, 17}, {17, 18}, {18, 19}, {19, 20}, {
+       20, 21}, {21, 22}, {22, 23}, {23, 24}, {24, 25}, {25, 26}, {26, 27}, {
+       27, 28}, {28, 29}, {29, 30}, {31, 32}, {31, 56}, {32, 33}, {33, 34}, {
+       34, 35}, {35, 36}, {36, 37}, {37, 38}, {38, 39}, {39, 40}, {40, 41}, {
+       41, 42}, {42, 43}, {43, 44}, {44, 45}, {45, 46}, {46, 47}, {47, 48}, {
+       48, 49}, {49, 50}, {50, 51}, {51, 52}, {52, 53}, {53, 54}, {54, 55}, {
+       55, 56}, {88, 89}, {88, 159}, {89, 90}, {90, 91}, {91, 92}, {92, 93}, {
+       93, 94}, {95, 96}, {95, 201}, {96, 97}, {97, 98}, {98, 99}, {99, 
+       100}, {100, 101}, {159, 187}, {187, 188}, {188, 189}, {189, 190}, {190,
+        191}, {191, 192}, {192, 193}, {193, 194}, {194, 195}, {195, 196}, {
+       196, 197}, {197, 198}, {198, 199}, {199, 200}, {200, 201}}], 
+      Line3DBox[{{5, 6}, {5, 30}, {6, 7}, {7, 8}, {8, 9}, {9, 10}, {10, 11}, {
+       11, 12}, {12, 13}, {13, 14}, {14, 15}, {15, 16}, {16, 17}, {17, 18}, {
+       18, 19}, {19, 20}, {20, 21}, {21, 22}, {22, 23}, {23, 24}, {24, 25}, {
+       25, 26}, {26, 27}, {27, 28}, {28, 29}, {29, 30}, {57, 58}, {57, 82}, {
+       58, 59}, {59, 60}, {60, 61}, {61, 62}, {62, 63}, {63, 64}, {64, 65}, {
+       65, 66}, {66, 67}, {67, 68}, {68, 69}, {69, 70}, {70, 71}, {71, 72}, {
+       72, 73}, {73, 74}, {74, 75}, {75, 76}, {76, 77}, {77, 78}, {78, 79}, {
+       79, 80}, {80, 81}, {81, 82}}], 
+      Line3DBox[{{1, 2}, {1, 83}, {2, 94}, {3, 4}, {3, 101}, {4, 102}, {83, 
+       84}, {84, 85}, {85, 86}, {86, 160}, {88, 89}, {88, 159}, {89, 90}, {90,
+        91}, {91, 92}, {92, 93}, {93, 94}, {95, 96}, {95, 201}, {96, 97}, {97,
+        98}, {98, 99}, {99, 100}, {100, 101}, {102, 106}, {104, 105}, {104, 
+       202}, {105, 106}, {159, 187}, {160, 203}, {187, 188}, {188, 189}, {189,
+        190}, {190, 191}, {191, 192}, {192, 193}, {193, 194}, {194, 195}, {
+       195, 196}, {196, 197}, {197, 198}, {198, 199}, {199, 200}, {200, 
+       201}, {202, 216}, {203, 204}, {204, 205}, {205, 206}, {206, 207}, {207,
+        208}, {208, 209}, {209, 210}, {210, 211}, {211, 212}, {212, 213}, {
+       213, 214}, {214, 215}, {215, 216}}], 
+      Line3DBox[{{1, 4}, {1, 83}, {4, 102}, {83, 102}}], 
+      Line3DBox[{{31, 32}, {31, 56}, {32, 33}, {33, 34}, {34, 35}, {35, 36}, {
+       36, 37}, {37, 38}, {38, 39}, {39, 40}, {40, 41}, {41, 42}, {42, 43}, {
+       43, 44}, {44, 45}, {45, 46}, {46, 47}, {47, 48}, {48, 49}, {49, 50}, {
+       50, 51}, {51, 52}, {52, 53}, {53, 54}, {54, 55}, {55, 56}, {107, 
+       108}, {107, 132}, {108, 109}, {109, 110}, {110, 111}, {111, 112}, {112,
+        113}, {113, 114}, {114, 115}, {115, 116}, {116, 117}, {117, 118}, {
+       118, 119}, {119, 120}, {120, 121}, {121, 122}, {122, 123}, {123, 
+       124}, {124, 125}, {125, 126}, {126, 127}, {127, 128}, {128, 129}, {129,
+        130}, {130, 131}, {131, 132}}], 
+      Line3DBox[{{57, 58}, {57, 82}, {58, 59}, {59, 60}, {60, 61}, {61, 62}, {
+       62, 63}, {63, 64}, {64, 65}, {65, 66}, {66, 67}, {67, 68}, {68, 69}, {
+       69, 70}, {70, 71}, {71, 72}, {72, 73}, {73, 74}, {74, 75}, {75, 76}, {
+       76, 77}, {77, 78}, {78, 79}, {79, 80}, {80, 81}, {81, 82}, {133, 
+       134}, {133, 158}, {134, 135}, {135, 136}, {136, 137}, {137, 138}, {138,
+        139}, {139, 140}, {140, 141}, {141, 142}, {142, 143}, {143, 144}, {
+       144, 145}, {145, 146}, {146, 147}, {147, 148}, {148, 149}, {149, 
+       150}, {150, 151}, {151, 152}, {152, 153}, {153, 154}, {154, 155}, {155,
+        156}, {156, 157}, {157, 158}}], 
+      Line3DBox[{{83, 84}, {83, 102}, {84, 106}, {102, 106}, {133, 134}, {133,
+        158}, {134, 135}, {135, 136}, {136, 137}, {137, 138}, {138, 139}, {
+       139, 140}, {140, 141}, {141, 142}, {142, 143}, {143, 144}, {144, 
+       145}, {145, 146}, {146, 147}, {147, 148}, {148, 149}, {149, 150}, {150,
+        151}, {151, 152}, {152, 153}, {153, 154}, {154, 155}, {155, 156}, {
+       156, 157}, {157, 158}, {161, 162}, {161, 186}, {162, 163}, {163, 
+       164}, {164, 165}, {165, 166}, {166, 167}, {167, 168}, {168, 169}, {169,
+        170}, {170, 171}, {171, 172}, {172, 173}, {173, 174}, {174, 175}, {
+       175, 176}, {176, 177}, {177, 178}, {178, 179}, {179, 180}, {180, 
+       181}, {181, 182}, {182, 183}, {183, 184}, {184, 185}, {185, 186}}], 
+      Line3DBox[{{85, 86}, {85, 105}, {86, 104}, {104, 105}}], 
+      Line3DBox[{{84, 85}, {84, 106}, {85, 105}, {105, 106}}], 
+      Line3DBox[{{107, 108}, {107, 132}, {108, 109}, {109, 110}, {110, 111}, {
+       111, 112}, {112, 113}, {113, 114}, {114, 115}, {115, 116}, {116, 
+       117}, {117, 118}, {118, 119}, {119, 120}, {120, 121}, {121, 122}, {122,
+        123}, {123, 124}, {124, 125}, {125, 126}, {126, 127}, {127, 128}, {
+       128, 129}, {129, 130}, {130, 131}, {131, 132}, {161, 162}, {161, 
+       186}, {162, 163}, {163, 164}, {164, 165}, {165, 166}, {166, 167}, {167,
+        168}, {168, 169}, {169, 170}, {170, 171}, {171, 172}, {172, 173}, {
+       173, 174}, {174, 175}, {175, 176}, {176, 177}, {177, 178}, {178, 
+       179}, {179, 180}, {180, 181}, {181, 182}, {182, 183}, {183, 184}, {184,
+        185}, {185, 186}}], 
+      Line3DBox[{{86, 104}, {86, 160}, {104, 202}, {160, 203}, {202, 216}, {
+       203, 204}, {204, 205}, {205, 206}, {206, 207}, {207, 208}, {208, 
+       209}, {209, 210}, {210, 211}, {211, 212}, {212, 213}, {213, 214}, {214,
+        215}, {215, 216}}]}]}, 
+   {EdgeForm[GrayLevel[0]], FaceForm[None, None], 
+    GraphicsComplex3DBox[CompressedData["
+1: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
+     "], {
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{22, 21, 1}, {20, 1, 21}, {23, 22, 1}, {19, 1, 20}, {24, 
+        23, 1}, {18, 4, 1}, {18, 1, 19}, {25, 24, 1}, {17, 4, 18}, {16, 4, 
+        17}, {15, 4, 16}, {14, 4, 15}, {13, 4, 14}, {12, 4, 13}, {11, 4, 
+        12}, {48, 28, 27}, {48, 47, 28}, {46, 29, 28}, {46, 28, 47}, {45, 30, 
+        29}, {45, 29, 46}, {44, 5, 30}, {44, 30, 45}, {43, 6, 5}, {43, 5, 
+        44}, {2, 26, 25}, {2, 27, 26}, {2, 49, 48}, {2, 50, 49}, {2, 51, 
+        50}, {2, 25, 1}, {2, 48, 27}, {52, 51, 2}, {42, 7, 6}, {42, 6, 43}, {
+        53, 52, 2}, {41, 8, 7}, {41, 7, 42}, {54, 53, 2}, {40, 9, 8}, {40, 8, 
+        41}, {55, 54, 2}, {56, 55, 2}, {31, 56, 2}, {3, 9, 40}, {3, 10, 9}, {
+        3, 32, 31}, {3, 33, 32}, {3, 34, 33}, {3, 35, 34}, {3, 36, 35}, {3, 
+        37, 36}, {3, 38, 37}, {3, 39, 38}, {3, 40, 39}, {3, 31, 2}, {3, 4, 
+        11}, {3, 11, 10}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{58, 57, 5}, {58, 5, 6}, {59, 6, 7}, {59, 58, 6}, {60, 7,
+         8}, {60, 59, 7}, {61, 8, 9}, {61, 60, 8}, {62, 9, 10}, {62, 61, 9}, {
+        63, 10, 11}, {63, 62, 10}, {64, 11, 12}, {64, 63, 11}, {65, 12, 13}, {
+        65, 64, 12}, {66, 13, 14}, {66, 65, 13}, {67, 14, 15}, {67, 66, 14}, {
+        68, 67, 15}, {68, 15, 16}, {69, 68, 16}, {69, 16, 17}, {70, 69, 17}, {
+        70, 17, 18}, {71, 18, 19}, {71, 70, 18}, {72, 71, 19}, {72, 19, 20}, {
+        73, 20, 21}, {73, 72, 20}, {74, 21, 22}, {74, 73, 21}, {75, 22, 23}, {
+        75, 74, 22}, {76, 23, 24}, {76, 75, 23}, {77, 24, 25}, {77, 76, 24}, {
+        78, 25, 26}, {78, 77, 25}, {79, 26, 27}, {79, 78, 26}, {80, 27, 28}, {
+        80, 79, 27}, {81, 28, 29}, {81, 80, 28}, {82, 29, 30}, {82, 81, 29}, {
+        57, 30, 5}, {57, 82, 30}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{86, 84, 85}, {87, 84, 86}, {2, 84, 87}, {1, 83, 2}, {83,
+         84, 2}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{96, 89, 88}, {96, 88, 95}, {97, 90, 89}, {97, 89, 96}, {
+        98, 91, 90}, {98, 90, 97}, {99, 92, 91}, {99, 91, 98}, {100, 93, 
+        92}, {100, 92, 99}, {101, 94, 93}, {101, 93, 100}, {3, 2, 94}, {3, 94,
+         101}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{83, 1, 4}, {83, 4, 102}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{104, 105, 106}, {103, 104, 106}, {3, 103, 106}, {102, 3,
+         106}, {4, 3, 102}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{108, 107, 31}, {108, 31, 32}, {109, 32, 33}, {109, 108, 
+        32}, {110, 33, 34}, {110, 109, 33}, {111, 34, 35}, {111, 110, 34}, {
+        112, 35, 36}, {112, 111, 35}, {113, 36, 37}, {113, 112, 36}, {114, 37,
+         38}, {114, 113, 37}, {115, 38, 39}, {115, 114, 38}, {116, 39, 40}, {
+        116, 115, 39}, {117, 40, 41}, {117, 116, 40}, {118, 117, 41}, {118, 
+        41, 42}, {119, 118, 42}, {119, 42, 43}, {120, 119, 43}, {120, 43, 
+        44}, {121, 44, 45}, {121, 120, 44}, {122, 121, 45}, {122, 45, 46}, {
+        123, 46, 47}, {123, 122, 46}, {124, 47, 48}, {124, 123, 47}, {125, 48,
+         49}, {125, 124, 48}, {126, 49, 50}, {126, 125, 49}, {127, 50, 51}, {
+        127, 126, 50}, {128, 51, 52}, {128, 127, 51}, {129, 52, 53}, {129, 
+        128, 52}, {130, 53, 54}, {130, 129, 53}, {131, 54, 55}, {131, 130, 
+        54}, {132, 55, 56}, {132, 131, 55}, {107, 56, 31}, {107, 132, 
+        56}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{58, 133, 57}, {58, 134, 133}, {59, 135, 134}, {59, 134, 
+        58}, {60, 136, 135}, {60, 135, 59}, {61, 137, 136}, {61, 136, 60}, {
+        62, 138, 137}, {62, 137, 61}, {63, 139, 138}, {63, 138, 62}, {64, 140,
+         139}, {64, 139, 63}, {65, 141, 140}, {65, 140, 64}, {66, 142, 141}, {
+        66, 141, 65}, {67, 143, 142}, {67, 142, 66}, {68, 144, 143}, {68, 143,
+         67}, {69, 144, 68}, {69, 145, 144}, {70, 145, 69}, {70, 146, 145}, {
+        71, 146, 70}, {71, 147, 146}, {72, 147, 71}, {72, 148, 147}, {73, 148,
+         72}, {73, 149, 148}, {74, 149, 73}, {74, 150, 149}, {75, 150, 74}, {
+        75, 151, 150}, {76, 151, 75}, {76, 152, 151}, {77, 152, 76}, {77, 153,
+         152}, {78, 153, 77}, {78, 154, 153}, {79, 154, 78}, {79, 155, 154}, {
+        80, 155, 79}, {80, 156, 155}, {81, 157, 156}, {81, 156, 80}, {82, 158,
+         157}, {82, 157, 81}, {57, 158, 82}, {57, 133, 158}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{87, 92, 93}, {87, 93, 94}, {87, 94, 2}, {91, 92, 87}, {
+        90, 91, 87}, {86, 89, 90}, {86, 90, 87}, {88, 89, 86}, {160, 159, 
+        88}, {160, 88, 86}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{183, 184, 84}, {185, 84, 184}, {182, 183, 84}, {186, 84,
+         185}, {181, 182, 84}, {161, 106, 84}, {161, 84, 186}, {180, 181, 
+        84}, {162, 106, 161}, {163, 106, 162}, {164, 106, 163}, {165, 106, 
+        164}, {166, 106, 165}, {167, 106, 166}, {168, 106, 167}, {155, 177, 
+        178}, {155, 156, 177}, {157, 176, 177}, {157, 177, 156}, {154, 155, 
+        178}, {154, 178, 179}, {158, 175, 176}, {158, 176, 157}, {153, 154, 
+        179}, {153, 179, 180}, {133, 174, 175}, {133, 175, 158}, {134, 173, 
+        174}, {134, 174, 133}, {135, 172, 173}, {135, 173, 134}, {136, 171, 
+        172}, {136, 172, 135}, {137, 170, 171}, {137, 171, 136}, {138, 169, 
+        170}, {138, 170, 137}, {83, 153, 180}, {83, 146, 147}, {83, 147, 
+        148}, {83, 148, 149}, {83, 149, 150}, {83, 150, 151}, {83, 151, 
+        152}, {83, 152, 153}, {83, 180, 84}, {102, 139, 140}, {102, 140, 
+        141}, {102, 141, 142}, {102, 142, 143}, {102, 143, 144}, {102, 144, 
+        145}, {102, 145, 146}, {102, 146, 83}, {102, 106, 168}, {102, 168, 
+        169}, {102, 169, 139}, {139, 169, 138}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{105, 86, 85}, {105, 104, 86}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{85, 106, 105}, {85, 84, 106}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{194, 195, 196}, {194, 196, 197}, {194, 197, 198}, {194, 
+        198, 199}, {194, 199, 200}, {194, 200, 201}, {159, 187, 188}, {159, 
+        188, 189}, {159, 189, 190}, {159, 190, 191}, {159, 191, 192}, {159, 
+        192, 193}, {159, 193, 194}, {159, 194, 201}, {88, 201, 95}, {88, 159, 
+        201}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{98, 103, 99}, {97, 104, 103}, {97, 103, 98}, {100, 99, 
+        103}, {96, 104, 97}, {101, 100, 103}, {3, 101, 103}, {95, 104, 96}, {
+        202, 104, 95}, {201, 202, 95}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{108, 161, 107}, {108, 162, 161}, {109, 163, 162}, {109, 
+        162, 108}, {110, 164, 163}, {110, 163, 109}, {111, 165, 164}, {111, 
+        164, 110}, {112, 166, 165}, {112, 165, 111}, {113, 167, 166}, {113, 
+        166, 112}, {114, 168, 167}, {114, 167, 113}, {115, 169, 168}, {115, 
+        168, 114}, {116, 170, 169}, {116, 169, 115}, {117, 171, 170}, {117, 
+        170, 116}, {118, 172, 171}, {118, 171, 117}, {119, 172, 118}, {119, 
+        173, 172}, {120, 173, 119}, {120, 174, 173}, {121, 174, 120}, {121, 
+        175, 174}, {122, 175, 121}, {122, 176, 175}, {123, 176, 122}, {123, 
+        177, 176}, {124, 177, 123}, {124, 178, 177}, {125, 178, 124}, {125, 
+        179, 178}, {126, 179, 125}, {126, 180, 179}, {127, 180, 126}, {127, 
+        181, 180}, {128, 181, 127}, {128, 182, 181}, {129, 182, 128}, {129, 
+        183, 182}, {130, 183, 129}, {130, 184, 183}, {131, 185, 184}, {131, 
+        184, 130}, {132, 186, 185}, {132, 185, 131}, {107, 186, 132}, {107, 
+        161, 186}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{187, 160, 203}, {187, 159, 160}, {188, 203, 204}, {188, 
+        187, 203}, {189, 204, 205}, {189, 188, 204}, {190, 205, 206}, {190, 
+        189, 205}, {191, 206, 207}, {191, 190, 206}, {192, 207, 208}, {192, 
+        191, 207}, {193, 208, 209}, {193, 192, 208}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{210, 212, 211}, {210, 213, 212}, {210, 214, 213}, {210, 
+        215, 214}, {210, 216, 215}, {210, 202, 216}, {160, 104, 202}, {160, 
+        210, 209}, {160, 86, 104}, {160, 202, 210}, {206, 203, 160}, {206, 
+        204, 203}, {206, 205, 204}, {206, 208, 207}, {206, 209, 208}, {206, 
+        160, 209}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{210, 194, 193}, {210, 193, 209}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{195, 210, 211}, {195, 194, 210}, {196, 211, 212}, {196, 
+        195, 211}, {197, 212, 213}, {197, 196, 212}, {198, 213, 214}, {198, 
+        197, 213}, {199, 214, 215}, {199, 198, 214}, {200, 215, 216}, {200, 
+        199, 215}, {201, 216, 202}, {201, 200, 216}}]}}]}},
+  Boxed->False,
+  ImageSize->{293.3136090320339, 407.2},
+  ViewPoint->{2.395713447045005, -2.10122353589232, 1.138163754413182},
+  ViewVertical->{0.17822600614804995`, -0.5981299233001242, 
+   0.7813296907103319}]], "Picture",
+ CellChangeTimes->{3.816333610795364*^9, 3.8163349784945297`*^9, 
+  3.823316797097745*^9},
+ CellID->61411381,ExpressionUUID->"705ae768-a6dc-40b0-bb25-1ee4e44f9666"]
+}, Open  ]],
+
+Cell["\<\
+The creation of the gear will be done in several stages. First, a basic \
+bracket is constructed from which the holes for the bolts are cut out. Then \
+fillets and chamfers are added.\
+\>", "Text",
+ CellChangeTimes->{{3.816333732481545*^9, 3.8163337749773073`*^9}, {
+  3.816334349557022*^9, 3.816334508986844*^9}, {3.816334558126828*^9, 
+  3.816334560086772*^9}, {3.823316984465419*^9, 3.823317047478253*^9}},
+ CellID->1893271022,ExpressionUUID->"6c05a1cf-c98b-4d12-82d1-05d1c9bf7233"],
+
+Cell[CellGroupData[{
+
+Cell["Load the packages.", "MathCaption",
+ CellChangeTimes->{{3.816333148137515*^9, 3.8163331547681513`*^9}},
+ CellID->836781195,ExpressionUUID->"ef60fd89-4d96-4a71-8d64-d79ad570042b"],
+
+Cell[BoxData[{
+ RowBox[{"Needs", "[", "\"\<OpenCascadeLink`\>\"", 
+  "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Needs", "[", "\"\<NDSolve`FEM`\>\"", "]"}]}], "Input",
+ CellChangeTimes->{{3.81633316345814*^9, 3.81633316530694*^9}},
+ CellLabel->"In[1]:=",
+ CellID->2058623809,ExpressionUUID->"01721daa-d10b-45fe-aa4b-de139352f28e"]
+}, Open  ]],
+
+Cell["\<\
+We start by creating the basic structure, two connected cuboids that have \
+mounts for the bolts removed. The cuboids are connected by a Boolean \
+operation. The holes for the bolt mounts are removed from the cuboid also by \
+a Boolean operation.\
+\>", "Text",
+ CellChangeTimes->{{3.82331686438509*^9, 3.823316905516808*^9}, {
+  3.823317104209715*^9, 3.823317231090974*^9}},
+ CellID->656242484,ExpressionUUID->"d98804c3-9d39-4484-916a-2a6007711d66"],
+
+Cell[CellGroupData[{
+
+Cell["Specify geometric parameters, two cuboids and two cylinders", \
+"MathCaption",
+ CellChangeTimes->{{3.823316916298006*^9, 3.823316942841535*^9}, {
+  3.823317116947837*^9, 3.823317140130417*^9}},
+ CellID->389675457,ExpressionUUID->"30424a05-3d92-4c0e-a738-d57e6c75a142"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"geometricParameters", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"d", "\[Rule]", "0.001"}], ",", 
+     RowBox[{"w", "\[Rule]", "0.005"}], ",", 
+     RowBox[{"h", "->", "0.02"}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"side", "=", 
+   RowBox[{
+    RowBox[{"Cuboid", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0", ",", "0"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"d", ",", "w", ",", "h"}], "}"}]}], "]"}], "/.", 
+    "geometricParameters"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"top", "=", 
+   RowBox[{
+    RowBox[{"Cuboid", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0", ",", 
+        RowBox[{"h", "-", 
+         RowBox[{"2", "d"}]}]}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"h", ",", "w", ",", 
+        RowBox[{"h", "-", "d"}]}], "}"}]}], "]"}], "/.", 
+    "geometricParameters"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"mount1", "=", 
+   RowBox[{
+    RowBox[{"Cylinder", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"-", "d"}], ",", 
+          RowBox[{"w", "/", "2"}], ",", 
+          RowBox[{"5", "d"}]}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"2", "d"}], ",", 
+          RowBox[{"w", "/", "2"}], ",", 
+          RowBox[{"5", "d"}]}], "}"}]}], "}"}], ",", 
+      RowBox[{"w", "/", "10"}]}], "]"}], "/.", "geometricParameters"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"mount2", "=", 
+   RowBox[{
+    RowBox[{"Cylinder", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"-", "d"}], ",", 
+          RowBox[{"w", "/", "2"}], ",", 
+          RowBox[{"h", "-", 
+           RowBox[{"5", "d"}]}]}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"2", "d"}], ",", 
+          RowBox[{"w", "/", "2"}], ",", 
+          RowBox[{"h", "-", 
+           RowBox[{"5", "d"}]}]}], "}"}]}], "}"}], ",", 
+      RowBox[{"w", "/", "10"}]}], "]"}], "/.", "geometricParameters"}]}], 
+  ";"}]}], "Input",
+ CellChangeTimes->{{3.822567947733111*^9, 3.822568083063726*^9}, 
+   3.822568317199059*^9, {3.8225683531997013`*^9, 3.82256855164666*^9}, {
+   3.8226265733175573`*^9, 3.822626732350065*^9}, {3.8226296663891077`*^9, 
+   3.8226296772938223`*^9}, 3.823317069078429*^9, 3.823317237037077*^9},
+ CellLabel->"In[3]:=",
+ CellID->373247626,ExpressionUUID->"3cce0182-59fc-426b-997b-a170eab0f09c"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Visualize the geometric components.", "MathCaption",
+ CellChangeTimes->{{3.8233172450210943`*^9, 3.823317255600252*^9}},
+ CellID->1997652498,ExpressionUUID->"faf271bb-2941-4996-ae68-a9edd5cced81"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Graphics3D", "[", 
+  RowBox[{"{", 
+   RowBox[{"side", ",", "top", ",", "mount1", ",", "mount2"}], "}"}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.822567999881566*^9, 3.822568006450601*^9}, {
+   3.822568085632181*^9, 3.822568086343492*^9}, {3.822568498052136*^9, 
+   3.82256853049601*^9}, {3.82262673694064*^9, 3.822626749257801*^9}, 
+   3.822629680423409*^9},
+ CellLabel->"In[8]:=",
+ CellID->1891658347,ExpressionUUID->"ee8c23d4-60bf-4ad1-831d-80786766bb10"],
+
+Cell[BoxData[
+ Graphics3DBox[{CuboidBox[{0, 0, 0}, {0.001, 0.005, 0.02}], 
+   CuboidBox[{0, 0, 0.018000000000000002`}, {0.02, 0.005, 0.019}], 
+   CylinderBox[{{-0.001, 0.0025, 0.005}, {0.002, 0.0025, 0.005}}, 0.0005], 
+   CylinderBox[{{-0.001, 0.0025, 0.015}, {0.002, 0.0025, 0.015}}, 0.0005]},
+  ImageSize->{339.0604971322359, 337.360372439604},
+  ImageSizeRaw->Automatic,
+  ViewPoint->{0.4041479064996216, -3.177395740277837, 1.0912473502081141`},
+  ViewVertical->{-0.033350298709844746`, -0.7941400466481695, 
+   0.6068190371812731}]], "Output",
+ CellChangeTimes->{
+  3.822649024461364*^9, {3.8230759190334806`*^9, 3.823075929098675*^9}, 
+   3.8230783313787107`*^9, 3.823171064824335*^9, {3.823171331795148*^9, 
+   3.8231713434595346`*^9}, 3.823223819010889*^9, 3.823223912329836*^9, 
+   3.823226221201191*^9, {3.823226346865484*^9, 3.823226365181354*^9}, 
+   3.8232266044250593`*^9, 3.823231826209643*^9, 3.823231880667472*^9, 
+   3.823232304682135*^9, 3.8232344537583303`*^9, 3.8232347216387987`*^9, 
+   3.82323482655107*^9, 3.8232349070992613`*^9, 3.8232349818902197`*^9, 
+   3.823235062048367*^9, 3.82323568959441*^9, 3.823236581816737*^9, 
+   3.823236973065199*^9, 3.823237546739645*^9, 3.823238238624009*^9, 
+   3.823251769262845*^9, 3.823251960415406*^9, 3.823252414595409*^9, 
+   3.8232525415318747`*^9, 3.823256943149722*^9, 3.823259647425187*^9, 
+   3.823317257774995*^9, 3.823317324321652*^9, 3.823320708972438*^9},
+ CellLabel->"Out[8]=",
+ CellID->310556068,ExpressionUUID->"d56122bc-1496-43c6-8422-b8b71f6c3ac3"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Construct the Boolean operation.", "MathCaption",
+ CellChangeTimes->{{3.823317262873193*^9, 3.823317275206437*^9}},
+ CellID->2145981494,ExpressionUUID->"c6717e06-a766-44d8-8e97-b52958b25b62"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"region", "=", 
+   RowBox[{"RegionDifference", "[", 
+    RowBox[{
+     RowBox[{"RegionDifference", "[", 
+      RowBox[{
+       RowBox[{"RegionUnion", "[", 
+        RowBox[{"side", ",", "top"}], "]"}], ",", "mount1"}], "]"}], ",", 
+     "mount2"}], "]"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.822568648552524*^9, 3.8225686500480413`*^9}, 
+   3.822568710129011*^9, {3.822626753840405*^9, 3.822626754900381*^9}, {
+   3.822629618193783*^9, 3.822629644590753*^9}, {3.822629686172065*^9, 
+   3.82262969466959*^9}, {3.82331728510882*^9, 3.8233172854693317`*^9}},
+ CellLabel->"In[9]:=",
+ CellID->1987911812,ExpressionUUID->"8f5aef2a-7af5-459e-80a3-553dfb97e40f"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Create a OpenCascade shape from the Boolean region.", "MathCaption",
+ CellChangeTimes->{{3.82331729243747*^9, 3.8233173111055403`*^9}},
+ CellID->451172925,ExpressionUUID->"40735943-43b7-4963-af06-19c41234480a"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"shape", "=", 
+  RowBox[{"OpenCascadeShape", "[", "region", "]"}]}]], "Input",
+ CellChangeTimes->{{3.82256792729291*^9, 3.8225679369683743`*^9}, {
+   3.8225685651743917`*^9, 3.82256866589874*^9}, 3.8225691935511103`*^9, 
+   3.822569314257848*^9, 3.823317290606686*^9},
+ CellLabel->"In[10]:=",
+ CellID->1231854223,ExpressionUUID->"10d0ac0c-8bad-4711-9725-877369899823"],
+
+Cell[BoxData[
+ RowBox[{"OpenCascadeShapeExpression", "[", "17", "]"}]], "Output",
+ CellChangeTimes->{{3.822569314730092*^9, 3.822569335189198*^9}, 
+   3.8225694049922543`*^9, 3.822569493684366*^9, 3.822569907450139*^9, {
+   3.8225699480154057`*^9, 3.822570008767002*^9}, {3.822570039321424*^9, 
+   3.822570072709594*^9}, 3.822616970420547*^9, 3.822617001458354*^9, {
+   3.822618952743499*^9, 3.822618969338038*^9}, 3.822624087200303*^9, 
+   3.82262675762181*^9, {3.822626828590831*^9, 3.822626837238612*^9}, {
+   3.822627442945415*^9, 3.822627449027492*^9}, {3.8226276872138977`*^9, 
+   3.8226277047496433`*^9}, {3.822629336693169*^9, 3.82262935227763*^9}, 
+   3.822629478811241*^9, 3.822629510432406*^9, 3.822629568039921*^9, {
+   3.8226296960551567`*^9, 3.822629704109746*^9}, {3.8226404531083508`*^9, 
+   3.822640461913434*^9}, 3.8226428163106422`*^9, {3.822642998916004*^9, 
+   3.8226430076138268`*^9}, 3.823075932731309*^9, 3.8230783361591673`*^9, 
+   3.8231710800291862`*^9, {3.8231713319699163`*^9, 3.823171353615028*^9}, 
+   3.823223822702064*^9, 3.823223912732699*^9, 3.8232262216136837`*^9, {
+   3.8232263470298147`*^9, 3.82322636559311*^9}, 3.823226604840728*^9, 
+   3.8232318274592876`*^9, 3.823231881081732*^9, 3.8232323051049128`*^9, 
+   3.823234454176857*^9, 3.82323472205788*^9, 3.823234826960705*^9, 
+   3.823234907520348*^9, 3.823234982307212*^9, 3.823235062464983*^9, 
+   3.8232356900650043`*^9, 3.8232365857039337`*^9, 3.82323697348137*^9, 
+   3.823237547164178*^9, 3.823238239052938*^9, 3.8232517696784067`*^9, 
+   3.823251963773799*^9, 3.823252417862906*^9, 3.8232525455354958`*^9, 
+   3.8232569435697727`*^9, 3.8232596478442173`*^9, {3.823317313416106*^9, 
+   3.823317325821409*^9}, 3.823320711635482*^9},
+ CellLabel->"Out[10]=",
+ CellID->1354521368,ExpressionUUID->"ce46ce42-a8d2-43bf-8f98-a7ceaf0e0055"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Visualize the surface of the Boolean region.", "MathCaption",
+ CellChangeTimes->{{3.8233173326758204`*^9, 3.823317349395432*^9}},
+ CellID->109058859,ExpressionUUID->"47f4c965-dc01-453b-84e7-0960ce68cdd8"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"OpenCascadeShapeSurfaceMeshToBoundaryMesh", "[", "shape", "]"}], 
+  "[", 
+  RowBox[{"\"\<Wireframe\>\"", "[", 
+   RowBox[{"\"\<MeshElementStyle\>\"", "\[Rule]", 
+    RowBox[{"Directive", "[", 
+     RowBox[{
+      RowBox[{"EdgeForm", "[", "]"}], ",", 
+      RowBox[{"FaceForm", "[", "LightGray", "]"}]}], "]"}]}], "]"}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.8225686696266413`*^9, 3.822568684555855*^9}, {
+  3.823318361317959*^9, 3.823318365969513*^9}},
+ CellLabel->"In[11]:=",
+ CellID->1700004430,ExpressionUUID->"09b63a89-6bab-4c1e-a77c-be12059826a8"],
+
+Cell[BoxData[
+ Graphics3DBox[
+  {EdgeForm[GrayLevel[0]], FaceForm[None, None], 
+   GraphicsComplex3DBox[CompressedData["
+1:eJx1lUtIVGEYhie1TakFmdaoE9bCRc0iS7so/ESBRYw3KoJc6KhpLTJrNBkt
+aZM3Zg5qpRSBZFpZGUWFmomUC8ug0GAcvDG10JKiNLpAUIL/ew6+f3NgGOaZ
+w/d/5/sezhtjL8zICzCZTKXzn8D5T1lYR7LPeVEsfDtE0mSqq/FEvfhz+9uQ
+zZ6mcFP7Yj76+9zxHkeD4DrMTfLi+szxG3Xwm/sx0QWO8/j+xf0Z/aBP7scf
+/38/uaJ7X3DAxsoS/f7oRkfp14oc0ZFa8f7LGYM/PVhqvtRgF2OvQ63R+w2e
+sqyptfZFtqiPjn2QFmhwX1dI4kxkthj90dfy+EaxzsPje/uL2rJE7/WhmsGt
+BjcvsS2dO5Ylbm12nlzV7VB4yk+f5X6iQ6mz/UJ10M++08q5kXFXZ4LTDW6T
+feYuj58omj2l8275XOZMm7213eBRcg57vWN3h88a3CnntrB3g4/UTYUPFecp
+9+8c/uCw2o8q9W9a+j8mxOWLHOonrDDlgMebL8zU/+TctVdpqQViGz3vWOyK
+mje1BcJG8xmXvI3m6ZN1emj+EfJcL+3rjuyzjvYr5HONkg/jcg7sT7mc2+Ed
+jwZKejXFt4yez50jTzTFt2ln/ERhs6b4tqdlV3N1uabsfVpzr02yaYon3ryI
+kOTVmuqVdebvJ49b4etXrvN0NrmVOo2e2ZeZR9zKuVX3yp7lb3Arvm26MpBg
+/u5SfKt6/u7XlrcuxTfL+SjLYJdL8W1N0KFQ60OX4hvfD98qqT58437gG/cP
+3y7T88K3GJoPfON5wjeeP3ybon3Bt920X/jGPsC3dOkPv+/8Xfw+ZT/B2U9w
+9hOc/QRnP8HZT3D2kzn85Drwk8/FfsHZT3D2E5z9BGc/wdlPcPYTnP0EZz/B
+2U9w9hOc/dTnQ36Cs5/g7Cc4+6mf68dPzl9wzl9wzl9wzl/eO/IXnPMXnPOX
+OfKX6yB/+VzkLzjnLzjnLzjnLzjnLzjnLzjnLzjnLzjnLzjnLzjnr753yl99
+PpS/4Jy/4Jy/4Jy/+rl+8hf/4733Dzjjcrg=
+    "], {
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{4, 1, 2}, {4, 2, 3}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{2, 1, 5}, {2, 5, 6}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{3, 9, 10}, {2, 9, 3}, {8, 7, 2}, {7, 9, 2}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{4, 12, 11}, {4, 3, 12}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{11, 5, 1}, {11, 1, 4}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{5, 11, 12}, {5, 12, 6}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{31, 30, 8}, {29, 8, 30}, {32, 31, 8}, {28, 8, 29}, {33, 
+       32, 8}, {27, 13, 8}, {27, 8, 28}, {34, 33, 8}, {26, 13, 27}, {25, 13, 
+       26}, {24, 13, 25}, {23, 13, 24}, {22, 13, 23}, {21, 13, 22}, {20, 13, 
+       21}, {57, 37, 36}, {57, 56, 37}, {55, 38, 37}, {55, 37, 56}, {58, 57, 
+       36}, {58, 36, 35}, {54, 39, 38}, {54, 38, 55}, {53, 39, 54}, {53, 14, 
+       39}, {52, 15, 14}, {52, 14, 53}, {51, 15, 52}, {51, 16, 15}, {50, 17, 
+       16}, {50, 16, 51}, {49, 18, 17}, {49, 17, 50}, {48, 19, 18}, {48, 18, 
+       49}, {2, 58, 35}, {2, 35, 34}, {2, 59, 58}, {2, 60, 59}, {2, 61, 60}, {
+       2, 62, 61}, {2, 63, 62}, {2, 64, 63}, {2, 65, 64}, {2, 34, 8}, {40, 65,
+        2}, {6, 41, 40}, {6, 42, 41}, {6, 43, 42}, {6, 44, 43}, {6, 45, 44}, {
+       6, 46, 45}, {6, 47, 46}, {6, 48, 47}, {6, 40, 2}, {6, 13, 20}, {6, 20, 
+       19}, {6, 19, 48}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{7, 8, 13}, {7, 13, 66}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{90, 91, 9}, {92, 9, 91}, {89, 90, 9}, {93, 9, 92}, {88, 
+       89, 9}, {68, 67, 9}, {68, 9, 93}, {87, 88, 9}, {69, 67, 68}, {70, 67, 
+       69}, {71, 67, 70}, {72, 67, 71}, {73, 67, 72}, {74, 67, 73}, {75, 67, 
+       74}, {116, 84, 85}, {116, 117, 84}, {118, 83, 84}, {118, 84, 117}, {
+       115, 116, 85}, {115, 85, 86}, {119, 82, 83}, {119, 83, 118}, {114, 115,
+        86}, {114, 86, 87}, {94, 81, 82}, {94, 82, 119}, {95, 80, 81}, {95, 
+       81, 94}, {96, 79, 80}, {96, 80, 95}, {97, 78, 79}, {97, 79, 96}, {98, 
+       77, 78}, {98, 78, 97}, {99, 76, 77}, {99, 77, 98}, {7, 114, 87}, {7, 
+       107, 108}, {7, 108, 109}, {7, 109, 110}, {7, 110, 111}, {7, 111, 
+       112}, {7, 112, 113}, {7, 113, 114}, {7, 87, 9}, {66, 100, 101}, {66, 
+       101, 102}, {66, 102, 103}, {66, 103, 104}, {66, 104, 105}, {66, 105, 
+       106}, {66, 106, 107}, {66, 107, 7}, {66, 67, 75}, {66, 75, 76}, {66, 
+       76, 100}, {100, 76, 99}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{10, 67, 120}, {10, 9, 67}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{120, 3, 10}, {120, 12, 3}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{12, 120, 67}, {6, 12, 67}, {66, 6, 67}, {13, 6, 66}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{15, 94, 14}, {15, 95, 94}, {16, 96, 95}, {16, 95, 15}, {
+       17, 97, 96}, {17, 96, 16}, {18, 98, 97}, {18, 97, 17}, {19, 99, 98}, {
+       19, 98, 18}, {20, 100, 99}, {20, 99, 19}, {21, 101, 100}, {21, 100, 
+       20}, {22, 102, 101}, {22, 101, 21}, {23, 103, 102}, {23, 102, 22}, {24,
+        104, 103}, {24, 103, 23}, {25, 105, 104}, {25, 104, 24}, {26, 105, 
+       25}, {26, 106, 105}, {27, 106, 26}, {27, 107, 106}, {28, 107, 27}, {28,
+        108, 107}, {29, 108, 28}, {29, 109, 108}, {30, 109, 29}, {30, 110, 
+       109}, {31, 110, 30}, {31, 111, 110}, {32, 111, 31}, {32, 112, 111}, {
+       33, 112, 32}, {33, 113, 112}, {34, 113, 33}, {34, 114, 113}, {35, 114, 
+       34}, {35, 115, 114}, {36, 115, 35}, {36, 116, 115}, {37, 116, 36}, {37,
+        117, 116}, {38, 118, 117}, {38, 117, 37}, {39, 119, 118}, {39, 118, 
+       38}, {14, 94, 119}, {14, 119, 39}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{41, 68, 40}, {41, 69, 68}, {42, 70, 69}, {42, 69, 41}, {
+       43, 71, 70}, {43, 70, 42}, {44, 72, 71}, {44, 71, 43}, {45, 73, 72}, {
+       45, 72, 44}, {46, 74, 73}, {46, 73, 45}, {47, 75, 74}, {47, 74, 46}, {
+       48, 76, 75}, {48, 75, 47}, {49, 77, 76}, {49, 76, 48}, {50, 78, 77}, {
+       50, 77, 49}, {51, 79, 78}, {51, 78, 50}, {52, 79, 51}, {52, 80, 79}, {
+       53, 80, 52}, {53, 81, 80}, {54, 81, 53}, {54, 82, 81}, {55, 82, 54}, {
+       55, 83, 82}, {56, 83, 55}, {56, 84, 83}, {57, 84, 56}, {57, 85, 84}, {
+       58, 85, 57}, {58, 86, 85}, {59, 86, 58}, {59, 87, 86}, {60, 87, 59}, {
+       60, 88, 87}, {61, 88, 60}, {61, 89, 88}, {62, 89, 61}, {62, 90, 89}, {
+       63, 90, 62}, {63, 91, 90}, {64, 92, 91}, {64, 91, 63}, {65, 93, 92}, {
+       65, 92, 64}, {40, 68, 93}, {40, 93, 65}}]}}]},
+  Boxed->False,
+  ImageSize->{362.3477528520031, 399.06480125683476`},
+  ImageSizeRaw->Automatic,
+  ViewPoint->{2.9208237814524103`, -1.2877392646981862`, 1.1227270477977374`},
+  
+  ViewVertical->{0.34967489195107493`, 0.5023938532999285, 
+   0.7907767612325579}]], "Output",
+ CellChangeTimes->{
+  3.8225686849025707`*^9, 3.8225690902173*^9, 3.822569124420879*^9, 
+   3.822569280494855*^9, {3.822569315849374*^9, 3.822569336961526*^9}, 
+   3.822569405048996*^9, 3.822569493706613*^9, 3.822569914588869*^9, {
+   3.822569948030587*^9, 3.822570008782049*^9}, {3.822570041084044*^9, 
+   3.822570072723494*^9}, 3.822616970431662*^9, 3.822617001508912*^9, 
+   3.8226189711847343`*^9, 3.822624087998665*^9, 3.8226267591236877`*^9, {
+   3.8226268287486486`*^9, 3.8226268389533577`*^9}, 3.822627449063217*^9, 
+   3.82262771070722*^9, 3.822629353600153*^9, 3.822629511454543*^9, 
+   3.8226295836008463`*^9, 3.822629705468912*^9, {3.822640453124275*^9, 
+   3.822640463482388*^9}, 3.822642818020005*^9, 3.82264300895854*^9, 
+   3.823075933948941*^9, 3.8230783361920958`*^9, 3.823171081241981*^9, 
+   3.823171356717063*^9, 3.823223822720231*^9, 3.82322391274977*^9, 
+   3.8232262216306953`*^9, {3.823226347044476*^9, 3.8232263656104507`*^9}, 
+   3.823226604857635*^9, 3.823231827478273*^9, 3.8232318810991*^9, 
+   3.823232305123323*^9, 3.823234454198357*^9, 3.8232347220782347`*^9, 
+   3.8232348269786577`*^9, 3.823234907542918*^9, 3.823234982326974*^9, 
+   3.823235062486745*^9, 3.8232356900834017`*^9, 3.823236585722158*^9, 
+   3.8232369735038433`*^9, 3.8232375471897583`*^9, 3.823238239072237*^9, 
+   3.823251769697569*^9, 3.823251963792601*^9, 3.823252419673876*^9, 
+   3.8232525455543613`*^9, 3.823256943590095*^9, 3.823259647864294*^9, 
+   3.823317351072863*^9, 3.823318367017578*^9, 3.82332071339443*^9},
+ CellLabel->"Out[11]=",
+ CellID->1548901642,ExpressionUUID->"1ff20077-1a04-49b7-8d90-7a77fabee047"]
+}, Open  ]]
+}, Open  ]],
+
+Cell["\<\
+Next, the fillets at the intersection of the cuboids and the fillets at the \
+end of bracket are made. The filleting function takes as arguments a shape, a \
+filleting radius and the identification numbers (ids) of the edges on which \
+the fillet is to be created.\
+\>", "Text",
+ CellChangeTimes->{{3.823317690429891*^9, 3.8233178135878973`*^9}, 
+   3.823317918367052*^9, {3.823318615891267*^9, 3.823318618402454*^9}},
+ CellID->882501203,ExpressionUUID->"c7b11021-99cf-40d7-b6dc-f252055779ea"],
+
+Cell[CellGroupData[{
+
+Cell["Find the number of edges.", "MathCaption",
+ CellChangeTimes->{{3.823317960302161*^9, 3.823317965177066*^9}},
+ CellID->1629930930,ExpressionUUID->"528e0cff-6283-45ba-bd28-fdab415cc791"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"OpenCascadeShapeNumberOfEdges", "[", "shape", "]"}]], "Input",
+ CellChangeTimes->{{3.82331792967015*^9, 3.823317957369196*^9}},
+ CellLabel->"In[12]:=",
+ CellID->412369071,ExpressionUUID->"ad68716f-e322-4c56-9674-d64e55e9d595"],
+
+Cell[BoxData["64"], "Output",
+ CellChangeTimes->{{3.8233179458952503`*^9, 3.82331795779783*^9}, 
+   3.823320714888411*^9},
+ CellLabel->"Out[12]=",
+ CellID->1413948844,ExpressionUUID->"cf65ac7a-ee18-40aa-a58c-c3b81bd99453"]
+}, Open  ]]
+}, Open  ]],
+
+Cell["\<\
+In OpenCascade edges between faces appear twice, once as viewed from each \
+face.\
+\>", "Text",
+ CellChangeTimes->{{3.8233179780912933`*^9, 3.8233180549260187`*^9}, {
+  3.823318295298992*^9, 3.8233182960510263`*^9}},
+ CellID->1539459772,ExpressionUUID->"68b9372e-a4cc-4473-a817-4d2efcd37c7c"],
+
+Cell[CellGroupData[{
+
+Cell["Create fillets on edges 20, 22 and 30.", "MathCaption",
+ CellChangeTimes->{{3.823317825739853*^9, 3.8233178396554823`*^9}},
+ CellID->211481408,ExpressionUUID->"7a55d5f2-df46-4822-a05c-168bbfb57a50"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"fshape", "=", 
+  RowBox[{
+   RowBox[{"OpenCascadeShapeFillet", "[", 
+    RowBox[{"shape", ",", "d", ",", 
+     RowBox[{"{", 
+      RowBox[{"20", ",", "22", ",", "30"}], "}"}]}], "]"}], "/.", 
+   "geometricParameters"}]}]], "Input",
+ CellChangeTimes->{{3.8225696064356937`*^9, 3.822569609059847*^9}, {
+  3.822626768570603*^9, 3.822626770259693*^9}},
+ CellLabel->"In[13]:=",
+ CellID->53784687,ExpressionUUID->"be54cf01-5137-4891-94e4-cfaef6df377f"],
+
+Cell[BoxData[
+ RowBox[{"OpenCascadeShapeExpression", "[", "18", "]"}]], "Output",
+ CellChangeTimes->{
+  3.82256960968679*^9, 3.822569917204208*^9, {3.822569949766968*^9, 
+   3.822570008803338*^9}, {3.822570041197319*^9, 3.8225700727470903`*^9}, 
+   3.822616970444034*^9, 3.822617001527954*^9, 3.8226189732201357`*^9, 
+   3.822624090172792*^9, 3.8226267718061028`*^9, 3.8226268389904613`*^9, 
+   3.822627451037551*^9, 3.8226277123030167`*^9, 3.82262935364259*^9, 
+   3.822629514247219*^9, 3.822629585751295*^9, 3.8226297073202763`*^9, 
+   3.8226404652879257`*^9, 3.822642818060958*^9, 3.822643009000833*^9, 
+   3.823075940216975*^9, 3.823078339173563*^9, 3.823171083561462*^9, 
+   3.823171361361656*^9, 3.823223824882598*^9, 3.823223912769455*^9, 
+   3.823226223585219*^9, {3.8232263470594807`*^9, 3.823226365626844*^9}, 
+   3.823226604874111*^9, 3.823231827497006*^9, 3.823231881116308*^9, 
+   3.823232305141118*^9, 3.8232344542196703`*^9, 3.823234722098612*^9, 
+   3.823234827041437*^9, 3.82323490756369*^9, 3.823234982346272*^9, 
+   3.823235062507647*^9, 3.823235691453157*^9, 3.823236589216943*^9, 
+   3.823236973525999*^9, 3.823237547206257*^9, 3.823238239087378*^9, 
+   3.8232517742213*^9, 3.823251965281938*^9, 3.823252422054023*^9, 
+   3.823252547367845*^9, 3.82325694360485*^9, 3.8232596478822403`*^9, 
+   3.823318301453891*^9, 3.823320716282023*^9},
+ CellLabel->"Out[13]=",
+ CellID->67880514,ExpressionUUID->"9c52b0ef-d08f-4c90-8544-297213843bc7"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Visualize the filleted surface.", "MathCaption",
+ CellChangeTimes->{{3.823318305969026*^9, 3.823318346135996*^9}},
+ CellID->2099084988,ExpressionUUID->"82f7e7c0-0c23-4c99-96c1-e09605671fb6"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"OpenCascadeShapeSurfaceMeshToBoundaryMesh", "[", "fshape", "]"}], 
+  "[", 
+  RowBox[{"\"\<Wireframe\>\"", "[", 
+   RowBox[{"\"\<MeshElementStyle\>\"", "\[Rule]", 
+    RowBox[{"Directive", "[", 
+     RowBox[{
+      RowBox[{"EdgeForm", "[", "]"}], ",", 
+      RowBox[{"FaceForm", "[", "LightGray", "]"}]}], "]"}]}], "]"}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.822569034436194*^9, 3.822569066699725*^9}, {
+  3.822569102099351*^9, 3.822569103844549*^9}, {3.822569324269465*^9, 
+  3.822569383621876*^9}, {3.822569415337905*^9, 3.822569641599537*^9}, {
+  3.822569675943543*^9, 3.822569714261902*^9}},
+ CellLabel->"In[14]:=",
+ CellID->1762792688,ExpressionUUID->"8aa5ecab-aab9-43ab-895d-8443f317e30d"],
+
+Cell[BoxData[
+ Graphics3DBox[
+  {EdgeForm[GrayLevel[0]], FaceForm[None, None], 
+   GraphicsComplex3DBox[CompressedData["
+1:eJyFlX1QVFUYxhehL0XTkVAXF1InnSaxstYsyTNoM0bMwkoKNlGzrPJlMyG4
+kCJkNhQI7m4sm4uWRQimSKCNFSCRGhWIU4Q5sLFo9KVFOooafVjmyH3uHZ4z
+Tndm/9jf3H3Pe57zO/tOs2bEJY/S6XRV1z7+1z69f764utlWJvKC6pb059pE
+xKlYu+d5l7iy50KXyWoRG4i3u2N3RIU9o76fUhD2b0CaS8ws6Cps3f2UygN9
+q+vfWeYSnw/OdL1kj1f51U0NL6cYXeJYfmres5efVHl9cWLSj2Nc4pIvcv9e
+vziVb/vab/p935aKhIShz3I6zCp36mo6v6gsVfo0q32+2Xrnvqw0maN/Xc1I
+jv1zDvj+pfHWkgn1ZeKuPb+N9li0Oj03W3zrfy4TLbfoO2+bqPFznzSFzJns
+FkVvmw2GrWtVvvCj4Ef3RbpF1JHvPEHns1QePaE9fcDiFhf6srcvvlvj1Y35
+DTE2t2jbFry8MjpT5cN9u8U/1/e3RuJ/K/vmOlUnDrqH1kdJ61oOHE4/u2WR
+1OeiGSeuHK2dL+2r9q266FfKZ6vcq+TQea//T32Xp6gcuVkSnjsc8cRfC8GR
+q+76M76ZfdMpD9dB/vg95w/O+YNz/uCcPzjnD875g8M39A8PcV/A+b6A830B
+5/sCzvcFnO8LOO4L53+j/nm/8IrzqVS84jxXKF5x/nMUr/i8ChSv+HxfU7zi
++1gRP+wV9497raPn/zj2yXWYs5/M8Yyss0o0RQWOuqcwR33f4LGtO79xpaiL
+3fj9uRc0fnD5Ov3rZVbhOzYu3BCt8ZjR5dUlnyYJl2HWfrO/xvsbxy4YCEkS
+vb8f2vlBVbbKg40trZm7LKKlsqu440GN6/1MN11Mt4jd9+eumdhkk3jMUH9o
+/QKbVGf+q5sDhg6tldYNmfvGQOBSjZuUPleNMZ7MHMxSeZOyL32iyVpdo/Gp
+Sg6Pe321x/M1nqvkNpyzxntKTwd3ZSdL7z9y/AdbuDVFqv9uaOsv8+amipXU
+T1BGzLJub6rQU/+nLu44ao5NEw/Rfn2zbi/+qiRNmCifPoXvojz7lTrNlP8k
+ZV0vnddepc9SOl+h7KuXfOhTcmB/8pTcVjx8oC2nxSn5Ftd8tqHnQ6fk25lc
+48mMCqfk22M7Iys25zmlcz/jdEyJMDklT7zJk8YuucMpexU+cPXXbofEp48P
+624od0h1PN2D7YlPO6R1i97b8HHqDIfk2+ztbfP0l+ySb0VHvvnjgU675Fvo
+pqmhHY12ybfJAfHjwt+3S77x+/CtkOrDN+4HvnH/8G0r7Re+TaN84BvnCd84
+f/h2ms4Lvi2m84Vv7AN8W0r+jPwfdUv/gzd6+H32Fpy9BWdvwdlbcPYWnL0F
+Z2+Zw1uuA295XZw7OHsLzt6Cs7fg7C04ewvO3oKzt+DsLTh7C87egrO3aj7k
+LTh7C87egrO36rrkLTjPZXCey+A8l8F5LvO5Yy6D81wG57nMHHOZ62Au87qY
+y+A8l8F5LoPzXAbnuQzOcxmc5zI4z2VwnsvgPJfBeS6r505zWc2H5jI4z2Vw
+nsvgPJfVdWku/wd5PF7C
+    "], {
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{10, 6, 7}, {10, 7, 8}, {10, 8, 9}, {5, 6, 10}, {4, 5, 
+       10}, {11, 3, 4}, {11, 4, 10}, {2, 3, 11}, {12, 1, 2}, {12, 2, 11}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{20, 21, 22}, {20, 22, 23}, {20, 23, 24}, {20, 24, 25}, {
+       20, 25, 26}, {20, 26, 27}, {1, 13, 14}, {1, 14, 15}, {1, 15, 16}, {1, 
+       16, 17}, {1, 17, 18}, {1, 18, 19}, {1, 19, 20}, {1, 20, 27}, {2, 27, 
+       28}, {2, 1, 27}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{13, 12, 29}, {13, 1, 12}, {14, 29, 30}, {14, 13, 29}, {
+       15, 30, 31}, {15, 14, 30}, {16, 31, 32}, {16, 15, 31}, {17, 32, 33}, {
+       17, 16, 32}, {18, 33, 34}, {18, 17, 33}, {19, 34, 35}, {19, 18, 34}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{37, 3, 2}, {37, 2, 28}, {38, 4, 3}, {38, 3, 37}, {39, 5, 
+       4}, {39, 4, 38}, {40, 6, 5}, {40, 5, 39}, {41, 7, 6}, {41, 6, 40}, {42,
+        8, 7}, {42, 7, 41}, {36, 9, 8}, {36, 8, 42}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{45, 47, 46}, {45, 48, 47}, {45, 49, 48}, {45, 50, 49}, {
+       45, 51, 50}, {45, 43, 51}, {12, 44, 43}, {12, 45, 35}, {12, 11, 44}, {
+       12, 43, 45}, {32, 29, 12}, {32, 30, 29}, {32, 31, 30}, {32, 34, 33}, {
+       32, 35, 34}, {32, 12, 35}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{11, 54, 55}, {10, 54, 11}, {9, 54, 10}, {52, 53, 9}, {53,
+        54, 9}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{45, 20, 19}, {45, 19, 35}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{39, 56, 40}, {38, 44, 56}, {38, 56, 39}, {41, 40, 56}, {
+       37, 44, 38}, {42, 41, 56}, {36, 42, 56}, {28, 44, 37}, {43, 44, 28}, {
+       27, 43, 28}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{21, 45, 46}, {21, 20, 45}, {22, 46, 47}, {22, 21, 46}, {
+       23, 47, 48}, {23, 22, 47}, {24, 48, 49}, {24, 23, 48}, {25, 49, 50}, {
+       25, 24, 49}, {26, 50, 51}, {26, 25, 50}, {27, 51, 43}, {27, 26, 51}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{75, 74, 52}, {73, 52, 74}, {76, 75, 52}, {72, 52, 73}, {
+       77, 76, 52}, {71, 57, 52}, {71, 52, 72}, {78, 77, 52}, {70, 57, 71}, {
+       69, 57, 70}, {68, 57, 69}, {67, 57, 68}, {66, 57, 67}, {65, 57, 66}, {
+       64, 57, 65}, {101, 81, 80}, {101, 100, 81}, {99, 82, 81}, {99, 81, 
+       100}, {98, 83, 82}, {98, 82, 99}, {9, 101, 80}, {9, 79, 78}, {9, 80, 
+       79}, {9, 102, 101}, {9, 103, 102}, {9, 78, 52}, {97, 58, 83}, {97, 83, 
+       98}, {104, 103, 9}, {96, 59, 58}, {96, 58, 97}, {105, 104, 9}, {95, 60,
+        59}, {95, 59, 96}, {106, 105, 9}, {94, 61, 60}, {94, 60, 95}, {107, 
+       106, 9}, {93, 62, 61}, {93, 61, 94}, {108, 107, 9}, {109, 108, 9}, {84,
+        109, 9}, {36, 63, 62}, {36, 85, 84}, {36, 86, 85}, {36, 87, 86}, {36, 
+       88, 87}, {36, 89, 88}, {36, 90, 89}, {36, 91, 90}, {36, 92, 91}, {36, 
+       93, 92}, {36, 62, 93}, {36, 84, 9}, {36, 57, 64}, {36, 64, 63}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{110, 11, 55}, {110, 44, 11}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{53, 52, 57}, {53, 57, 111}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{135, 136, 54}, {137, 54, 136}, {134, 135, 54}, {138, 54, 
+       137}, {133, 134, 54}, {113, 112, 54}, {113, 54, 138}, {132, 133, 54}, {
+       114, 112, 113}, {115, 112, 114}, {116, 112, 115}, {117, 112, 116}, {
+       118, 112, 117}, {119, 112, 118}, {120, 112, 119}, {161, 129, 130}, {
+       161, 162, 129}, {163, 128, 129}, {163, 129, 162}, {160, 161, 130}, {
+       160, 130, 131}, {164, 127, 128}, {164, 128, 163}, {159, 160, 131}, {
+       159, 131, 132}, {139, 126, 127}, {139, 127, 164}, {140, 125, 126}, {
+       140, 126, 139}, {141, 124, 125}, {141, 125, 140}, {142, 123, 124}, {
+       142, 124, 141}, {143, 122, 123}, {143, 123, 142}, {144, 121, 122}, {
+       144, 122, 143}, {53, 159, 132}, {53, 152, 153}, {53, 153, 154}, {53, 
+       154, 155}, {53, 155, 156}, {53, 156, 157}, {53, 157, 158}, {53, 158, 
+       159}, {53, 132, 54}, {111, 145, 146}, {111, 146, 147}, {111, 147, 
+       148}, {111, 148, 149}, {111, 149, 150}, {111, 150, 151}, {111, 151, 
+       152}, {111, 152, 53}, {111, 112, 120}, {111, 120, 121}, {111, 121, 
+       145}, {145, 121, 144}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{55, 112, 110}, {55, 54, 112}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{44, 110, 112}, {56, 44, 112}, {36, 56, 112}, {111, 36, 
+       112}, {57, 36, 111}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{59, 139, 58}, {59, 140, 139}, {60, 141, 140}, {60, 140, 
+       59}, {61, 142, 141}, {61, 141, 60}, {62, 143, 142}, {62, 142, 61}, {63,
+        144, 143}, {63, 143, 62}, {64, 145, 144}, {64, 144, 63}, {65, 146, 
+       145}, {65, 145, 64}, {66, 147, 146}, {66, 146, 65}, {67, 148, 147}, {
+       67, 147, 66}, {68, 149, 148}, {68, 148, 67}, {69, 150, 149}, {69, 149, 
+       68}, {70, 150, 69}, {70, 151, 150}, {71, 151, 70}, {71, 152, 151}, {72,
+        152, 71}, {72, 153, 152}, {73, 153, 72}, {73, 154, 153}, {74, 154, 
+       73}, {74, 155, 154}, {75, 155, 74}, {75, 156, 155}, {76, 156, 75}, {76,
+        157, 156}, {77, 157, 76}, {77, 158, 157}, {78, 158, 77}, {78, 159, 
+       158}, {79, 159, 78}, {79, 160, 159}, {80, 160, 79}, {80, 161, 160}, {
+       81, 161, 80}, {81, 162, 161}, {82, 163, 162}, {82, 162, 81}, {83, 164, 
+       163}, {83, 163, 82}, {58, 139, 164}, {58, 164, 83}}]}, 
+     {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+      Polygon3DBox[{{85, 113, 84}, {85, 114, 113}, {86, 115, 114}, {86, 114, 
+       85}, {87, 116, 115}, {87, 115, 86}, {88, 117, 116}, {88, 116, 87}, {89,
+        118, 117}, {89, 117, 88}, {90, 119, 118}, {90, 118, 89}, {91, 120, 
+       119}, {91, 119, 90}, {92, 121, 120}, {92, 120, 91}, {93, 122, 121}, {
+       93, 121, 92}, {94, 123, 122}, {94, 122, 93}, {95, 124, 123}, {95, 123, 
+       94}, {96, 124, 95}, {96, 125, 124}, {97, 125, 96}, {97, 126, 125}, {98,
+        126, 97}, {98, 127, 126}, {99, 127, 98}, {99, 128, 127}, {100, 128, 
+       99}, {100, 129, 128}, {101, 129, 100}, {101, 130, 129}, {102, 130, 
+       101}, {102, 131, 130}, {103, 131, 102}, {103, 132, 131}, {104, 132, 
+       103}, {104, 133, 132}, {105, 133, 104}, {105, 134, 133}, {106, 134, 
+       105}, {106, 135, 134}, {107, 135, 106}, {107, 136, 135}, {108, 137, 
+       136}, {108, 136, 107}, {109, 138, 137}, {109, 137, 108}, {84, 113, 
+       138}, {84, 138, 109}}]}}]},
+  Boxed->False,
+  ImageSize->{315.1390273833965, 407.7060514064233},
+  ImageSizeRaw->Automatic,
+  ViewPoint->{2.4987867103787615`, -2.2742217796663318`, 0.1843373888439135},
+  ViewVertical->{0.21392827799329334`, -0.8595391648489504, 
+   0.4641412672512465}]], "Output",
+ CellChangeTimes->{{3.822569509018338*^9, 3.82256964252369*^9}, {
+   3.822569679924952*^9, 3.822569714790992*^9}, 3.822569917240303*^9, {
+   3.822569950838328*^9, 3.8225700088190727`*^9}, {3.822570042976511*^9, 
+   3.8225700727650547`*^9}, 3.82261697047047*^9, 3.82261700311304*^9, 
+   3.8226189732730303`*^9, 3.822624090213271*^9, 3.8226267741958857`*^9, 
+   3.822626840648078*^9, 3.822627451079989*^9, 3.82262771401147*^9, 
+   3.8226293552255077`*^9, 3.822629515608931*^9, 3.822629589182653*^9, 
+   3.822629708790576*^9, 3.822640466784398*^9, 3.822642819695912*^9, 
+   3.822643010502804*^9, 3.823075941903138*^9, 3.823078339239208*^9, 
+   3.8231710850728903`*^9, 3.823171363449273*^9, 3.823223824914463*^9, 
+   3.823223915019465*^9, 3.823226223621969*^9, {3.823226347079652*^9, 
+   3.8232263656466913`*^9}, 3.8232266048939867`*^9, 3.823231827518261*^9, 
+   3.8232318811360817`*^9, 3.82323230520146*^9, 3.82323445423973*^9, 
+   3.823234722119895*^9, 3.823234827062307*^9, 3.823234907586527*^9, 
+   3.8232349823666143`*^9, 3.823235062529428*^9, 3.823235691568385*^9, 
+   3.8232365892515287`*^9, 3.823236973547985*^9, 3.823237547227714*^9, 
+   3.823238239108354*^9, 3.823251774336071*^9, 3.823251965333403*^9, 
+   3.82325242370616*^9, 3.823252547406994*^9, 3.8232569436267023`*^9, 
+   3.823259647904017*^9, 3.8233207177794437`*^9},
+ CellLabel->"Out[14]=",
+ CellID->1531485535,ExpressionUUID->"d1b3226c-3a8f-4094-a033-38fe3c45caa3"]
+}, Open  ]]
+}, Open  ]],
+
+Cell["\<\
+The final step is to create the chamfer on the bolt holes. Chamfers are \
+similar to fillets. The difference is that chamfers are not rounded but \
+planes. The chamfer function takes as argument a shape, a distance, \
+tangential to which the chamfer will be created, and the identification \
+numbers (ids) of the edges on which the fillet is to be created.\
+\>", "Text",
+ CellChangeTimes->{{3.8233185553264227`*^9, 3.823318606089517*^9}, {
+  3.823318782114106*^9, 3.823318796541922*^9}, {3.823318858380391*^9, 
+  3.8233188610239563`*^9}, {3.823319684317606*^9, 3.8233197244203777`*^9}},
+ CellID->105751068,ExpressionUUID->"f9cb41c1-6e20-4573-b861-ef10381a0856"],
+
+Cell[CellGroupData[{
+
+Cell["Create chamfers on edges 52 and 53.", "MathCaption",
+ CellChangeTimes->{{3.823319783142724*^9, 3.823319796732231*^9}},
+ CellID->75356409,ExpressionUUID->"cecf8657-7e91-4abd-a438-0563e271127f"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"cfshape", "=", 
+  RowBox[{
+   RowBox[{"OpenCascadeShapeChamfer", "[", 
+    RowBox[{"fshape", ",", 
+     RowBox[{"d", "/", "5"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"52", ",", "53"}], "}"}]}], "]"}], "/.", 
+   "geometricParameters"}]}]], "Input",
+ CellChangeTimes->{{3.8225696064356937`*^9, 3.822569609059847*^9}, {
+  3.822569854841504*^9, 3.822570155808989*^9}, {3.822626782605825*^9, 
+  3.822626783993587*^9}},
+ CellLabel->"In[15]:=",
+ CellID->145845842,ExpressionUUID->"025d4ae0-2a65-4363-9ac1-1408c5834a9c"],
+
+Cell[BoxData[
+ RowBox[{"OpenCascadeShapeExpression", "[", "19", "]"}]], "Output",
+ CellChangeTimes->{
+  3.82256960968679*^9, {3.822569873223898*^9, 3.822569885302661*^9}, {
+   3.822569921516086*^9, 3.8225699291462793`*^9}, 3.8225699661181803`*^9, 
+   3.822570011075808*^9, {3.822570058044599*^9, 3.8225701562876987`*^9}, 
+   3.822616970483822*^9, 3.8226170031359*^9, 3.822618976121779*^9, 
+   3.822624094636943*^9, 3.82262678486491*^9, 3.822626840674655*^9, 
+   3.822627451097588*^9, 3.822627715373851*^9, 3.822629355254126*^9, 
+   3.822629712530401*^9, 3.8226404683619223`*^9, 3.822642819725657*^9, 
+   3.8226430105358353`*^9, 3.823075947983923*^9, 3.823078343465437*^9, 
+   3.823171086522732*^9, 3.823171368168935*^9, 3.8232238276367292`*^9, 
+   3.8232239264490623`*^9, 3.823226225589314*^9, {3.823226347094977*^9, 
+   3.82322636566444*^9}, 3.823226604911214*^9, 3.8232318275364733`*^9, 
+   3.823231881153211*^9, 3.823232305214074*^9, 3.823234454258234*^9, 
+   3.823234722139221*^9, 3.823234828773279*^9, 3.8232349076069393`*^9, 
+   3.823234982385664*^9, 3.8232350625501137`*^9, 3.823235693154687*^9, 
+   3.823236591545949*^9, 3.823236973570086*^9, 3.823237547244174*^9, 
+   3.823238239122615*^9, 3.823251774359542*^9, 3.8232519671496563`*^9, 
+   3.823252425568345*^9, 3.823252549764379*^9, 3.823256943638317*^9, 
+   3.8232596479223146`*^9, 3.823319799994914*^9, 3.823320719267844*^9},
+ CellLabel->"Out[15]=",
+ CellID->1523007703,ExpressionUUID->"ab1ddb83-5017-4658-8c4b-eec34a7a3e3c"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Visualize the filleted and chamfered surface.", "MathCaption",
+ CellChangeTimes->{{3.823318305969026*^9, 3.823318346135996*^9}, {
+  3.8233197547916517`*^9, 3.8233197591916113`*^9}},
+ CellID->580703023,ExpressionUUID->"07eb8e69-74d9-4a8c-8b0d-11820ba193c6"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"bmesh", "=", 
+   RowBox[{
+   "OpenCascadeShapeSurfaceMeshToBoundaryMesh", "[", "cfshape", "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{"Show", "[", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"bmesh", "[", "\"\<Edgeframe\>\"", "]"}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"bmesh", "[", 
+    RowBox[{"\"\<Wireframe\>\"", "[", 
+     RowBox[{"\"\<MeshElementStyle\>\"", "\[Rule]", 
+      RowBox[{"Directive", "[", 
+       RowBox[{
+        RowBox[{"EdgeForm", "[", "]"}], ",", 
+        RowBox[{"FaceForm", "[", "LightGray", "]"}]}], "]"}]}], "]"}], 
+    "]"}]}], "]"}]}], "Input",
+ CellChangeTimes->{{3.822570176017994*^9, 3.822570179046677*^9}, 
+   3.823319747972763*^9},
+ CellLabel->"In[16]:=",
+ CellID->494699365,ExpressionUUID->"c9b47bb5-a128-41bf-8b77-5b6f00500b17"],
+
+Cell[BoxData[
+ Graphics3DBox[{
+   {GrayLevel[0], GraphicsComplex3DBox[CompressedData["
+1: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
+     
+     "], {Line3DBox[{{1, 2}, {1, 4}, {2, 94}, {3, 4}, {3, 101}, {5, 6}, {5, 
+       30}, {6, 7}, {7, 8}, {8, 9}, {9, 10}, {10, 11}, {11, 12}, {12, 13}, {
+       13, 14}, {14, 15}, {15, 16}, {16, 17}, {17, 18}, {18, 19}, {19, 20}, {
+       20, 21}, {21, 22}, {22, 23}, {23, 24}, {24, 25}, {25, 26}, {26, 27}, {
+       27, 28}, {28, 29}, {29, 30}, {31, 32}, {31, 56}, {32, 33}, {33, 34}, {
+       34, 35}, {35, 36}, {36, 37}, {37, 38}, {38, 39}, {39, 40}, {40, 41}, {
+       41, 42}, {42, 43}, {43, 44}, {44, 45}, {45, 46}, {46, 47}, {47, 48}, {
+       48, 49}, {49, 50}, {50, 51}, {51, 52}, {52, 53}, {53, 54}, {54, 55}, {
+       55, 56}, {88, 89}, {88, 159}, {89, 90}, {90, 91}, {91, 92}, {92, 93}, {
+       93, 94}, {95, 96}, {95, 201}, {96, 97}, {97, 98}, {98, 99}, {99, 
+       100}, {100, 101}, {159, 187}, {187, 188}, {188, 189}, {189, 190}, {190,
+        191}, {191, 192}, {192, 193}, {193, 194}, {194, 195}, {195, 196}, {
+       196, 197}, {197, 198}, {198, 199}, {199, 200}, {200, 201}}], 
+      Line3DBox[{{5, 6}, {5, 30}, {6, 7}, {7, 8}, {8, 9}, {9, 10}, {10, 11}, {
+       11, 12}, {12, 13}, {13, 14}, {14, 15}, {15, 16}, {16, 17}, {17, 18}, {
+       18, 19}, {19, 20}, {20, 21}, {21, 22}, {22, 23}, {23, 24}, {24, 25}, {
+       25, 26}, {26, 27}, {27, 28}, {28, 29}, {29, 30}, {57, 58}, {57, 82}, {
+       58, 59}, {59, 60}, {60, 61}, {61, 62}, {62, 63}, {63, 64}, {64, 65}, {
+       65, 66}, {66, 67}, {67, 68}, {68, 69}, {69, 70}, {70, 71}, {71, 72}, {
+       72, 73}, {73, 74}, {74, 75}, {75, 76}, {76, 77}, {77, 78}, {78, 79}, {
+       79, 80}, {80, 81}, {81, 82}}], 
+      Line3DBox[{{1, 2}, {1, 83}, {2, 94}, {3, 4}, {3, 101}, {4, 102}, {83, 
+       84}, {84, 85}, {85, 86}, {86, 160}, {88, 89}, {88, 159}, {89, 90}, {90,
+        91}, {91, 92}, {92, 93}, {93, 94}, {95, 96}, {95, 201}, {96, 97}, {97,
+        98}, {98, 99}, {99, 100}, {100, 101}, {102, 106}, {104, 105}, {104, 
+       202}, {105, 106}, {159, 187}, {160, 203}, {187, 188}, {188, 189}, {189,
+        190}, {190, 191}, {191, 192}, {192, 193}, {193, 194}, {194, 195}, {
+       195, 196}, {196, 197}, {197, 198}, {198, 199}, {199, 200}, {200, 
+       201}, {202, 216}, {203, 204}, {204, 205}, {205, 206}, {206, 207}, {207,
+        208}, {208, 209}, {209, 210}, {210, 211}, {211, 212}, {212, 213}, {
+       213, 214}, {214, 215}, {215, 216}}], 
+      Line3DBox[{{1, 4}, {1, 83}, {4, 102}, {83, 102}}], 
+      Line3DBox[{{31, 32}, {31, 56}, {32, 33}, {33, 34}, {34, 35}, {35, 36}, {
+       36, 37}, {37, 38}, {38, 39}, {39, 40}, {40, 41}, {41, 42}, {42, 43}, {
+       43, 44}, {44, 45}, {45, 46}, {46, 47}, {47, 48}, {48, 49}, {49, 50}, {
+       50, 51}, {51, 52}, {52, 53}, {53, 54}, {54, 55}, {55, 56}, {107, 
+       108}, {107, 132}, {108, 109}, {109, 110}, {110, 111}, {111, 112}, {112,
+        113}, {113, 114}, {114, 115}, {115, 116}, {116, 117}, {117, 118}, {
+       118, 119}, {119, 120}, {120, 121}, {121, 122}, {122, 123}, {123, 
+       124}, {124, 125}, {125, 126}, {126, 127}, {127, 128}, {128, 129}, {129,
+        130}, {130, 131}, {131, 132}}], 
+      Line3DBox[{{57, 58}, {57, 82}, {58, 59}, {59, 60}, {60, 61}, {61, 62}, {
+       62, 63}, {63, 64}, {64, 65}, {65, 66}, {66, 67}, {67, 68}, {68, 69}, {
+       69, 70}, {70, 71}, {71, 72}, {72, 73}, {73, 74}, {74, 75}, {75, 76}, {
+       76, 77}, {77, 78}, {78, 79}, {79, 80}, {80, 81}, {81, 82}, {133, 
+       134}, {133, 158}, {134, 135}, {135, 136}, {136, 137}, {137, 138}, {138,
+        139}, {139, 140}, {140, 141}, {141, 142}, {142, 143}, {143, 144}, {
+       144, 145}, {145, 146}, {146, 147}, {147, 148}, {148, 149}, {149, 
+       150}, {150, 151}, {151, 152}, {152, 153}, {153, 154}, {154, 155}, {155,
+        156}, {156, 157}, {157, 158}}], 
+      Line3DBox[{{83, 84}, {83, 102}, {84, 106}, {102, 106}, {133, 134}, {133,
+        158}, {134, 135}, {135, 136}, {136, 137}, {137, 138}, {138, 139}, {
+       139, 140}, {140, 141}, {141, 142}, {142, 143}, {143, 144}, {144, 
+       145}, {145, 146}, {146, 147}, {147, 148}, {148, 149}, {149, 150}, {150,
+        151}, {151, 152}, {152, 153}, {153, 154}, {154, 155}, {155, 156}, {
+       156, 157}, {157, 158}, {161, 162}, {161, 186}, {162, 163}, {163, 
+       164}, {164, 165}, {165, 166}, {166, 167}, {167, 168}, {168, 169}, {169,
+        170}, {170, 171}, {171, 172}, {172, 173}, {173, 174}, {174, 175}, {
+       175, 176}, {176, 177}, {177, 178}, {178, 179}, {179, 180}, {180, 
+       181}, {181, 182}, {182, 183}, {183, 184}, {184, 185}, {185, 186}}], 
+      Line3DBox[{{85, 86}, {85, 105}, {86, 104}, {104, 105}}], 
+      Line3DBox[{{84, 85}, {84, 106}, {85, 105}, {105, 106}}], 
+      Line3DBox[{{107, 108}, {107, 132}, {108, 109}, {109, 110}, {110, 111}, {
+       111, 112}, {112, 113}, {113, 114}, {114, 115}, {115, 116}, {116, 
+       117}, {117, 118}, {118, 119}, {119, 120}, {120, 121}, {121, 122}, {122,
+        123}, {123, 124}, {124, 125}, {125, 126}, {126, 127}, {127, 128}, {
+       128, 129}, {129, 130}, {130, 131}, {131, 132}, {161, 162}, {161, 
+       186}, {162, 163}, {163, 164}, {164, 165}, {165, 166}, {166, 167}, {167,
+        168}, {168, 169}, {169, 170}, {170, 171}, {171, 172}, {172, 173}, {
+       173, 174}, {174, 175}, {175, 176}, {176, 177}, {177, 178}, {178, 
+       179}, {179, 180}, {180, 181}, {181, 182}, {182, 183}, {183, 184}, {184,
+        185}, {185, 186}}], 
+      Line3DBox[{{86, 104}, {86, 160}, {104, 202}, {160, 203}, {202, 216}, {
+       203, 204}, {204, 205}, {205, 206}, {206, 207}, {207, 208}, {208, 
+       209}, {209, 210}, {210, 211}, {211, 212}, {212, 213}, {213, 214}, {214,
+        215}, {215, 216}}]}]}, 
+   {EdgeForm[GrayLevel[0]], FaceForm[None, None], 
+    GraphicsComplex3DBox[CompressedData["
+1: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
+     "], {
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{22, 21, 1}, {20, 1, 21}, {23, 22, 1}, {19, 1, 20}, {24, 
+        23, 1}, {18, 4, 1}, {18, 1, 19}, {25, 24, 1}, {17, 4, 18}, {16, 4, 
+        17}, {15, 4, 16}, {14, 4, 15}, {13, 4, 14}, {12, 4, 13}, {11, 4, 
+        12}, {48, 28, 27}, {48, 47, 28}, {46, 29, 28}, {46, 28, 47}, {45, 30, 
+        29}, {45, 29, 46}, {44, 5, 30}, {44, 30, 45}, {43, 6, 5}, {43, 5, 
+        44}, {2, 26, 25}, {2, 27, 26}, {2, 49, 48}, {2, 50, 49}, {2, 51, 
+        50}, {2, 25, 1}, {2, 48, 27}, {52, 51, 2}, {42, 7, 6}, {42, 6, 43}, {
+        53, 52, 2}, {41, 8, 7}, {41, 7, 42}, {54, 53, 2}, {40, 9, 8}, {40, 8, 
+        41}, {55, 54, 2}, {56, 55, 2}, {31, 56, 2}, {3, 9, 40}, {3, 10, 9}, {
+        3, 32, 31}, {3, 33, 32}, {3, 34, 33}, {3, 35, 34}, {3, 36, 35}, {3, 
+        37, 36}, {3, 38, 37}, {3, 39, 38}, {3, 40, 39}, {3, 31, 2}, {3, 4, 
+        11}, {3, 11, 10}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{58, 57, 5}, {58, 5, 6}, {59, 6, 7}, {59, 58, 6}, {60, 7,
+         8}, {60, 59, 7}, {61, 8, 9}, {61, 60, 8}, {62, 9, 10}, {62, 61, 9}, {
+        63, 10, 11}, {63, 62, 10}, {64, 11, 12}, {64, 63, 11}, {65, 12, 13}, {
+        65, 64, 12}, {66, 13, 14}, {66, 65, 13}, {67, 14, 15}, {67, 66, 14}, {
+        68, 67, 15}, {68, 15, 16}, {69, 68, 16}, {69, 16, 17}, {70, 69, 17}, {
+        70, 17, 18}, {71, 18, 19}, {71, 70, 18}, {72, 71, 19}, {72, 19, 20}, {
+        73, 20, 21}, {73, 72, 20}, {74, 21, 22}, {74, 73, 21}, {75, 22, 23}, {
+        75, 74, 22}, {76, 23, 24}, {76, 75, 23}, {77, 24, 25}, {77, 76, 24}, {
+        78, 25, 26}, {78, 77, 25}, {79, 26, 27}, {79, 78, 26}, {80, 27, 28}, {
+        80, 79, 27}, {81, 28, 29}, {81, 80, 28}, {82, 29, 30}, {82, 81, 29}, {
+        57, 30, 5}, {57, 82, 30}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{86, 84, 85}, {87, 84, 86}, {2, 84, 87}, {1, 83, 2}, {83,
+         84, 2}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{96, 89, 88}, {96, 88, 95}, {97, 90, 89}, {97, 89, 96}, {
+        98, 91, 90}, {98, 90, 97}, {99, 92, 91}, {99, 91, 98}, {100, 93, 
+        92}, {100, 92, 99}, {101, 94, 93}, {101, 93, 100}, {3, 2, 94}, {3, 94,
+         101}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{83, 1, 4}, {83, 4, 102}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{104, 105, 106}, {103, 104, 106}, {3, 103, 106}, {102, 3,
+         106}, {4, 3, 102}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{108, 107, 31}, {108, 31, 32}, {109, 32, 33}, {109, 108, 
+        32}, {110, 33, 34}, {110, 109, 33}, {111, 34, 35}, {111, 110, 34}, {
+        112, 35, 36}, {112, 111, 35}, {113, 36, 37}, {113, 112, 36}, {114, 37,
+         38}, {114, 113, 37}, {115, 38, 39}, {115, 114, 38}, {116, 39, 40}, {
+        116, 115, 39}, {117, 40, 41}, {117, 116, 40}, {118, 117, 41}, {118, 
+        41, 42}, {119, 118, 42}, {119, 42, 43}, {120, 119, 43}, {120, 43, 
+        44}, {121, 44, 45}, {121, 120, 44}, {122, 121, 45}, {122, 45, 46}, {
+        123, 46, 47}, {123, 122, 46}, {124, 47, 48}, {124, 123, 47}, {125, 48,
+         49}, {125, 124, 48}, {126, 49, 50}, {126, 125, 49}, {127, 50, 51}, {
+        127, 126, 50}, {128, 51, 52}, {128, 127, 51}, {129, 52, 53}, {129, 
+        128, 52}, {130, 53, 54}, {130, 129, 53}, {131, 54, 55}, {131, 130, 
+        54}, {132, 55, 56}, {132, 131, 55}, {107, 56, 31}, {107, 132, 
+        56}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{58, 133, 57}, {58, 134, 133}, {59, 135, 134}, {59, 134, 
+        58}, {60, 136, 135}, {60, 135, 59}, {61, 137, 136}, {61, 136, 60}, {
+        62, 138, 137}, {62, 137, 61}, {63, 139, 138}, {63, 138, 62}, {64, 140,
+         139}, {64, 139, 63}, {65, 141, 140}, {65, 140, 64}, {66, 142, 141}, {
+        66, 141, 65}, {67, 143, 142}, {67, 142, 66}, {68, 144, 143}, {68, 143,
+         67}, {69, 144, 68}, {69, 145, 144}, {70, 145, 69}, {70, 146, 145}, {
+        71, 146, 70}, {71, 147, 146}, {72, 147, 71}, {72, 148, 147}, {73, 148,
+         72}, {73, 149, 148}, {74, 149, 73}, {74, 150, 149}, {75, 150, 74}, {
+        75, 151, 150}, {76, 151, 75}, {76, 152, 151}, {77, 152, 76}, {77, 153,
+         152}, {78, 153, 77}, {78, 154, 153}, {79, 154, 78}, {79, 155, 154}, {
+        80, 155, 79}, {80, 156, 155}, {81, 157, 156}, {81, 156, 80}, {82, 158,
+         157}, {82, 157, 81}, {57, 158, 82}, {57, 133, 158}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{87, 92, 93}, {87, 93, 94}, {87, 94, 2}, {91, 92, 87}, {
+        90, 91, 87}, {86, 89, 90}, {86, 90, 87}, {88, 89, 86}, {160, 159, 
+        88}, {160, 88, 86}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{183, 184, 84}, {185, 84, 184}, {182, 183, 84}, {186, 84,
+         185}, {181, 182, 84}, {161, 106, 84}, {161, 84, 186}, {180, 181, 
+        84}, {162, 106, 161}, {163, 106, 162}, {164, 106, 163}, {165, 106, 
+        164}, {166, 106, 165}, {167, 106, 166}, {168, 106, 167}, {155, 177, 
+        178}, {155, 156, 177}, {157, 176, 177}, {157, 177, 156}, {154, 155, 
+        178}, {154, 178, 179}, {158, 175, 176}, {158, 176, 157}, {153, 154, 
+        179}, {153, 179, 180}, {133, 174, 175}, {133, 175, 158}, {134, 173, 
+        174}, {134, 174, 133}, {135, 172, 173}, {135, 173, 134}, {136, 171, 
+        172}, {136, 172, 135}, {137, 170, 171}, {137, 171, 136}, {138, 169, 
+        170}, {138, 170, 137}, {83, 153, 180}, {83, 146, 147}, {83, 147, 
+        148}, {83, 148, 149}, {83, 149, 150}, {83, 150, 151}, {83, 151, 
+        152}, {83, 152, 153}, {83, 180, 84}, {102, 139, 140}, {102, 140, 
+        141}, {102, 141, 142}, {102, 142, 143}, {102, 143, 144}, {102, 144, 
+        145}, {102, 145, 146}, {102, 146, 83}, {102, 106, 168}, {102, 168, 
+        169}, {102, 169, 139}, {139, 169, 138}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{105, 86, 85}, {105, 104, 86}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{85, 106, 105}, {85, 84, 106}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{194, 195, 196}, {194, 196, 197}, {194, 197, 198}, {194, 
+        198, 199}, {194, 199, 200}, {194, 200, 201}, {159, 187, 188}, {159, 
+        188, 189}, {159, 189, 190}, {159, 190, 191}, {159, 191, 192}, {159, 
+        192, 193}, {159, 193, 194}, {159, 194, 201}, {88, 201, 95}, {88, 159, 
+        201}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{98, 103, 99}, {97, 104, 103}, {97, 103, 98}, {100, 99, 
+        103}, {96, 104, 97}, {101, 100, 103}, {3, 101, 103}, {95, 104, 96}, {
+        202, 104, 95}, {201, 202, 95}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{108, 161, 107}, {108, 162, 161}, {109, 163, 162}, {109, 
+        162, 108}, {110, 164, 163}, {110, 163, 109}, {111, 165, 164}, {111, 
+        164, 110}, {112, 166, 165}, {112, 165, 111}, {113, 167, 166}, {113, 
+        166, 112}, {114, 168, 167}, {114, 167, 113}, {115, 169, 168}, {115, 
+        168, 114}, {116, 170, 169}, {116, 169, 115}, {117, 171, 170}, {117, 
+        170, 116}, {118, 172, 171}, {118, 171, 117}, {119, 172, 118}, {119, 
+        173, 172}, {120, 173, 119}, {120, 174, 173}, {121, 174, 120}, {121, 
+        175, 174}, {122, 175, 121}, {122, 176, 175}, {123, 176, 122}, {123, 
+        177, 176}, {124, 177, 123}, {124, 178, 177}, {125, 178, 124}, {125, 
+        179, 178}, {126, 179, 125}, {126, 180, 179}, {127, 180, 126}, {127, 
+        181, 180}, {128, 181, 127}, {128, 182, 181}, {129, 182, 128}, {129, 
+        183, 182}, {130, 183, 129}, {130, 184, 183}, {131, 185, 184}, {131, 
+        184, 130}, {132, 186, 185}, {132, 185, 131}, {107, 186, 132}, {107, 
+        161, 186}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{187, 160, 203}, {187, 159, 160}, {188, 203, 204}, {188, 
+        187, 203}, {189, 204, 205}, {189, 188, 204}, {190, 205, 206}, {190, 
+        189, 205}, {191, 206, 207}, {191, 190, 206}, {192, 207, 208}, {192, 
+        191, 207}, {193, 208, 209}, {193, 192, 208}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{210, 212, 211}, {210, 213, 212}, {210, 214, 213}, {210, 
+        215, 214}, {210, 216, 215}, {210, 202, 216}, {160, 104, 202}, {160, 
+        210, 209}, {160, 86, 104}, {160, 202, 210}, {206, 203, 160}, {206, 
+        204, 203}, {206, 205, 204}, {206, 208, 207}, {206, 209, 208}, {206, 
+        160, 209}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{210, 194, 193}, {210, 193, 209}}]}, 
+      {EdgeForm[None], FaceForm[GrayLevel[0.85]], 
+       Polygon3DBox[{{195, 210, 211}, {195, 194, 210}, {196, 211, 212}, {196, 
+        195, 211}, {197, 212, 213}, {197, 196, 212}, {198, 213, 214}, {198, 
+        197, 213}, {199, 214, 215}, {199, 198, 214}, {200, 215, 216}, {200, 
+        199, 215}, {201, 216, 202}, {201, 200, 216}}]}}]}},
+  Boxed->False,
+  ImageSize->{306.4724193749214, 426.08794247981984`},
+  ImageSizeRaw->Automatic,
+  ViewPoint->{2.4899778685085967`, -1.875810439340115, 1.3158059925384238`},
+  ViewVertical->{0.2186452145193344, -0.31082925447816906`, 
+   0.9249753752010591}]], "Output",
+ CellChangeTimes->{{3.822569509018338*^9, 3.82256964252369*^9}, {
+   3.822569679924952*^9, 3.822569714790992*^9}, 3.8225698798493767`*^9, 
+   3.822570013030396*^9, {3.822570074508732*^9, 3.8225701576609507`*^9}, 
+   3.8225701973745613`*^9, 3.822616970530961*^9, 3.822617004753933*^9, 
+   3.822618977792522*^9, 3.822624094687195*^9, 3.822626787140583*^9, 
+   3.82262684270483*^9, 3.8226274535259447`*^9, 3.822627718646449*^9, 
+   3.822629357043791*^9, 3.822629713920207*^9, 3.8226404719710083`*^9, 
+   3.8226428211893997`*^9, 3.8226430121783*^9, 3.823075948054242*^9, 
+   3.823078343564674*^9, 3.823171087742935*^9, 3.823171369827372*^9, 
+   3.823223827694867*^9, 3.8232239265074673`*^9, 3.8232262272629128`*^9, {
+   3.823226347135936*^9, 3.8232263656992807`*^9}, 3.823226604946666*^9, 
+   3.823231827573969*^9, 3.8232318811882133`*^9, 3.823232305250043*^9, 
+   3.8232344542974777`*^9, 3.8232347221761427`*^9, 3.823234828888294*^9, 
+   3.823234907647174*^9, 3.823234982422843*^9, 3.823235062587492*^9, 
+   3.823235694718424*^9, 3.8232365916101027`*^9, 3.8232369736133947`*^9, 
+   3.823237547281843*^9, 3.823238239160738*^9, 3.8232517744026117`*^9, 
+   3.823251967212913*^9, 3.823252428059387*^9, 3.823252549823962*^9, 
+   3.823256943677546*^9, 3.8232596479596643`*^9, 3.823319800054873*^9, 
+   3.8233207206194487`*^9},
+ CellLabel->"Out[17]=",
+ CellID->826844613,ExpressionUUID->"53339db2-a076-4561-800a-e1dbb01e05bb"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["More About", "TutorialMoreAboutSection",
+ CellID->23220180,ExpressionUUID->"9f88fb4e-528d-435c-9b71-75da5ccf993d"],
+
+Cell["XXXX", "TutorialMoreAbout",
+ CellID->1567025153,ExpressionUUID->"ebd17222-d81f-4ccd-af4d-ff00106118bb"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Related Tutorials", "RelatedTutorialsSection",
+ CellID->415694126,ExpressionUUID->"db3d9f41-1e21-4c6c-a140-226714101dbe"],
+
+Cell[TextData[ButtonBox["Using OpenCascde Link",
+ BaseStyle->"Link",
+ ButtonData->
+  "paclet:OpenCascadeLink/tutorial/UsingOpenCascadeLink"]], "RelatedTutorials",\
+
+ CellChangeTimes->{3.8233162142497787`*^9},
+ CellID->806871991,ExpressionUUID->"3a7607e4-b16f-438f-a49a-b72628ee6010"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Related Wolfram Training Courses", "TutorialRelatedLinksSection",
+ CellChangeTimes->{{3.545139239709342*^9, 3.545139240396411*^9}},
+ CellID->415694148,ExpressionUUID->"bce46771-bb6d-4d2c-873b-a8609a5c8334"],
+
+Cell["XXXX", "TutorialRelatedLinks",
+ CellID->415694149,ExpressionUUID->"0c5deb0f-072c-404d-a611-125856bb9c57"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{969.75, 780.75},
+WindowMargins->{{1.5, Automatic}, {Automatic, 13.5}},
+TaggingRules->{
+ "DocuToolsSettingsInternal" -> {
+   "$ApplicationName" -> "Mathematica", "$LinkBase" -> "Mathematica", 
+    "$ApplicationDirectory" -> "/home/ruebenko/wri/Mathematica/", 
+    "$DocumentationDirectory" -> 
+    "/home/ruebenko/wri/Mathematica/Documentation/English/", 
+    "$UseNewPageDialog" -> "", "$PacletVersion" -> "0.10.2239"}, "Author" -> 
+  "ruebenko", "CreationDate" -> "02-26-2021 09:11:57"},
+Magnification:>1.25 Inherited,
+FrontEndVersion->"12.2 for Linux x86 (64-bit) (December 12, 2020)",
+StyleDefinitions->FrontEnd`FileName[{"Wolfram"}, "TutorialPageStyles.nb", 
+  CharacterEncoding -> "UTF-8"],
+ExpressionUUID->"2e01986a-3c7c-4b38-861f-9288b0da0950"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 601, 14, 30, "History",ExpressionUUID->"e1f03e69-01bd-400b-95ea-3214d2ad1db9",
+ CellID->1247902091],
+Cell[1162, 36, 141, 1, 26, "AuthorDate",ExpressionUUID->"71034d06-b0dd-4c51-92e6-401c2ea3369a",
+ CellID->1829122349],
+Cell[CellGroupData[{
+Cell[1328, 41, 123, 1, 36, "CategorizationSection",ExpressionUUID->"80f5bbf6-ac29-4386-b82b-8a629b0d4b57",
+ CellID->1122911449],
+Cell[1454, 44, 136, 2, 41, "Categorization",ExpressionUUID->"59eb398f-2cfa-4ef0-89ef-328082fae657",
+ CellID->686433507],
+Cell[1593, 48, 187, 3, 41, "Categorization",ExpressionUUID->"e5655a85-cb0c-4f0a-b452-2358963156e9",
+ CellID->605800465],
+Cell[1783, 53, 181, 3, 41, "Categorization",ExpressionUUID->"73775877-5234-4a88-8507-db9acfe83d4e",
+ CellID->468444828],
+Cell[1967, 58, 183, 2, 41, "Categorization",ExpressionUUID->"9c5c8d93-a482-4cb6-bcc8-37b0ccd60d4f"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[2187, 65, 111, 1, 23, "SynonymsSection",ExpressionUUID->"782db226-017d-4ea1-a7c1-873f57d3a93d",
+ CellID->1427418553],
+Cell[2301, 68, 169, 2, 24, "Synonyms",ExpressionUUID->"c7de44f9-0747-4aa1-8f16-d703fb8fd8bd",
+ CellID->1251652828]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[2507, 75, 111, 1, 23, "KeywordsSection",ExpressionUUID->"da1ed6ea-7c36-4cd6-a789-77e4dac42247",
+ CellID->1427428552],
+Cell[2621, 78, 169, 2, 24, "Keywords",ExpressionUUID->"3ac305b5-a749-44e0-b960-9465eba3639b",
+ CellID->1251852827],
+Cell[2793, 82, 171, 2, 24, "Keywords",ExpressionUUID->"7a42dced-e926-4abe-9d84-e4accdedc865",
+ CellID->1522199704]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[3001, 89, 108, 1, 23, "DetailsSection",ExpressionUUID->"ca0b9c1d-1c14-4f21-872f-049356cd2eb9",
+ CellID->307771771],
+Cell[3112, 92, 118, 2, 87, "Details",ExpressionUUID->"6a4fafe4-74a0-495e-beec-af65f5430ad4",
+ CellID->115134701],
+Cell[3233, 96, 124, 2, 87, "Details",ExpressionUUID->"f4d3f560-1a8d-4126-9478-88d748ea43db",
+ CellID->350963985],
+Cell[3360, 100, 121, 2, 87, "Details",ExpressionUUID->"3a39bb2b-7340-4b9c-a99c-3c0e38c49f0a",
+ CellID->787641479],
+Cell[3484, 104, 126, 2, 87, "Details",ExpressionUUID->"859ce4f0-4fe5-4b41-b660-7a7f6e147485",
+ CellID->489188983],
+Cell[3613, 108, 116, 2, 87, "Details",ExpressionUUID->"bae5295b-9304-4509-a5fc-6f526247bb01",
+ CellID->267986155],
+Cell[3732, 112, 115, 2, 87, "Details",ExpressionUUID->"805a1261-cd8d-48da-aa12-3422c4eae045",
+ CellID->55052072],
+Cell[3850, 116, 118, 2, 87, "Details",ExpressionUUID->"e6d11df1-7171-4bb8-97fb-9af0a9da874b",
+ CellID->125741376],
+Cell[3971, 120, 132, 2, 87, "Details",ExpressionUUID->"004e5dfd-c122-4c50-96ab-faa527a9dcc2",
+ CellID->31040295],
+Cell[4106, 124, 122, 2, 87, "Details",ExpressionUUID->"a4b9dd65-f6c8-42be-8299-5ee100992031",
+ CellID->240026365]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[4265, 131, 180, 2, 116, "Title",ExpressionUUID->"77a27d44-1780-42f4-8e73-40e553c39e4f",
+ CellID->509267359],
+Cell[CellGroupData[{
+Cell[4470, 137, 573, 11, 29, "Text",ExpressionUUID->"1813cd15-76c3-4ec4-907c-b783182ca511",
+ CellID->1918030960],
+Cell[5046, 150, 19655, 296, 519, "Picture",ExpressionUUID->"705ae768-a6dc-40b0-bb25-1ee4e44f9666",
+ CellID->61411381]
+}, Open  ]],
+Cell[24716, 449, 495, 8, 50, "Text",ExpressionUUID->"6c05a1cf-c98b-4d12-82d1-05d1c9bf7233",
+ CellID->1893271022],
+Cell[CellGroupData[{
+Cell[25236, 461, 184, 2, 44, "MathCaption",ExpressionUUID->"ef60fd89-4d96-4a71-8d64-d79ad570042b",
+ CellID->836781195],
+Cell[25423, 465, 327, 6, 58, "Input",ExpressionUUID->"01721daa-d10b-45fe-aa4b-de139352f28e",
+ CellID->2058623809]
+}, Open  ]],
+Cell[25765, 474, 459, 8, 50, "Text",ExpressionUUID->"d98804c3-9d39-4484-916a-2a6007711d66",
+ CellID->656242484],
+Cell[CellGroupData[{
+Cell[26249, 486, 274, 4, 44, "MathCaption",ExpressionUUID->"30424a05-3d92-4c0e-a738-d57e6c75a142",
+ CellID->389675457],
+Cell[26526, 492, 2522, 76, 180, "Input",ExpressionUUID->"3cce0182-59fc-426b-997b-a170eab0f09c",
+ CellID->373247626]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[29085, 573, 202, 2, 49, "MathCaption",ExpressionUUID->"faf271bb-2941-4996-ae68-a9edd5cced81",
+ CellID->1997652498],
+Cell[CellGroupData[{
+Cell[29312, 579, 483, 10, 33, "Input",ExpressionUUID->"ee8c23d4-60bf-4ad1-831d-80786766bb10",
+ CellID->1891658347],
+Cell[29798, 591, 1527, 24, 434, "Output",ExpressionUUID->"d56122bc-1496-43c6-8422-b8b71f6c3ac3",
+ CellID->310556068]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[31374, 621, 197, 2, 49, "MathCaption",ExpressionUUID->"c6717e06-a766-44d8-8e97-b52958b25b62",
+ CellID->2145981494],
+Cell[31574, 625, 692, 15, 58, "Input",ExpressionUUID->"8f5aef2a-7af5-459e-80a3-553dfb97e40f",
+ CellID->1987911812]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[32303, 645, 216, 2, 49, "MathCaption",ExpressionUUID->"40735943-43b7-4963-af06-19c41234480a",
+ CellID->451172925],
+Cell[CellGroupData[{
+Cell[32544, 651, 391, 7, 33, "Input",ExpressionUUID->"10d0ac0c-8bad-4711-9725-877369899823",
+ CellID->1231854223],
+Cell[32938, 660, 1828, 26, 32, "Output",ExpressionUUID->"ce46ce42-a8d2-43bf-8f98-a7ceaf0e0055",
+ CellID->1354521368]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[34815, 692, 210, 2, 49, "MathCaption",ExpressionUUID->"47f4c965-dc01-453b-84e7-0960ce68cdd8",
+ CellID->109058859],
+Cell[CellGroupData[{
+Cell[35050, 698, 591, 14, 58, "Input",ExpressionUUID->"09b63a89-6bab-4c1e-a77c-be12059826a8",
+ CellID->1700004430],
+Cell[35644, 714, 7929, 125, 511, "Output",ExpressionUUID->"1ff20077-1a04-49b7-8d90-7a77fabee047",
+ CellID->1548901642]
+}, Open  ]]
+}, Open  ]],
+Cell[43600, 843, 503, 8, 50, "Text",ExpressionUUID->"c7b11021-99cf-40d7-b6dc-f252055779ea",
+ CellID->882501203],
+Cell[CellGroupData[{
+Cell[44128, 855, 190, 2, 44, "MathCaption",ExpressionUUID->"528e0cff-6283-45ba-bd28-fdab415cc791",
+ CellID->1629930930],
+Cell[CellGroupData[{
+Cell[44343, 861, 250, 4, 33, "Input",ExpressionUUID->"ad68716f-e322-4c56-9674-d64e55e9d595",
+ CellID->412369071],
+Cell[44596, 867, 222, 4, 32, "Output",ExpressionUUID->"cf65ac7a-ee18-40aa-a58c-c3b81bd99453",
+ CellID->1413948844]
+}, Open  ]]
+}, Open  ]],
+Cell[44845, 875, 302, 6, 29, "Text",ExpressionUUID->"68b9372e-a4cc-4473-a817-4d2efcd37c7c",
+ CellID->1539459772],
+Cell[CellGroupData[{
+Cell[45172, 885, 204, 2, 44, "MathCaption",ExpressionUUID->"7a55d5f2-df46-4822-a05c-168bbfb57a50",
+ CellID->211481408],
+Cell[CellGroupData[{
+Cell[45401, 891, 470, 11, 33, "Input",ExpressionUUID->"be54cf01-5137-4891-94e4-cfaef6df377f",
+ CellID->53784687],
+Cell[45874, 904, 1456, 22, 32, "Output",ExpressionUUID->"9c52b0ef-d08f-4c90-8544-297213843bc7",
+ CellID->67880514]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[47379, 932, 196, 2, 49, "MathCaption",ExpressionUUID->"82f7e7c0-0c23-4c99-96c1-e09605671fb6",
+ CellID->2099084988],
+Cell[CellGroupData[{
+Cell[47600, 938, 734, 16, 58, "Input",ExpressionUUID->"8aa5ecab-aab9-43ab-895d-8443f317e30d",
+ CellID->1762792688],
+Cell[48337, 956, 10177, 157, 522, "Output",ExpressionUUID->"d1b3226c-3a8f-4094-a033-38fe3c45caa3",
+ CellID->1531485535]
+}, Open  ]]
+}, Open  ]],
+Cell[58541, 1117, 671, 10, 72, "Text",ExpressionUUID->"f9cb41c1-6e20-4573-b861-ef10381a0856",
+ CellID->105751068],
+Cell[CellGroupData[{
+Cell[59237, 1131, 198, 2, 44, "MathCaption",ExpressionUUID->"cecf8657-7e91-4abd-a438-0563e271127f",
+ CellID->75356409],
+Cell[CellGroupData[{
+Cell[59460, 1137, 538, 13, 33, "Input",ExpressionUUID->"025d4ae0-2a65-4363-9ac1-1408c5834a9c",
+ CellID->145845842],
+Cell[60001, 1152, 1487, 22, 32, "Output",ExpressionUUID->"ab1ddb83-5017-4658-8c4b-eec34a7a3e3c",
+ CellID->1523007703]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[61537, 1180, 262, 3, 49, "MathCaption",ExpressionUUID->"07eb8e69-74d9-4a8c-8b0d-11820ba193c6",
+ CellID->580703023],
+Cell[CellGroupData[{
+Cell[61824, 1187, 801, 21, 131, "Input",ExpressionUUID->"c9b47bb5-a128-41bf-8b77-5b6f00500b17",
+ CellID->494699365],
+Cell[62628, 1210, 20952, 315, 545, "Output",ExpressionUUID->"53339db2-a076-4561-800a-e1dbb01e05bb",
+ CellID->826844613]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[83629, 1531, 120, 1, 91, "TutorialMoreAboutSection",ExpressionUUID->"9f88fb4e-528d-435c-9b71-75da5ccf993d",
+ CellID->23220180],
+Cell[83752, 1534, 109, 1, 27, "TutorialMoreAbout",ExpressionUUID->"ebd17222-d81f-4ccd-af4d-ff00106118bb",
+ CellID->1567025153]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[83898, 1540, 127, 1, 91, "RelatedTutorialsSection",ExpressionUUID->"db3d9f41-1e21-4c6c-a140-226714101dbe",
+ CellID->415694126],
+Cell[84028, 1543, 283, 6, 27, "RelatedTutorials",ExpressionUUID->"3a7607e4-b16f-438f-a49a-b72628ee6010",
+ CellID->806871991]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[84348, 1554, 212, 2, 91, "TutorialRelatedLinksSection",ExpressionUUID->"bce46771-bb6d-4d2c-873b-a8609a5c8334",
+ CellID->415694148],
+Cell[84563, 1558, 111, 1, 27, "TutorialRelatedLinks",ExpressionUUID->"0c5deb0f-072c-404d-a611-125856bb9c57",
+ CellID->415694149]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
