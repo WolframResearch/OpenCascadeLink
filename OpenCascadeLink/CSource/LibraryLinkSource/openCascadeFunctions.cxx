@@ -1502,7 +1502,7 @@ DLLEXPORT int makeChamfer(WolframLibraryData libData, mint Argc, MArgument *Args
 {
 	mint id  = MArgument_getInteger(Args[0]);
 	mint id1 = MArgument_getInteger(Args[1]);
-	double radius = MArgument_getReal(Args[2]);
+	double distance = MArgument_getReal(Args[2]);
 
 	/* these are assumed to be sorted */
 	MTensor p = MArgument_getMTensor(Args[3]);
@@ -1528,7 +1528,7 @@ DLLEXPORT int makeChamfer(WolframLibraryData libData, mint Argc, MArgument *Args
 	mint i = 0, iter = 0;
     while (explore.More() && (i < dims[0])) {
 		if ( indices[i] == iter) {
-			chamfered.Add(radius, TopoDS::Edge(explore.Current()));
+			chamfered.Add(distance, TopoDS::Edge(explore.Current()));
 			i++;
 		};
 		iter++;
