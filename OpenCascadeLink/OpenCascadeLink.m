@@ -1793,7 +1793,7 @@ Module[
 			bmesh = NDSolve`FEM`ElementMesh[coords, Automatic, bEle,
 				elementMeshOpts];
 		,
-		"ElementMesh",
+		ElementMesh | "ElementMesh",
 			bEle = {NDSolve`FEM`TriangleElement[ bEle]};
 			bmesh = NDSolve`FEM`ToBoundaryMesh["Coordinates"->coords,
 				"BoundaryElements"->bEle, bMeshOpts];
