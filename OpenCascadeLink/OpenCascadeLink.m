@@ -1873,7 +1873,7 @@ Module[
 					, "CheckIncidentsCompleteness"->False
 				}]];
 	];
-Print["OC: ", bmesh//InputForm];
+
 	bmesh
 ]
 
