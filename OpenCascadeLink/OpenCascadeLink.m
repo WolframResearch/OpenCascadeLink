@@ -1832,7 +1832,8 @@ Module[
 
 			bmesh = Null;
 
-			maxMarker = Max[ElementMarkers[pEle], ElementMarkers[bEle]];
+			maxMarker = Max[NDSolve`FEM`ElementMarkers[pEle],
+				NDSolve`FEM`ElementMarkers[bEle]];
 
 			pEle = Table[
 				automaticPMarker = Extract[ allBoundaryMarker,
