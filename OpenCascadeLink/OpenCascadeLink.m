@@ -1787,9 +1787,8 @@ Module[
 	elementMeshOpts = FilterRules[bMeshOpts, Options[NDSolve`FEM`ElementMesh]];
 
 	markerMethod = OptionValue["MarkerMethod"];
-
 	Switch[ markerMethod,
-		None,
+		None | "None",
 			bEle = {NDSolve`FEM`TriangleElement[ bEle]};
 			bmesh = NDSolve`FEM`ElementMesh[coords, Automatic, bEle,
 				elementMeshOpts];
@@ -1874,7 +1873,7 @@ Module[
 					, "CheckIncidentsCompleteness"->False
 				}]];
 	];
-
+Print["OC: ", bmesh//InputForm];
 	bmesh
 ]
 
