@@ -926,14 +926,25 @@ Module[{p, instance, res, optParam, temp, types},
 
 OpenCascadeShape[Polygon[coords_]] /;
 		MatrixQ[coords, NumericQ] && MatchQ[ Dimensions[coords], {_, 3}] :=
-Module[{p, instance, res},
+Module[{p, instance, res, bmesh},
 
 	p = pack[ N[ coords]];
 	p = DeleteDuplicates[p];
 
 	instance = OpenCascadeShapeCreate[];
-	res = makePolygonFun[ instanceID[ instance], N[ p]];
-	If[ res =!= 0, Return[$Failed, Module]];
+	res = makePolygonFun[ instanceID[ instance], p];
+	If[ res =!= 0,
+		(* could be a non-coplanar surface *)
+		If[ !TrueQ[ CoplanarPoints[ p]],
+			bmesh = Quiet[ NDSolve`FEM`ToBoundaryMesh[
+				DiscretizeGraphics[Polygon[p]]]];
+			If[ NDSolve`FEM`BoundaryElementMeshQ[bmesh],
+				Return[ OpenCascadeShape[ bmesh], Module];
+			];
+		];
+
+		Return[$Failed, Module];
+	];
 
 	instance
 ]
