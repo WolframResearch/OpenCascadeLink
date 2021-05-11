@@ -949,6 +949,23 @@ Module[{p, instance, res, bmesh},
 	instance
 ]
 
+OpenCascadeShape[Polygon[coords_]] /;
+		MatchQ[ Dimensions[coords], {_, _, 3}] :=
+Module[{faces, face},
+
+	faces = OpenCascadeShape /@ (Polygon /@ coords);
+	If[ !AllTrue[faces, OpenCascadeShapeExpressionQ],
+		Return[$Failed, Module];
+	];
+
+	face = OpenCascadeShapeUnion[ faces];
+	If[ !OpenCascadeShapeExpressionQ[ face],
+		Return[$Failed, Module];
+	];
+
+	face
+]
+
 
 OpenCascadeShape[p:Polygon[coords_, data_]] /;
 	MatrixQ[coords, NumericQ] && MatchQ[ Dimensions[coords], {_, 3}] :=
@@ -971,7 +988,11 @@ Module[{mesh, c, cells, inci, poly, shapes},
 ]
 
 OpenCascadeShape[Triangle[coords_]] /;
-		MatrixQ[coords, NumericQ] && MatchQ[ Dimensions[coords], {_, 3}] :=
+		MatrixQ[coords, NumericQ] && MatchQ[ Dimensions[coords], {3, 3}] :=
+OpenCascadeShape[Polygon[coords]]
+
+OpenCascadeShape[Triangle[coords_]] /;
+		ArrayQ[coords, 3, NumericQ] && MatchQ[ Dimensions[coords], {_, 3, 3}] :=
 OpenCascadeShape[Polygon[coords]]
 
 
