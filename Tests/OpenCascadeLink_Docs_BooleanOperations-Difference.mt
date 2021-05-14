@@ -41,11 +41,11 @@ TestRequirement[
 
 (* Boolean operations *)
 
-combinationsIndices = DeleteCases[Tuples[Range[Length[solids]], {2}], {x_, x_}];
-combinations = solids[[#]] & /@ combinationsIndices;
+combinationSolidIndices = DeleteCases[Tuples[Range[Length[solids]], {2}], {x_, x_}];
+combinationSolids = solids[[#]] & /@ combinationSolidIndices;
 
 (* SphericalShell\Tetrahedron hangs, see 391160 *)
-combinations = DeleteCases[combinations, <|SphericalShell -> _, Tetrahedron -> _|> |
+combinationSolids = DeleteCases[combinationSolids, <|SphericalShell -> _, Tetrahedron -> _|> |
 										 <|regionUnionPolyhedron -> _, Ball -> _|> |
 										 <|CapsuleShape -> _, Ellipsoid -> _|>];
 
@@ -60,6 +60,22 @@ bugID = Merge[{Thread[{{SphericalShell, Tetrahedron},
 MapIndexed[
   boolOperationTest[#, "Difference", 
 	If[KeyExistsQ[bugID, Keys[#]], Lookup[bugID,Key[Keys[#]]], ""]] &,
-  combinations]
+  combinationSolids]
+  
+(* surfaces *)
+combinationSurfaceIndices = 
+	(* excluding ElementMesh *)
+	DeleteCases[
+		Tuples[Map[Key, Complement[Keys[surfaces], {openMesh, closedMesh, polygonSelfIntersect}]], {2}], 
+			{x_, x_} | {Key[Polygon], Key[polygonWithHole]}];
+combinationSurfaces = surfaces[[#]]& /@ combinationSurfaceIndices;
+
+bugID = <||>;
+
+MapIndexed[
+  boolOperationTest[#, "Difference", 
+	If[KeyExistsQ[bugID, Keys[#]], Lookup[bugID, Key[Keys[#]]], ""]] &,
+  combinationSurfaces]
+
 
 EndRequirement[]

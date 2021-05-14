@@ -47,6 +47,6 @@ additionalSurfaces = <|polygonWithHole -> Polygon[{{0,0,0},{3,0,0},{3,3,0},{0,3,
 
 surfaceList = {(*bss, *)
 	Polygon[{{0,0,0},{1,0,0},{1,1,0},{0,1,0}}], 
-	Triangle[{{0,0,0},{1,0,0},{1,1,0},{0,1,0}}]
+	Triangle[{{0,0,0},{1,0,0},{1,1,0}}]
 	};
 surfaces = <|Thread[(Head[#]->#)&/@surfaceList], additionalSurfaces|>;

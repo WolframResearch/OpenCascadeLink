@@ -54,6 +54,20 @@ combinations = DeleteCases[combinations, <|SphericalShell -> _, Tetrahedron -> _
   boolOperationTest[#, "Union"] &,
   combinations]
 
+(* surfaces *)
+elemeneMeshIndices = Flatten@Position[Keys[surfaces], openMesh | closedMesh | polygonSelfIntersect];
+combinationSurfaceIndices = 
+	(* excluding ElementMesh *)
+	Subsets[Complement[Range[Length[surfaces]], elemeneMeshIndices], {2}];
+combinationSurfaces = surfaces[[#]]& /@ combinationSurfaceIndices;
+
+bugID = <||>;
+
+MapIndexed[
+  boolOperationTest[#, "Union", 
+	If[KeyExistsQ[bugID, Keys[#]], Lookup[bugID, Key[Keys[#]]], ""]] &,
+  combinationSurfaces]
+
 EndRequirement[]
 
 ClearAll["Global`*"]

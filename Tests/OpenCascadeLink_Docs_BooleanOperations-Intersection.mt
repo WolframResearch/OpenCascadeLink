@@ -65,5 +65,22 @@ bugIDIntersection = Merge[{Thread[{{CapsuleShape, Ellipsoid},
   boolOperationTest[#, "Intersection", 
   	If[KeyExistsQ[bugIDIntersection, Keys[#]], Lookup[bugIDIntersection,Key[Keys[#]]], ""]] &,
   combinations]
+  
+(* surfaces *)
+elemeneMeshIndices = Flatten@Position[Keys[surfaces], openMesh | closedMesh];
+combinationSurfaceIndices = 
+	(* excluding ElementMesh *)
+	Subsets[Complement[Range[Length[surfaces]], elemeneMeshIndices], {2}];
+combinationSurfaces = surfaces[[#]]& /@ combinationSurfaceIndices;
+
+bugID = <|{Polygon, polygonSelfIntersect} -> "-bug-409648-408840",
+		{Triangle, polygonSelfIntersect} -> "-bug-409648",
+		{polygonWithHole, polygonSelfIntersect} -> "-bug-409648"|>;
+
+MapIndexed[
+  boolOperationTest[#, "Intersection", 
+	If[KeyExistsQ[bugID, Keys[#]], Lookup[bugID, Key[Keys[#]]], ""]] &,
+  combinationSurfaces]
+
 
 EndRequirement[]

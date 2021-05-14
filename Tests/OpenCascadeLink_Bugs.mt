@@ -121,3 +121,24 @@ TestMatch[
 	,
 	TestID->"OpenCascadeLink_Bugs-20201120-V9G4E3-bug-400507"
 ]
+
+NTest[
+	(* OpenCascadeLink supports coplanar points *)
+	{P1, P2, P3, P4} = polydata = {{0.0009750000000000002, 0.003862499999999999,0.00238028772515744}, 
+						{0.0009750000000000002, 0.004800000000000002, 0.0021002496030130442}, 
+						{0.0017999999999999995, 0.004800000000000002, 0.002066207259773256}, 
+						{0.0017999999999999995, 0.003862499999999999, 0.0023417063243405954}};
+	shape = OpenCascadeShape[Polygon[polydata]];
+	bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shape];
+	<|"ShapeType" -> OpenCascadeShapeType[shape], 
+	"Coordinates" -> Sort[bmesh["Coordinates"]], 
+	"NumberOfSolids" -> OpenCascadeShapeNumberOfSolids[shape]|>
+	,
+	<|"ShapeType" -> "Shell", 
+	"Coordinates" -> Sort[polydata],
+	"NumberOfSolids" -> 0|>
+	,
+	TestID->"OpenCascadeLink_Bugs-20210506-Z8J9G9-bug-408840"
+]
+
+Clear["Global`*"];
