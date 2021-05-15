@@ -24,9 +24,9 @@ boolOperationTest[shapeAssoc_Association, operation_String, bugID_ : ""] :=
                 result["CompoundQ"] = OpenCascadeShapeType[shape] === "Compound";
 
                 (* RegionDimension could return unevaluated. Assuming the compound region is a solid. *)
-                result["OpenCascadeShapeNumberOfSolids"] = If[ TrueQ[ dim <= 2],
-                                                               numOfSolids === 0 || <|"Actual" -> numOfSolid, "Expected" -> 0|>,
-                                                               TrueQ[numOfSolids > 0] || <|"Actual" -> numOfSolid, "Expected" -> "Greater than 0"|>
+                result["OpenCascadeShapeNumberOfSolids"] = If[ TrueQ[ dim <= 2] || isEmpty,
+                                                               numOfSolids === 0 || <|"Actual" -> numOfSolids, "Expected" -> 0|>,
+                                                               TrueQ[numOfSolids > 0] || <|"Actual" -> numOfSolids, "Expected" -> "Greater than 0"|>
                                                            ,
                                                            ];
                 result["OpenCascadeShapeSolids"] = If[ TrueQ[ dim <= 2],
