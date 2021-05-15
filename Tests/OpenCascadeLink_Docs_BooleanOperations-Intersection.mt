@@ -67,10 +67,11 @@ bugIDIntersection = Merge[{Thread[{{CapsuleShape, Ellipsoid},
   combinations]
   
 (* surfaces *)
-elemeneMeshIndices = Flatten@Position[Keys[surfaces], openMesh | closedMesh];
 combinationSurfaceIndices = 
 	(* excluding ElementMesh *)
-	Subsets[Complement[Range[Length[surfaces]], elemeneMeshIndices], {2}];
+	DeleteCases[
+		Tuples[Map[Key, Complement[Keys[surfaces], {openMesh, closedMesh, polygonSelfIntersect}]], {2}], 
+			{x_, x_} | {Key[Polygon]}];
 combinationSurfaces = surfaces[[#]]& /@ combinationSurfaceIndices;
 
 bugID = <|{Polygon, polygonSelfIntersect} -> "-bug-409648-408840",
