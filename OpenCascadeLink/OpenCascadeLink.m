@@ -1585,11 +1585,10 @@ OpenCascadeShapeVertices[shape_] /; OpenCascadeShapeExpressionQ[shape] :=
 	OpenCascadeShapeVertices[shape, All]
 
 
-
 OpenCascadeShapeFillet[shape_, radius_, edgeIDs_] /; 
 		OpenCascadeShapeExpressionQ[shape] &&
 		NumericQ[ radius] &&
-		(edgeIDs === All || VectorQ[edgeIDs, NumericQ]) :=
+		(edgeIDs === All || VectorQ[edgeIDs, IntegerQ]) :=
 Module[
 	{instance, numEdges, id1, res, r, eIDs = edgeIDs},
 
@@ -1616,11 +1615,14 @@ Module[
 OpenCascadeShapeFillet[shape_, radius_] /; OpenCascadeShapeExpressionQ[shape] :=
 	OpenCascadeShapeFillet[ shape, radius, All] 
 
+OpenCascadeShapeFillet[shape_, radius_, edgeIDs_] /; IntegerQ[edgeIDs] :=
+	OpenCascadeShapeFillet[shape, radius, {edgeIDs}]
+
 
 OpenCascadeShapeChamfer[shape_, distance_, edgeIDs_] /; 
 		OpenCascadeShapeExpressionQ[shape] &&
 		NumericQ[ distance] &&
-		(edgeIDs === All || VectorQ[edgeIDs, NumericQ]) :=
+		(edgeIDs === All || VectorQ[edgeIDs, IntegerQ]) :=
 Module[
 	{instance, numEdges, id1, res, d, eIDs = edgeIDs},
 
@@ -1647,11 +1649,14 @@ Module[
 OpenCascadeShapeChamfer[shape_, distance_] /; OpenCascadeShapeExpressionQ[shape] :=
 	OpenCascadeShapeChamfer[ shape, distance, All] 
 
+OpenCascadeShapeChamfer[shape_, radius_, edgeIDs_] /; IntegerQ[edgeIDs] :=
+	OpenCascadeShapeChamfer[shape, radius, {edgeIDs}]
+
 
 OpenCascadeShapeShelling[shape_, thickness_, faceIDs_] /; 
 		OpenCascadeShapeExpressionQ[shape] &&
 		NumericQ[ thickness] &&
-		VectorQ[faceIDs, NumericQ] :=
+		VectorQ[faceIDs, IntegerQ] :=
 Module[
 	{instance, numFaces, id1, res, t, fIDs = faceIDs},
 
@@ -1674,6 +1679,8 @@ Module[
 	instance
 ]
 
+OpenCascadeShapeShelling[shape_, thickness_, faceIDs_] /; IntegerQ[faceIDs] :=
+	OpenCascadeShapeShelling[shape, thickness, {faceIDs}]
 
 
 (*
