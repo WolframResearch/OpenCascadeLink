@@ -159,7 +159,7 @@ Test[
 	,
 	{Graphics3D, "Rendering Errors" ->{}}
 	,
-	TestID->"OpenCascadeLink_Docs_ShapeProcessing-20200311-I8W6L2"
+	TestID->"OpenCascadeLink_Docs_ShapeProcessing-20200311-I8W6L2-bug-410647"
 ]]
 
 TestExecute[
