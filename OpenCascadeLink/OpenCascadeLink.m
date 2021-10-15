@@ -613,16 +613,17 @@ OpenCascadeShape[OpenCascadeTorus[{p1_, p2_}, r1_, r2_]] :=
 OpenCascadeShape[OpenCascadeTorus[{p1_, p2_}, r1_, r2_, angle_]] :=
 	OpenCascadeShape[OpenCascadeTorus[{p1, p2}, r1, r2, angle, {0, 2 Pi}]]
 
+OpenCascadeShape[FilledTorus[]] :=
+	OpenCascadeShape[OpenCascadeTorus[{{0, 0, 0}, {0, 0, 1}}, (1 + 1/2)/2, (1 - 1/2)/2]]
 
-OpenCascadeShape[(FilledTorus|Torus)[]] :=
-	OpenCascadeShape[OpenCascadeTorus[{{0, 0, 0}, {0, 0, 1}}, 1, 1/2]]
+OpenCascadeShape[FilledTorus[p1_, r1_, r2_] ] := 
+	OpenCascadeShape[FilledTorus[p1, {r1, r2}]]
 
-OpenCascadeShape[(FilledTorus|Torus)[p1_, r1_, r2_]
+OpenCascadeShape[FilledTorus[p1_, {r1_, r2_}]
 	] /;
 		VectorQ[p1, NumericQ] && (Length[ p1] == 3) &&
 		NumericQ[r1] && NumericQ[r2] && (r1 < r2) :=
-	OpenCascadeShape[OpenCascadeTorus[{p1, p1 + {0, 0, 1}}, r2, r1]]
-
+	OpenCascadeShape[OpenCascadeTorus[{p1, p1 + {0, 0, 1}}, (r2 + r1)/2, (r2 - r1)/2]]
 
 (**)
 (* derived 3D primitives *)
