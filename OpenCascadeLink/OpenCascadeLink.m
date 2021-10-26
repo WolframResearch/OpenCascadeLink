@@ -490,6 +490,17 @@ OpenCascadeShape[Cone[{pMin_, pMax_}, r_]] /;
 OpenCascadeShape /@ Thread[ Cone[{pMin, pMax}, r]]
 
 
+OpenCascadeShape[Cube[]] := OpenCascadeShape[Cube[1]]
+
+OpenCascadeShape[Cube[l_]] /; NumericQ[l] := OpenCascadeShape[
+	Cube[{0, 0, 0}, l]]
+
+OpenCascadeShape[Cube[base_, l_]] /; 
+	VectorQ[base, NumericQ] && (Length[base] == 3) &&
+	NumericQ[l] := OpenCascadeShape[
+	Cuboid[{-1, -1, -1}*l/2 + base, {1, 1, 1}*l/2 + base]]
+
+
 OpenCascadeShape[Cuboid[pMin_, pMax_]] /;
 		VectorQ[pMin, NumericQ] && (Length[ pMin] == 3) &&
 		VectorQ[pMax, NumericQ] && (Length[ pMax] == 3) :=
