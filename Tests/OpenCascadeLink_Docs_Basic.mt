@@ -36,7 +36,7 @@ basicShapeTests[shape_, options : OptionsPattern[]] :=
              ,
              OpenCascadeShapeExpression
              ,
-             TestID -> "OpenCascadeLink_Docs_Basic-20200311-" <> "ShapeExpression-" <> testID
+             TestID -> "OpenCascadeLink_Docs_Basic-20200311-" <> "ShapeExpression-" <> testID <> "-bug-416930"
          ];
          TestMatch[
              OpenCascadeShapeType[shapeCascade]

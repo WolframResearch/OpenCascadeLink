@@ -27,7 +27,6 @@ boolOperationTest[shapeAssoc_Association, operation_String, bugID_ : ""] :=
                 result["OpenCascadeShapeNumberOfSolids"] = If[ TrueQ[ dim <= 2] || isEmpty,
                                                                numOfSolids === 0 || <|"Actual" -> numOfSolids, "Expected" -> 0|>,
                                                                TrueQ[numOfSolids > 0] || <|"Actual" -> numOfSolids, "Expected" -> "Greater than 0"|>
-                                                           ,
                                                            ];
                 result["OpenCascadeShapeSolids"] = If[ TrueQ[ dim <= 2],
                                                        solids === {} || <|"Actual" -> solids, "Expected" -> {}|>,
