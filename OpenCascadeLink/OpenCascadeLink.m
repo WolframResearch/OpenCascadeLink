@@ -1148,11 +1148,13 @@ Module[
 
 
 OpenCascadeShape[mesh_] /;
-	!NDSolve`FEM`BoundaryElementMeshQ[ mesh] && NDSolve`FEM`ElementMeshQ[mesh] :=
+	!NDSolve`FEM`BoundaryElementMeshQ[ mesh] && NDSolve`FEM`ElementMeshQ[mesh] 
+	&& (mesh["EmbeddingDimension"] === 3) :=
 OpenCascadeShapeInternal[ NDSolve`FEM`ToBoundaryMesh[ mesh], True]
 
 OpenCascadeShape[bmesh_] /;
-	NDSolve`FEM`BoundaryElementMeshQ[ bmesh] :=
+	NDSolve`FEM`BoundaryElementMeshQ[ bmesh] &&
+	(bmesh["EmbeddingDimension"] === 3) :=
 Module[{closedQ = False, mesh},
 
 	(* this is an expensive test to see if we have a closed surface
