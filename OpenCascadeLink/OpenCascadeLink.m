@@ -1148,8 +1148,8 @@ Module[
 
 
 OpenCascadeShape[mesh_] /;
-	!NDSolve`FEM`BoundaryElementMeshQ[ mesh] && NDSolve`FEM`ElementMeshQ[mesh] 
-	&& (mesh["EmbeddingDimension"] === 3) :=
+	!NDSolve`FEM`BoundaryElementMeshQ[ mesh] && NDSolve`FEM`ElementMeshQ[mesh] &&
+		(mesh["EmbeddingDimension"] === 3) :=
 OpenCascadeShapeInternal[ NDSolve`FEM`ToBoundaryMesh[ mesh], True]
 
 OpenCascadeShape[bmesh_] /;
