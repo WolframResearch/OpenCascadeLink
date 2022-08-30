@@ -27,6 +27,7 @@
 #include <TopTools_DataMapOfShapeShape.hxx>
 #include <TopTools_IndexedDataMapOfShapeListOfShape.hxx>
 #include <TopTools_MapOfShape.hxx>
+#include <TopTools_SequenceOfShape.hxx>
 #include <Geom_Plane.hxx>
 #include <Precision.hxx>
 class ShapeBuild_ReShape;
@@ -155,6 +156,10 @@ public:
 
 protected:
 
+  struct SubSequenceOfEdges;
+
+protected:
+
   //! This method makes if possible a common face from each
   //! group of faces lying on coincident surfaces
   Standard_EXPORT void UnifyFaces();
@@ -164,10 +169,42 @@ protected:
   Standard_EXPORT void UnifyEdges();
 
   void IntUnifyFaces(const TopoDS_Shape& theInpShape,
-                     TopTools_IndexedDataMapOfShapeListOfShape& theGMapEdgeFaces);
+                     TopTools_IndexedDataMapOfShapeListOfShape& theGMapEdgeFaces,
+                     const TopTools_MapOfShape& theFreeBoundMap);
+
+  //! Splits the sequence of edges into the sequence of chains
+  Standard_Boolean MergeEdges(TopTools_SequenceOfShape& SeqEdges,
+                              const TopTools_IndexedDataMapOfShapeListOfShape& theVFmap,
+                              NCollection_Sequence<SubSequenceOfEdges>& SeqOfSubSeqOfEdges,
+                              const TopTools_MapOfShape& NonMergVrt);
+
+  //! Tries to unify the sequence of edges with the set of
+  //! another edges which lies on the same geometry
+  Standard_Boolean MergeSeq(TopTools_SequenceOfShape& SeqEdges,
+                            const TopTools_IndexedDataMapOfShapeListOfShape& theVFmap,
+                            const TopTools_MapOfShape& nonMergVert);
+
+  //! Merges a sequence of edges into one edge if possible
+  Standard_Boolean MergeSubSeq(const TopTools_SequenceOfShape& theChain,
+                               const TopTools_IndexedDataMapOfShapeListOfShape& theVFmap,
+                               TopoDS_Edge& OutEdge);
+
+  //! Unifies the pcurve of the chain into one pcurve of the edge
+  void UnionPCurves(const TopTools_SequenceOfShape& theChain,
+                    TopoDS_Edge& theEdge);
 
   //! Fills the history of the modifications during the operation.
   Standard_EXPORT void FillHistory();
+
+private:
+
+  //! Generates sub-sequences of edges from sequence of edges.
+  //! Edges from each subsequences can be merged into the one edge.
+  static void generateSubSeq (const TopTools_SequenceOfShape& anInpEdgeSeq,
+                              NCollection_Sequence<SubSequenceOfEdges>& SeqOfSubSeqOfEdges,
+                              Standard_Boolean IsClosed, double theAngTol, double theLinTol,
+                              const TopTools_MapOfShape& AvoidEdgeVrt,
+                              const TopTools_IndexedDataMapOfShapeListOfShape& theVFmap);
 
 private:
 
@@ -183,6 +220,8 @@ private:
   Handle(ShapeBuild_ReShape) myContext;
   TopTools_MapOfShape myKeepShapes;
   DataMapOfFacePlane myFacePlaneMap;
+  TopTools_IndexedDataMapOfShapeListOfShape myEFmap;
+  TopTools_DataMapOfShapeShape myFaceNewFace;
 
   Handle(BRepTools_History) myHistory; //!< The history.
 };
