@@ -102,7 +102,7 @@ Begin["`Private`"]
 pack = Developer`ToPackedArray;
 packedQ = Developer`PackedArrayQ;
 
-$OpenCascadeVersion = "7.5.0"
+$OpenCascadeVersion = "7.6.0"
 
 $OpenCascadeInstallationDirectory = DirectoryName[ $InputFileName]
 baseLibraryName = FileNameJoin[{ $OpenCascadeInstallationDirectory,

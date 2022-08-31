@@ -4,7 +4,7 @@
 
 Paclet[
     Name -> "OpenCascadeLink",
-    Version -> "0.3.3",
+    Version -> "0.4.0",
     MathematicaVersion -> "12+",
 	Updating -> Automatic,
     Extensions -> 

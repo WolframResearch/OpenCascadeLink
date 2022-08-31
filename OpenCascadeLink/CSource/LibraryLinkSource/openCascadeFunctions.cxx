@@ -1710,6 +1710,7 @@ DLLEXPORT int getSurfaceMeshCoordinates(WolframLibraryData libData, mint Argc, M
 	MTensor tenPts;
 	mint dims[2];
 	mint id;
+	mint thisNodeId = 0;
 	mint numberOfNodes = 0;
 	mint nodeOffset = 0;
 
@@ -1730,7 +1731,7 @@ DLLEXPORT int getSurfaceMeshCoordinates(WolframLibraryData libData, mint Argc, M
 			BRep_Tool::Triangulation (TopoDS::Face (anExpSF.Current()), aLoc);
 
 		if ( !aTriangulation.IsNull()) {
-			numberOfNodes += aTriangulation->NbNodes ();
+			numberOfNodes += aTriangulation->NbNodes();
 		} 
 	}
 
@@ -1756,22 +1757,18 @@ DLLEXPORT int getSurfaceMeshCoordinates(WolframLibraryData libData, mint Argc, M
 
 		if (aTriangulation.IsNull()) continue;
 
-		const TColgp_Array1OfPnt& aNodes = aTriangulation->Nodes();
+		mint thisFaceNumerOfNodes = aTriangulation->NbNodes();
 
-		// copy nodes
 		gp_Trsf aTrsf = aLoc.Transformation();
-		for (	Standard_Integer aNodeIter = aNodes.Lower();
-			aNodeIter <= aNodes.Upper(); ++aNodeIter) {
-
-			gp_Pnt aPnt = aNodes (aNodeIter);
+		for (mint i = 1; i <= thisFaceNumerOfNodes; i++) {
+			gp_Pnt aPnt = aTriangulation->Node(i);
 			aPnt.Transform (aTrsf);
-			pos = dims[1] * (aNodeIter + nodeOffset - 1);
+			pos = dims[1] * (i + nodeOffset - 1);
 			rawPts[pos    ] = (double) aPnt.X();
 			rawPts[pos + 1] = (double) aPnt.Y();
 			rawPts[pos + 2] = (double) aPnt.Z();
 		}
-
-		nodeOffset += aNodes.Size();
+		nodeOffset += thisFaceNumerOfNodes - 1;
 	}
 
 	MArgument_setMTensor(res, tenPts);
@@ -1802,7 +1799,7 @@ DLLEXPORT int getSurfaceMeshElements(WolframLibraryData libData, mint Argc, MArg
 		Handle(Poly_Triangulation) aTriangulation =
 			BRep_Tool::Triangulation (TopoDS::Face (anExpSF.Current()), aLoc);
 		if ( !aTriangulation.IsNull()) {
-			numberOfTriangles += aTriangulation->NbTriangles ();
+			numberOfTriangles += aTriangulation->NbTriangles();
 		}
 	}
 
@@ -1829,15 +1826,13 @@ DLLEXPORT int getSurfaceMeshElements(WolframLibraryData libData, mint Argc, MArg
 
 		if (aTriangulation.IsNull()) continue;
 
-		const TColgp_Array1OfPnt& aNodes = aTriangulation->Nodes();
-		const Poly_Array1OfTriangle& aTriangles = aTriangulation->Triangles();
+		numberOfTriangles = aTriangulation->NbTriangles ();
+
+		const TopAbs_Orientation anOrientation = anExpSF.Current().Orientation();
 
 		// copy triangles
-		const TopAbs_Orientation anOrientation = anExpSF.Current().Orientation();
-		for (Standard_Integer aTriIter = aTriangles.Lower();
-			aTriIter <= aTriangles.Upper(); ++aTriIter) {
-
-			Poly_Triangle aTri = aTriangles (aTriIter);
+		for (mint i = 1; i <= numberOfTriangles; i++) {
+			Poly_Triangle aTri = aTriangulation->Triangle(i);
 
 			Standard_Integer anId[3];
 			aTri.Get (anId[0], anId[1], anId[2]);
@@ -1853,14 +1848,14 @@ DLLEXPORT int getSurfaceMeshElements(WolframLibraryData libData, mint Argc, MArg
 			anId[1] += nodeOffset;
 			anId[2] += nodeOffset;
 		
-			pos = dims[1] * (aTriIter + triangleOffset - 1);
+			pos = dims[1] * (i + triangleOffset - 1);
 			rawEle[pos    ] = (mint) anId[0];
 			rawEle[pos + 1] = (mint) anId[1];
 			rawEle[pos + 2] = (mint) anId[2];
 		}
 
-		nodeOffset += aNodes.Size();
-		triangleOffset += aTriangles.Size();
+		nodeOffset += aTriangulation->NbNodes();
+		triangleOffset += numberOfTriangles;
 	}
 
 	MArgument_setMTensor(res, tenEle);
@@ -1913,9 +1908,7 @@ DLLEXPORT int getSurfaceMeshElementOffsets(WolframLibraryData libData, mint Argc
 
 		if (aTriangulation.IsNull()) continue;
 
-		const Poly_Array1OfTriangle& aTriangles = aTriangulation->Triangles();
-
-		rawOffsets[ pos++] = aTriangles.Size();
+		rawOffsets[ pos++] = aTriangulation->NbTriangles();
 	}
 
 	MArgument_setMTensor(res, tenOffsets);
