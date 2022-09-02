@@ -1623,7 +1623,15 @@ DLLEXPORT int makeFillet(WolframLibraryData libData, mint Argc, MArgument *Args,
 		explore.Next();
 	}
 
-	filleted.Build();
+	try {
+		filleted.Build();
+	}
+	catch (const Standard_Failure& theErr) {
+		*instance = *instance1;
+		MArgument_setInteger(res, ERROR);
+		return 0;
+	}
+
 	if (!filleted.IsDone()) {
 		*instance = *instance1;
 		MArgument_setInteger(res, ERROR);
@@ -1674,7 +1682,16 @@ DLLEXPORT int makeChamfer(WolframLibraryData libData, mint Argc, MArgument *Args
 		explore.Next();
 	}
 
-	chamfered.Build();
+	try {
+		OCC_CATCH_SIGNALS
+		chamfered.Build();
+	}
+	catch (const Standard_Failure& theErr) {
+		*instance = *instance1;
+		MArgument_setInteger(res, ERROR);
+		return 0;
+	}
+
 	if (!chamfered.IsDone()) {
 		*instance = *instance1;
 		MArgument_setInteger(res, ERROR);
