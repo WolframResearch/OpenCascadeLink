@@ -1768,7 +1768,7 @@ DLLEXPORT int getSurfaceMeshCoordinates(WolframLibraryData libData, mint Argc, M
 			rawPts[pos + 1] = (double) aPnt.Y();
 			rawPts[pos + 2] = (double) aPnt.Z();
 		}
-		nodeOffset += thisFaceNumerOfNodes - 1;
+		nodeOffset += thisFaceNumerOfNodes;
 	}
 
 	MArgument_setMTensor(res, tenPts);
