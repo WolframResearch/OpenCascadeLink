@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    150781,       3224]
-NotebookOptionsPosition[    135733,       2985]
-NotebookOutlinePosition[    136167,       3002]
-CellTagsIndexPosition[    136124,       2999]
+NotebookDataLength[    177287,       3764]
+NotebookOptionsPosition[    160906,       3505]
+NotebookOutlinePosition[    161343,       3522]
+CellTagsIndexPosition[    161300,       3519]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -68,6 +68,23 @@ Cell[BoxData[
 Cell[CellGroupData[{
 
 Cell["Building OpenCascade from source", "Subsection",ExpressionUUID->"f3c0c75c-ee3f-4fef-b526-60aa215398a4"],
+
+Cell[TextData[{
+ "The OpenCascade source code is provided either as a *.tgz archive or can be \
+cloned from a git repository. You can download OpenCascade ",
+ ButtonBox["here",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["https://www.opencascade.com/content/latest-release"], None},
+  ButtonNote->"https://www.opencascade.com/content/latest-release"],
+ ". Alternatively, the repo can be cloned with"
+}], "Text",ExpressionUUID->"45ba7a1a-0dd1-4d3d-9e58-efa067427bf2"],
+
+Cell["\<\
+git clone https://git.dev.opencascade.org/repos/occt.git occt\
+\>", "Text",ExpressionUUID->"89a9b201-6610-40b9-b8cc-b10b5092de0c"],
+
+Cell["Then use git tag to find the latest tagged version.", "Text",ExpressionUUID->"d73ac2d7-2199-42f4-a532-f4312a8fcc3c"],
 
 Cell[CellGroupData[{
 
@@ -313,7 +330,7 @@ Cell[BoxData[{
  CellLabel->"In[3]:=",ExpressionUUID->"405c7967-b349-47b1-8e27-5e028c8719f1"],
 
 Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/build\"\>"], "Output",
- CellLabel->"Out[4]=",ExpressionUUID->"23cb3b96-b418-4ba7-8de9-9dca83d25d46"]
+ CellLabel->"Out[4]=",ExpressionUUID->"da1ec6b6-fd72-419a-a791-8f8b2a8b61a0"]
 }, Open  ]],
 
 Cell["Load the build script:", "Text",ExpressionUUID->"ed0f6cd1-df62-4727-8f52-b94ea7934eaa"],
@@ -351,7 +368,7 @@ Cell[BoxData[
 Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/\
 OpenCascadeLink/LibraryResources/Linux-x86-64/openCascadeWolframDLL.so\"\>"], \
 "Output",
- CellLabel->"Out[7]=",ExpressionUUID->"1b26d900-50cd-450e-a819-d24bfb65c52c"]
+ CellLabel->"Out[7]=",ExpressionUUID->"90396202-e3d9-4734-98e9-f1987868295c"]
 }, Open  ]],
 
 Cell["\<\
@@ -360,6 +377,745 @@ Should something go wrong in the build, you can uncomment the line (*, \
 *) in the call to CreateLibrary in the BuildOpenCascadeLink.wl script to see \
 what might be the issue.\
 \>", "Text",ExpressionUUID->"dba0cf0d-4a87-46b1-bae5-194367ed0493"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Build the OpenCascadeLink paclet layout", "Subsubsection",ExpressionUUID->"34ed6358-b785-4f7b-af0d-f08c986028cd"],
+
+Cell["\<\
+To complete the paclet we need to copy files from the source directory into \
+the build directory.\
+\>", "Text",ExpressionUUID->"d79707bb-c1b2-4b2e-b3f9-07448c83f563"],
+
+Cell["Set up the paclet directory:", "Text",ExpressionUUID->"4a6b0479-b5d2-4c39-82f2-96ebfc40847f"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"pacletDir", "=", 
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{"buildDir", ",", "\"\<OpenCascadeLink\>\""}], "}"}], "]"}]}], 
+  ";"}]], "Input",
+ CellLabel->"In[8]:=",ExpressionUUID->"2d65b802-6846-4d06-8c24-7927a619ad36"],
+
+Cell["Copy the kernel files:", "Text",ExpressionUUID->"559e7e0d-04e8-4844-932a-aaba0ab44de9"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"CopyDirectory", "[", 
+  RowBox[{
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{
+     "baseDir", ",", "\"\<OpenCascadeLink\>\"", ",", "\"\<Kernel\>\""}], 
+     "}"}], "]"}], ",", 
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{"pacletDir", ",", "\"\<Kernel\>\""}], "}"}], "]"}]}], 
+  "]"}]], "Input",
+ CellLabel->"In[9]:=",ExpressionUUID->"389119e3-c06d-4348-a14c-18c1dff54203"],
+
+Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/\
+OpenCascadeLink/Kernel\"\>"], "Output",
+ CellLabel->"Out[9]=",ExpressionUUID->"9a9d6f8a-f578-4dd3-bc02-1eb7837e7d46"]
+}, Open  ]],
+
+Cell["Copy the example data files:", "Text",ExpressionUUID->"4c134813-261d-4d20-a011-4b67af6f9bc1"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"CopyDirectory", "[", 
+  RowBox[{
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{
+     "baseDir", ",", "\"\<OpenCascadeLink\>\"", ",", "\"\<ExampleData\>\""}], 
+     "}"}], "]"}], ",", 
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{"pacletDir", ",", "\"\<ExampleData\>\""}], "}"}], "]"}]}], 
+  "]"}]], "Input",
+ CellLabel->"In[10]:=",ExpressionUUID->"34f8c02e-b928-48f8-8523-f821fb0aada1"],
+
+Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/\
+OpenCascadeLink/ExampleData\"\>"], "Output",
+ CellLabel->"Out[10]=",ExpressionUUID->"40ae23d7-13cd-46ba-ab56-b64809974541"]
+}, Open  ]],
+
+Cell["Copy the OpenCascadeLink.m file:", "Text",ExpressionUUID->"a322e256-7cf3-4bbc-8dec-88c9225a13fb"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"CopyFile", "[", 
+  RowBox[{
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{
+     "baseDir", ",", "\"\<OpenCascadeLink\>\"", ",", 
+      "\"\<OpenCascadeLink.m\>\""}], "}"}], "]"}], ",", 
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{"pacletDir", ",", "\"\<OpenCascadeLink.m\>\""}], "}"}], "]"}], 
+   ",", 
+   RowBox[{"OverwriteTarget", "\[Rule]", "True"}]}], "]"}]], "Input",
+ CellLabel->"In[11]:=",ExpressionUUID->"704a1be5-c475-44f6-8987-f5adca69b06e"],
+
+Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/\
+OpenCascadeLink/OpenCascadeLink.m\"\>"], "Output",
+ CellLabel->"Out[11]=",ExpressionUUID->"8c89f15c-05cf-40a8-be8c-d8d9b05043a6"]
+}, Open  ]],
+
+Cell["Copy the PacletInfo.m file:", "Text",ExpressionUUID->"073fa7c7-5e7a-42e7-9129-e4c33035745e"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"CopyFile", "[", 
+  RowBox[{
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{
+     "baseDir", ",", "\"\<OpenCascadeLink\>\"", ",", "\"\<PacletInfo.m\>\""}],
+      "}"}], "]"}], ",", 
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{"pacletDir", ",", "\"\<PacletInfo.m\>\""}], "}"}], "]"}], ",", 
+   RowBox[{"OverwriteTarget", "\[Rule]", "True"}]}], "]"}]], "Input",
+ CellLabel->"In[12]:=",ExpressionUUID->"d7b697c0-482d-4e4e-8563-fcbc91610247"],
+
+Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/\
+OpenCascadeLink/PacletInfo.m\"\>"], "Output",
+ CellLabel->"Out[12]=",ExpressionUUID->"be097af1-c02b-49bf-8ca9-9965e2580a89"]
+}, Open  ]]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Build the OpenCascadeLink Documentation", "Subsubsection",ExpressionUUID->"1fb53ba5-f5fe-4be3-a17d-58f25b5d6ceb"],
+
+Cell["To build the documentation load the paclet tools:", "Text",ExpressionUUID->"db5515a5-7e04-46c9-b6c4-52db86fa062f"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<PacletTools`\>\"", "]"}]], "Input",
+ CellLabel->"In[13]:=",ExpressionUUID->"3685fdd8-6086-4f9f-bf52-7ef19ac0dea3"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PacletDocumentationBuild", "[", 
+  RowBox[{
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{"baseDir", ",", "\"\<OpenCascadeLink\>\""}], "}"}], "]"}], ",", 
+   "buildDir"}], "]"}]], "Input",
+ CellLabel->"In[14]:=",ExpressionUUID->"560e0ffd-e50c-4ed7-87d3-ed2bc57c39f3"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{
+   TagBox["Success",
+    "SummaryHead"], "[", 
+   DynamicModuleBox[{Typeset`open$$ = False, Typeset`embedState$$ = "Ready"}, 
+    
+    TemplateBox[{
+      PaneSelectorBox[{False -> GridBox[{{
+            PaneBox[
+             ButtonBox[
+              DynamicBox[
+               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxOpener"]], 
+              ButtonFunction :> (Typeset`open$$ = True), Appearance -> None, 
+              BaseStyle -> {}, Evaluator -> Automatic, Method -> 
+              "Preemptive"], Alignment -> {Center, Center}, ImageSize -> 
+             Dynamic[{
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
+            FrameBox[
+             StyleBox["\"\[Checkmark]\"", 
+              Directive[
+               RGBColor[
+               0.3607843137254902, 0.596078431372549, 0.3803921568627451], 
+               25], StripOnInput -> False], ContentPadding -> False, 
+             FrameStyle -> None, FrameMargins -> {{0, 0}, {0, 0}}, 
+             StripOnInput -> False], 
+            GridBox[{{
+               RowBox[{
+                 TagBox[
+                  TemplateBox[{"\"Message\"", "\": \""}, "RowDefault"], 
+                  "SummaryItemAnnotation"], "\[InvisibleSpace]", 
+                 TagBox[
+                 "\"Documentation build completed successfully.\"", 
+                  "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox[
+                  TemplateBox[{"\"TotalTime\"", "\": \""}, "RowDefault"], 
+                  "SummaryItemAnnotation"], "\[InvisibleSpace]", 
+                 TagBox[
+                  
+                  TemplateBox[{
+                   "11.815279`", "\"s\"", "seconds", "\"Seconds\""}, 
+                   "Quantity", SyntaxForm -> Mod], "SummaryItem"]}]}}, 
+             GridBoxAlignment -> {
+              "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
+             False, GridBoxItemSize -> {
+              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+             GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
+              BaseStyle -> {
+              ShowStringCharacters -> False, NumberMarks -> False, 
+               PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
+          AutoDelete -> False, 
+          GridBoxItemSize -> {
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+          BaselinePosition -> {1, 1}], True -> GridBox[{{
+            PaneBox[
+             ButtonBox[
+              DynamicBox[
+               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxCloser"]], 
+              ButtonFunction :> (Typeset`open$$ = False), Appearance -> None, 
+              BaseStyle -> {}, Evaluator -> Automatic, Method -> 
+              "Preemptive"], Alignment -> {Center, Center}, ImageSize -> 
+             Dynamic[{
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
+            FrameBox[
+             StyleBox["\"\[Checkmark]\"", 
+              Directive[
+               RGBColor[
+               0.3607843137254902, 0.596078431372549, 0.3803921568627451], 
+               25], StripOnInput -> False], ContentPadding -> False, 
+             FrameStyle -> None, FrameMargins -> {{0, 0}, {0, 0}}, 
+             StripOnInput -> False], 
+            GridBox[{{
+               RowBox[{
+                 TagBox[
+                  TemplateBox[{"\"Message\"", "\": \""}, "RowDefault"], 
+                  "SummaryItemAnnotation"], "\[InvisibleSpace]", 
+                 TagBox[
+                 "\"Documentation build completed successfully.\"", 
+                  "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox[
+                  TemplateBox[{"\"TotalTime\"", "\": \""}, "RowDefault"], 
+                  "SummaryItemAnnotation"], "\[InvisibleSpace]", 
+                 TagBox[
+                  
+                  TemplateBox[{
+                   "11.815279`", "\"s\"", "seconds", "\"Seconds\""}, 
+                   "Quantity", SyntaxForm -> Mod], "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox[
+                  
+                  TemplateBox[{"\"MaximumFileTime\"", "\": \""}, 
+                   "RowDefault"], "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  RowBox[{"{", 
+                    RowBox[{
+                    
+                    TemplateBox[{
+                    "6.667533`", "\"s\"", "seconds", "\"Seconds\""}, 
+                    "Quantity", SyntaxForm -> Mod], ",", 
+                    
+                    "\"/home/ruebenko/wri_git/OpenCascadeLink/OpenCascadeLink/\
+Documentation/English/Tutorials/UsingOpenCascadeLink.nb\""}], "}"}], 
+                  "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox[
+                  TemplateBox[{"\"ProcessedFiles\"", "\": \""}, "RowDefault"],
+                   "SummaryItemAnnotation"], "\[InvisibleSpace]", 
+                 TagBox[
+                  RowBox[{"\[LeftAssociation]", 
+                    RowBox[{
+                    
+                    RowBox[{
+                    "\"/home/ruebenko/wri_git/OpenCascadeLink/OpenCascadeLink/\
+Documentation/English/Tutorials/BookShelfBracket.nb\"", "\[Rule]", 
+                    InterpretationBox[
+                    RowBox[{
+                    TagBox["Success", "SummaryHead"], "[", 
+                    
+                    DynamicModuleBox[{
+                    Typeset`open$$ = False, Typeset`embedState$$ = "Ready"}, 
+                    TemplateBox[{
+                    PaneSelectorBox[{False -> GridBox[{{
+                    FrameBox[
+                    StyleBox["\"\[Checkmark]\"", 
+                    Directive[
+                    RGBColor[
+                    0.3607843137254902, 0.596078431372549, 
+                    0.3803921568627451], 25], StripOnInput -> False], 
+                    ContentPadding -> False, FrameStyle -> None, 
+                    FrameMargins -> {{0, 0}, {0, 0}}, StripOnInput -> False], 
+                    
+                    GridBox[{{
+                    RowBox[{
+                    TagBox[
+                    TemplateBox[{"\"Time\"", "\": \""}, "RowDefault"], 
+                    "SummaryItemAnnotation"], "\[InvisibleSpace]", 
+                    TagBox[
+                    
+                    TemplateBox[{"0.887828`", "\"s\"", "seconds", 
+                    "\"Seconds\""}, "Quantity", SyntaxForm -> Mod], 
+                    "SummaryItem"]}]}, {
+                    RowBox[{
+                    TagBox[
+                    TemplateBox[{"\"Tag\"", "\": \""}, "RowDefault"], 
+                    "SummaryItemAnnotation"], "\[InvisibleSpace]", 
+                    TagBox[
+                    "\"BuildDocumentationNotebook\"", "SummaryItem"]}]}}, 
+                    GridBoxAlignment -> {
+                    "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, 
+                    AutoDelete -> False, 
+                    GridBoxItemSize -> {
+                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+                    GridBoxSpacings -> {
+                    "Columns" -> {{2}}, "Rows" -> {{Automatic}}}, 
+                    BaseStyle -> {ShowStringCharacters -> False, NumberMarks -> 
+                    False, PrintPrecision -> 3, ShowSyntaxStyles -> False}]}},
+                     GridBoxAlignment -> {
+                    "Columns" -> {{Left}}, "Rows" -> {{Top}}}, AutoDelete -> 
+                    False, GridBoxItemSize -> {
+                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+                    BaselinePosition -> {1, 1}], True -> GridBox[{{
+                    FrameBox[
+                    StyleBox["\"\[Checkmark]\"", 
+                    Directive[
+                    RGBColor[
+                    0.3607843137254902, 0.596078431372549, 
+                    0.3803921568627451], 25], StripOnInput -> False], 
+                    ContentPadding -> False, FrameStyle -> None, 
+                    FrameMargins -> {{0, 0}, {0, 0}}, StripOnInput -> False], 
+                    
+                    GridBox[{{
+                    RowBox[{
+                    TagBox[
+                    TemplateBox[{"\"Time\"", "\": \""}, "RowDefault"], 
+                    "SummaryItemAnnotation"], "\[InvisibleSpace]", 
+                    TagBox[
+                    
+                    TemplateBox[{"0.887828`", "\"s\"", "seconds", 
+                    "\"Seconds\""}, "Quantity", SyntaxForm -> Mod], 
+                    "SummaryItem"]}]}, {
+                    RowBox[{
+                    TagBox[
+                    TemplateBox[{"\"Tag\"", "\": \""}, "RowDefault"], 
+                    "SummaryItemAnnotation"], "\[InvisibleSpace]", 
+                    TagBox[
+                    "\"BuildDocumentationNotebook\"", "SummaryItem"]}]}}, 
+                    GridBoxAlignment -> {
+                    "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, 
+                    AutoDelete -> False, 
+                    GridBoxItemSize -> {
+                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+                    GridBoxSpacings -> {
+                    "Columns" -> {{2}}, "Rows" -> {{Automatic}}}, 
+                    BaseStyle -> {ShowStringCharacters -> False, NumberMarks -> 
+                    False, PrintPrecision -> 3, ShowSyntaxStyles -> False}]}},
+                     GridBoxAlignment -> {
+                    "Columns" -> {{Left}}, "Rows" -> {{Top}}}, AutoDelete -> 
+                    False, GridBoxItemSize -> {
+                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+                    BaselinePosition -> {1, 1}]}, 
+                    Dynamic[Typeset`open$$], ImageSize -> Automatic]}, 
+                    "SummaryPanel"], DynamicModuleValues :> {}], "]"}], 
+                    Success[
+                    "BuildDocumentationNotebook", <|
+                    "Time" -> Quantity[0.887828, "Seconds"]|>], Selectable -> 
+                    False, Editable -> False, SelectWithContents -> True]}], 
+                    ",", 
+                    
+                    RowBox[{
+                    "\"/home/ruebenko/wri_git/OpenCascadeLink/OpenCascadeLink/\
+Documentation/English/Tutorials/HelicalBevelGear.nb\"", "\[Rule]", 
+                    InterpretationBox[
+                    RowBox[{
+                    TagBox["Success", "SummaryHead"], "[", 
+                    
+                    DynamicModuleBox[{
+                    Typeset`open$$ = False, Typeset`embedState$$ = "Ready"}, 
+                    TemplateBox[{
+                    PaneSelectorBox[{False -> GridBox[{{
+                    FrameBox[
+                    StyleBox["\"\[Checkmark]\"", 
+                    Directive[
+                    RGBColor[
+                    0.3607843137254902, 0.596078431372549, 
+                    0.3803921568627451], 25], StripOnInput -> False], 
+                    ContentPadding -> False, FrameStyle -> None, 
+                    FrameMargins -> {{0, 0}, {0, 0}}, StripOnInput -> False], 
+                    
+                    GridBox[{{
+                    RowBox[{
+                    TagBox[
+                    TemplateBox[{"\"Time\"", "\": \""}, "RowDefault"], 
+                    "SummaryItemAnnotation"], "\[InvisibleSpace]", 
+                    TagBox[
+                    
+                    TemplateBox[{"3.826176`", "\"s\"", "seconds", 
+                    "\"Seconds\""}, "Quantity", SyntaxForm -> Mod], 
+                    "SummaryItem"]}]}, {
+                    RowBox[{
+                    TagBox[
+                    TemplateBox[{"\"Tag\"", "\": \""}, "RowDefault"], 
+                    "SummaryItemAnnotation"], "\[InvisibleSpace]", 
+                    TagBox[
+                    "\"BuildDocumentationNotebook\"", "SummaryItem"]}]}}, 
+                    GridBoxAlignment -> {
+                    "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, 
+                    AutoDelete -> False, 
+                    GridBoxItemSize -> {
+                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+                    GridBoxSpacings -> {
+                    "Columns" -> {{2}}, "Rows" -> {{Automatic}}}, 
+                    BaseStyle -> {ShowStringCharacters -> False, NumberMarks -> 
+                    False, PrintPrecision -> 3, ShowSyntaxStyles -> False}]}},
+                     GridBoxAlignment -> {
+                    "Columns" -> {{Left}}, "Rows" -> {{Top}}}, AutoDelete -> 
+                    False, GridBoxItemSize -> {
+                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+                    BaselinePosition -> {1, 1}], True -> GridBox[{{
+                    FrameBox[
+                    StyleBox["\"\[Checkmark]\"", 
+                    Directive[
+                    RGBColor[
+                    0.3607843137254902, 0.596078431372549, 
+                    0.3803921568627451], 25], StripOnInput -> False], 
+                    ContentPadding -> False, FrameStyle -> None, 
+                    FrameMargins -> {{0, 0}, {0, 0}}, StripOnInput -> False], 
+                    
+                    GridBox[{{
+                    RowBox[{
+                    TagBox[
+                    TemplateBox[{"\"Time\"", "\": \""}, "RowDefault"], 
+                    "SummaryItemAnnotation"], "\[InvisibleSpace]", 
+                    TagBox[
+                    
+                    TemplateBox[{"3.826176`", "\"s\"", "seconds", 
+                    "\"Seconds\""}, "Quantity", SyntaxForm -> Mod], 
+                    "SummaryItem"]}]}, {
+                    RowBox[{
+                    TagBox[
+                    TemplateBox[{"\"Tag\"", "\": \""}, "RowDefault"], 
+                    "SummaryItemAnnotation"], "\[InvisibleSpace]", 
+                    TagBox[
+                    "\"BuildDocumentationNotebook\"", "SummaryItem"]}]}}, 
+                    GridBoxAlignment -> {
+                    "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, 
+                    AutoDelete -> False, 
+                    GridBoxItemSize -> {
+                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+                    GridBoxSpacings -> {
+                    "Columns" -> {{2}}, "Rows" -> {{Automatic}}}, 
+                    BaseStyle -> {ShowStringCharacters -> False, NumberMarks -> 
+                    False, PrintPrecision -> 3, ShowSyntaxStyles -> False}]}},
+                     GridBoxAlignment -> {
+                    "Columns" -> {{Left}}, "Rows" -> {{Top}}}, AutoDelete -> 
+                    False, GridBoxItemSize -> {
+                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+                    BaselinePosition -> {1, 1}]}, 
+                    Dynamic[Typeset`open$$], ImageSize -> Automatic]}, 
+                    "SummaryPanel"], DynamicModuleValues :> {}], "]"}], 
+                    Success[
+                    "BuildDocumentationNotebook", <|
+                    "Time" -> Quantity[3.826176, "Seconds"]|>], Selectable -> 
+                    False, Editable -> False, SelectWithContents -> True]}], 
+                    ",", 
+                    
+                    RowBox[{
+                    "\"/home/ruebenko/wri_git/OpenCascadeLink/OpenCascadeLink/\
+Documentation/English/Tutorials/UsingOpenCascadeLink.nb\"", "\[Rule]", 
+                    InterpretationBox[
+                    RowBox[{
+                    TagBox["Success", "SummaryHead"], "[", 
+                    
+                    DynamicModuleBox[{
+                    Typeset`open$$ = False, Typeset`embedState$$ = "Ready"}, 
+                    TemplateBox[{
+                    PaneSelectorBox[{False -> GridBox[{{
+                    FrameBox[
+                    StyleBox["\"\[Checkmark]\"", 
+                    Directive[
+                    RGBColor[
+                    0.3607843137254902, 0.596078431372549, 
+                    0.3803921568627451], 25], StripOnInput -> False], 
+                    ContentPadding -> False, FrameStyle -> None, 
+                    FrameMargins -> {{0, 0}, {0, 0}}, StripOnInput -> False], 
+                    
+                    GridBox[{{
+                    RowBox[{
+                    TagBox[
+                    TemplateBox[{"\"Time\"", "\": \""}, "RowDefault"], 
+                    "SummaryItemAnnotation"], "\[InvisibleSpace]", 
+                    TagBox[
+                    
+                    TemplateBox[{"6.667533`", "\"s\"", "seconds", 
+                    "\"Seconds\""}, "Quantity", SyntaxForm -> Mod], 
+                    "SummaryItem"]}]}, {
+                    RowBox[{
+                    TagBox[
+                    TemplateBox[{"\"Tag\"", "\": \""}, "RowDefault"], 
+                    "SummaryItemAnnotation"], "\[InvisibleSpace]", 
+                    TagBox[
+                    "\"BuildDocumentationNotebook\"", "SummaryItem"]}]}}, 
+                    GridBoxAlignment -> {
+                    "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, 
+                    AutoDelete -> False, 
+                    GridBoxItemSize -> {
+                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+                    GridBoxSpacings -> {
+                    "Columns" -> {{2}}, "Rows" -> {{Automatic}}}, 
+                    BaseStyle -> {ShowStringCharacters -> False, NumberMarks -> 
+                    False, PrintPrecision -> 3, ShowSyntaxStyles -> False}]}},
+                     GridBoxAlignment -> {
+                    "Columns" -> {{Left}}, "Rows" -> {{Top}}}, AutoDelete -> 
+                    False, GridBoxItemSize -> {
+                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+                    BaselinePosition -> {1, 1}], True -> GridBox[{{
+                    FrameBox[
+                    StyleBox["\"\[Checkmark]\"", 
+                    Directive[
+                    RGBColor[
+                    0.3607843137254902, 0.596078431372549, 
+                    0.3803921568627451], 25], StripOnInput -> False], 
+                    ContentPadding -> False, FrameStyle -> None, 
+                    FrameMargins -> {{0, 0}, {0, 0}}, StripOnInput -> False], 
+                    
+                    GridBox[{{
+                    RowBox[{
+                    TagBox[
+                    TemplateBox[{"\"Time\"", "\": \""}, "RowDefault"], 
+                    "SummaryItemAnnotation"], "\[InvisibleSpace]", 
+                    TagBox[
+                    
+                    TemplateBox[{"6.667533`", "\"s\"", "seconds", 
+                    "\"Seconds\""}, "Quantity", SyntaxForm -> Mod], 
+                    "SummaryItem"]}]}, {
+                    RowBox[{
+                    TagBox[
+                    TemplateBox[{"\"Tag\"", "\": \""}, "RowDefault"], 
+                    "SummaryItemAnnotation"], "\[InvisibleSpace]", 
+                    TagBox[
+                    "\"BuildDocumentationNotebook\"", "SummaryItem"]}]}}, 
+                    GridBoxAlignment -> {
+                    "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, 
+                    AutoDelete -> False, 
+                    GridBoxItemSize -> {
+                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+                    GridBoxSpacings -> {
+                    "Columns" -> {{2}}, "Rows" -> {{Automatic}}}, 
+                    BaseStyle -> {ShowStringCharacters -> False, NumberMarks -> 
+                    False, PrintPrecision -> 3, ShowSyntaxStyles -> False}]}},
+                     GridBoxAlignment -> {
+                    "Columns" -> {{Left}}, "Rows" -> {{Top}}}, AutoDelete -> 
+                    False, GridBoxItemSize -> {
+                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+                    BaselinePosition -> {1, 1}]}, 
+                    Dynamic[Typeset`open$$], ImageSize -> Automatic]}, 
+                    "SummaryPanel"], DynamicModuleValues :> {}], "]"}], 
+                    Success[
+                    "BuildDocumentationNotebook", <|
+                    "Time" -> Quantity[6.667533, "Seconds"]|>], Selectable -> 
+                    False, Editable -> False, SelectWithContents -> True]}]}],
+                     "\[RightAssociation]"}], "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox[
+                  
+                  TemplateBox[{"\"FailedFilesCount\"", "\": \""}, 
+                   "RowDefault"], "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["0", "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox[
+                  
+                  TemplateBox[{"\"PercentSucceeded\"", "\": \""}, 
+                   "RowDefault"], "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  
+                  TemplateBox[{"100.`", "\"%\"", "percent", "\"Percent\""}, 
+                   "QuantityPostfix", SyntaxForm -> Mod], "SummaryItem"]}]}, {
+              
+               RowBox[{
+                 TagBox[
+                  
+                  TemplateBox[{"\"ProcessedFilesCount\"", "\": \""}, 
+                   "RowDefault"], "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["3", "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox[
+                  
+                  TemplateBox[{"\"SuccessfulFilesCount\"", "\": \""}, 
+                   "RowDefault"], "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["3", "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox[
+                  
+                  TemplateBox[{"\"SkippedFilesCount\"", "\": \""}, 
+                   "RowDefault"], "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["0", "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox[
+                  TemplateBox[{"\"Tag\"", "\": \""}, "RowDefault"], 
+                  "SummaryItemAnnotation"], "\[InvisibleSpace]", 
+                 TagBox["\"DocumentationBuild\"", "SummaryItem"]}]}}, 
+             GridBoxAlignment -> {
+              "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
+             False, GridBoxItemSize -> {
+              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+             GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
+              BaseStyle -> {
+              ShowStringCharacters -> False, NumberMarks -> False, 
+               PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
+          AutoDelete -> False, 
+          GridBoxItemSize -> {
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+          BaselinePosition -> {1, 1}]}, 
+       Dynamic[Typeset`open$$], ImageSize -> Automatic]},
+     "SummaryPanel"],
+    DynamicModuleValues:>{}], "]"}],
+  Success[
+  "DocumentationBuild", <|
+   "TotalTime" -> Quantity[11.815279, "Seconds"], "MaximumFileTime" -> {
+      Quantity[6.667533, "Seconds"], 
+      "/home/ruebenko/wri_git/OpenCascadeLink/OpenCascadeLink/Documentation/\
+English/Tutorials/UsingOpenCascadeLink.nb"}, 
+    "ProcessedFiles" -> <|
+     "/home/ruebenko/wri_git/OpenCascadeLink/OpenCascadeLink/Documentation/\
+English/Tutorials/BookShelfBracket.nb" -> 
+      Success["BuildDocumentationNotebook", <|
+        "Time" -> Quantity[0.887828, "Seconds"]|>], 
+      "/home/ruebenko/wri_git/OpenCascadeLink/OpenCascadeLink/Documentation/\
+English/Tutorials/HelicalBevelGear.nb" -> 
+      Success["BuildDocumentationNotebook", <|
+        "Time" -> Quantity[3.826176, "Seconds"]|>], 
+      "/home/ruebenko/wri_git/OpenCascadeLink/OpenCascadeLink/Documentation/\
+English/Tutorials/UsingOpenCascadeLink.nb" -> 
+      Success["BuildDocumentationNotebook", <|
+        "Time" -> Quantity[6.667533, "Seconds"]|>]|>, "FailedFilesCount" -> 0,
+     "PercentSucceeded" -> Quantity[100., "Percent"], "ProcessedFilesCount" -> 
+    3, "SuccessfulFilesCount" -> 3, "SkippedFilesCount" -> 0, 
+    "MessageTemplate" -> "Documentation build completed successfully."|>],
+  Editable->False,
+  SelectWithContents->True,
+  Selectable->False]], "Output",
+ CellLabel->"Out[14]=",ExpressionUUID->"7986f712-037a-4428-b9af-f90c172978e6"]
+}, Open  ]],
+
+Cell["\<\
+This will create the documentation and put it in the OpenCascade folder i the \
+folder named build.\
+\>", "Text",ExpressionUUID->"04a008e2-f1ba-4275-9cc9-42c3404fd267"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Build the OpenCascadeLink Paclet", "Subsubsection",ExpressionUUID->"c8ab5b56-b2c1-4f79-be2e-1e7d87abc227"],
+
+Cell["Next we create the OpenCascadeLink-X.Y.Z.paclet.", "Text",ExpressionUUID->"08f6297e-0175-418d-a615-cfdce1d8b2c4"],
+
+Cell["Load the paclet manager to create the paclet", "Text",ExpressionUUID->"74ecbd42-5f55-43cc-a593-f4a0c257a6a2"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<PacletManager`\>\"", "]"}]], "Input",
+ CellChangeTimes->{{3.732945903851519*^9, 3.732945916339141*^9}},
+ CellLabel->"In[15]:=",ExpressionUUID->"0faf7db5-2f0e-46bf-a9e6-1b9a2212b2a1"],
+
+Cell["Check that the OpenCascadeLink directory is there:", "Text",ExpressionUUID->"02dfa579-ff87-44ac-b061-3f4ca122f816"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"FileNames", "[", 
+  RowBox[{"All", ",", "buildDir"}], "]"}]], "Input",
+ CellLabel->"In[16]:=",ExpressionUUID->"64b18ca9-49ac-487d-b48a-495f6d8fd8b1"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/incremental\"\>", 
+   ",", "\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/OpenCascadeLink\"\>\
+"}], "}"}]], "Output",
+ CellLabel->"Out[16]=",ExpressionUUID->"6427c854-bbda-4b1a-9f6a-a1733a8d557d"]
+}, Open  ]],
+
+Cell["\<\
+Add the paclet directory. This is convenient for development as \
+PacletDirectoryAdd wins ties if the paclet version is the same as the paclet \
+the Wolfram language ships with:\
+\>", "Text",ExpressionUUID->"fda6454b-195a-4b34-b1c5-a7963f0c2a90"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PacletDirectoryAdd", "[", "pacletDir", "]"}]], "Input",
+ CellLabel->"In[17]:=",ExpressionUUID->"d12b597f-8f33-4c92-b0d6-12b60d5fb449"],
+
+Cell[BoxData[
+ RowBox[{"{", \
+"\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/OpenCascadeLink\"\>", 
+  "}"}]], "Output",
+ CellLabel->"Out[17]=",ExpressionUUID->"63b7a168-ef8d-4eb2-9331-5168ebdde886"]
+}, Open  ]],
+
+Cell["If you like you can create the paclet:", "Text",ExpressionUUID->"d0a94687-6a60-48d2-8fa9-2c69e0a8d395"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"paclet", "=", 
+  RowBox[{"PackPaclet", "[", "pacletDir", "]"}]}]], "Input",
+ CellLabel->"In[18]:=",ExpressionUUID->"263402d4-9eb2-4f2f-9d5b-4c46bbdb3569"],
+
+Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/\
+OpenCascadeLink-0.4.0.paclet\"\>"], "Output",
+ CellLabel->"Out[18]=",ExpressionUUID->"7a3985f4-e10d-49fc-8c8c-7fe9ad619120"]
+}, Open  ]]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Load the new OpenCascadeLink Paclet", "Subsubsection",ExpressionUUID->"db5330f1-ad02-4660-96a3-f9da5a8b4ca4"],
+
+Cell["\<\
+You can load the newly created paclet with out installing it. \
+\>", "Text",ExpressionUUID->"17ec6fe5-c335-4a0b-8158-62421b03129c"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PacletDirectoryLoad", "[", "pacletDir", "]"}]], "Input",
+ CellLabel->"In[19]:=",ExpressionUUID->"cc166fd1-4353-441d-be91-cc95f5d4f27e"],
+
+Cell[BoxData[
+ RowBox[{"{", \
+"\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/OpenCascadeLink\"\>", 
+  "}"}]], "Output",
+ CellLabel->"Out[19]=",ExpressionUUID->"a3b6d248-3280-4d14-ba09-12e0a434a9be"]
+}, Open  ]],
+
+Cell["Load the paclet and check the version", "Text",ExpressionUUID->"5628d5cd-e635-4742-b9ab-41231f72d924"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<OpenCascadeLink`\>\"", "]"}]], "Input",
+ CellLabel->"In[20]:=",ExpressionUUID->"0d5da820-91de-4cab-ab78-66869c70cf0a"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["$OpenCascadeVersion"], "Input",
+ CellLabel->"In[21]:=",ExpressionUUID->"c6bd01dd-3c26-4b80-8dd0-5cf0ae447158"],
+
+Cell[BoxData["\<\"7.6.3\"\>"], "Output",
+ CellLabel->"Out[21]=",ExpressionUUID->"537af6aa-271d-4a2c-9511-eba7d34ae01b"]
+}, Open  ]]
 }, Closed]],
 
 Cell[CellGroupData[{
@@ -413,232 +1169,6 @@ You can now attach a debugger to that process ID. Set a break point at the \
 function you wish to inspect and call the function. The debugger should now \
 stop at the requested break point.\
 \>", "Text",ExpressionUUID->"4743dd77-3517-4b8c-bd9c-8c69f09e6333"]
-}, Closed]],
-
-Cell[CellGroupData[{
-
-Cell["Build the OpenCascadeLink Documentation", "Subsubsection",ExpressionUUID->"1fb53ba5-f5fe-4be3-a17d-58f25b5d6ceb"],
-
-Cell[TextData[{
- "To build the OpenCascadeLink Documentation ",
- ButtonBox["Wolfram Workbench",
-  BaseStyle->"Hyperlink",
-  ButtonData->{
-    URL["https://support.wolfram.com/27221%0A"], None},
-  ButtonNote->"https://support.wolfram.com/27221%0A"],
- " is needed."
-}], "Text",ExpressionUUID->"8149c8a0-139b-4dfc-a9da-cf5ef78358ce"],
-
-Cell["\<\
-First, import OpenCascadeLink in Workbench:                                   \
-        
-* Select File -> Import...                                                    \
-  
-* Git - Projects from Git (Next)                                              \
-  
-* Existing local repository (Next)                                            \
-  
-* Add... (browse to OpenCascadeLink, select, Next)                            \
-        
-* Import as general project (Finish)                                          \
-      \
-\>", "Text",ExpressionUUID->"4a717956-5e5e-434d-aff1-6e04cdb06d45"],
-
-Cell["\<\
-Importing of the OpenCascadeLink source needs to be done only once. Next, the \
-actual documentation is build:                                                \
-  
-* In the folder scripts in the OpenCascadeLink directory right click on \
-docbuild.xml                           
-  * Choose Run As...                                                          \
-  
-  * Choose 2 Ant Build...                                                     \
-  
-  * Deselect all                                                              \
-  
-  * Select *OpenCascadeLink*                                                  \
-            
-  * Run\
-\>", "Text",ExpressionUUID->"7e35ebb8-d6e1-4dc4-ac80-deb8916fc7df"],
-
-Cell["\<\
-This will create the documentation and put it in a folder named build.\
-\>", "Text",ExpressionUUID->"04a008e2-f1ba-4275-9cc9-42c3404fd267"]
-}, Closed]],
-
-Cell[CellGroupData[{
-
-Cell["Build the OpenCascadeLink paclet layout", "Subsubsection",ExpressionUUID->"34ed6358-b785-4f7b-af0d-f08c986028cd"],
-
-Cell["\<\
-To complete the paclet we need to copy files from the source directory into \
-the build directory.\
-\>", "Text",ExpressionUUID->"d79707bb-c1b2-4b2e-b3f9-07448c83f563"],
-
-Cell["Set up the paclet directory:", "Text",ExpressionUUID->"4a6b0479-b5d2-4c39-82f2-96ebfc40847f"],
-
-Cell[BoxData[
- RowBox[{
-  RowBox[{"pacletDir", "=", 
-   RowBox[{"FileNameJoin", "[", 
-    RowBox[{"{", 
-     RowBox[{"buildDir", ",", "\"\<OpenCascadeLink\>\""}], "}"}], "]"}]}], 
-  ";"}]], "Input",
- CellLabel->"In[8]:=",ExpressionUUID->"2d65b802-6846-4d06-8c24-7927a619ad36"],
-
-Cell["Copy the kernel files:", "Text",ExpressionUUID->"559e7e0d-04e8-4844-932a-aaba0ab44de9"],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"CopyDirectory", "[", 
-  RowBox[{
-   RowBox[{"FileNameJoin", "[", 
-    RowBox[{"{", 
-     RowBox[{
-     "baseDir", ",", "\"\<OpenCascadeLink\>\"", ",", "\"\<Kernel\>\""}], 
-     "}"}], "]"}], ",", 
-   RowBox[{"FileNameJoin", "[", 
-    RowBox[{"{", 
-     RowBox[{"pacletDir", ",", "\"\<Kernel\>\""}], "}"}], "]"}]}], 
-  "]"}]], "Input",
- CellLabel->"In[9]:=",ExpressionUUID->"389119e3-c06d-4348-a14c-18c1dff54203"],
-
-Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/\
-OpenCascadeLink/Kernel\"\>"], "Output",
- CellLabel->"Out[9]=",ExpressionUUID->"651b3591-aa97-4842-86b9-f91971382f6b"]
-}, Open  ]],
-
-Cell["Copy the example data files:", "Text",ExpressionUUID->"4c134813-261d-4d20-a011-4b67af6f9bc1"],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"CopyDirectory", "[", 
-  RowBox[{
-   RowBox[{"FileNameJoin", "[", 
-    RowBox[{"{", 
-     RowBox[{
-     "baseDir", ",", "\"\<OpenCascadeLink\>\"", ",", "\"\<ExampleData\>\""}], 
-     "}"}], "]"}], ",", 
-   RowBox[{"FileNameJoin", "[", 
-    RowBox[{"{", 
-     RowBox[{"pacletDir", ",", "\"\<ExampleData\>\""}], "}"}], "]"}]}], 
-  "]"}]], "Input",
- CellLabel->"In[10]:=",ExpressionUUID->"34f8c02e-b928-48f8-8523-f821fb0aada1"],
-
-Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/\
-OpenCascadeLink/ExampleData\"\>"], "Output",
- CellLabel->"Out[10]=",ExpressionUUID->"c0bd9539-90d8-4081-bb98-65721612baf5"]
-}, Open  ]],
-
-Cell["Copy the OpenCascadeLink.m file:", "Text",ExpressionUUID->"a322e256-7cf3-4bbc-8dec-88c9225a13fb"],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"CopyFile", "[", 
-  RowBox[{
-   RowBox[{"FileNameJoin", "[", 
-    RowBox[{"{", 
-     RowBox[{
-     "baseDir", ",", "\"\<OpenCascadeLink\>\"", ",", 
-      "\"\<OpenCascadeLink.m\>\""}], "}"}], "]"}], ",", 
-   RowBox[{"FileNameJoin", "[", 
-    RowBox[{"{", 
-     RowBox[{"pacletDir", ",", "\"\<OpenCascadeLink.m\>\""}], "}"}], "]"}], 
-   ",", 
-   RowBox[{"OverwriteTarget", "\[Rule]", "True"}]}], "]"}]], "Input",
- CellLabel->"In[11]:=",ExpressionUUID->"704a1be5-c475-44f6-8987-f5adca69b06e"],
-
-Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/\
-OpenCascadeLink/OpenCascadeLink.m\"\>"], "Output",
- CellLabel->"Out[11]=",ExpressionUUID->"a9d9ed1e-ccc6-42c0-8a16-24b3e7644382"]
-}, Open  ]],
-
-Cell["Copy the PacletInfo.m file:", "Text",ExpressionUUID->"073fa7c7-5e7a-42e7-9129-e4c33035745e"],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"CopyFile", "[", 
-  RowBox[{
-   RowBox[{"FileNameJoin", "[", 
-    RowBox[{"{", 
-     RowBox[{"baseDir", ",", "\"\<PacletInfo.m\>\""}], "}"}], "]"}], ",", 
-   RowBox[{"FileNameJoin", "[", 
-    RowBox[{"{", 
-     RowBox[{"pacletDir", ",", "\"\<PacletInfo.m\>\""}], "}"}], "]"}], ",", 
-   RowBox[{"OverwriteTarget", "\[Rule]", "True"}]}], "]"}]], "Input",
- CellLabel->"In[12]:=",ExpressionUUID->"d7b697c0-482d-4e4e-8563-fcbc91610247"],
-
-Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/\
-OpenCascadeLink/PacletInfo.m\"\>"], "Output",
- CellLabel->"Out[12]=",ExpressionUUID->"99b66101-b7ad-4868-bcd9-8eb2633c2c6a"]
-}, Open  ]]
-}, Closed]],
-
-Cell[CellGroupData[{
-
-Cell["Build the OpenCascadeLink Paclet", "Subsubsection",ExpressionUUID->"c8ab5b56-b2c1-4f79-be2e-1e7d87abc227"],
-
-Cell["Next we create the OpenCascadeLink-X.Y.Z.paclet.", "Text",ExpressionUUID->"08f6297e-0175-418d-a615-cfdce1d8b2c4"],
-
-Cell["Load the paclet manager to create the paclet", "Text",ExpressionUUID->"74ecbd42-5f55-43cc-a593-f4a0c257a6a2"],
-
-Cell[BoxData[
- RowBox[{"Needs", "[", "\"\<PacletManager`\>\"", "]"}]], "Input",
- CellChangeTimes->{{3.732945903851519*^9, 3.732945916339141*^9}},
- CellLabel->"In[13]:=",ExpressionUUID->"0faf7db5-2f0e-46bf-a9e6-1b9a2212b2a1"],
-
-Cell["Check that the OpenCascadeLink directory is there:", "Text",ExpressionUUID->"02dfa579-ff87-44ac-b061-3f4ca122f816"],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"FileNames", "[", 
-  RowBox[{"All", ",", "buildDir"}], "]"}]], "Input",
- CellLabel->"In[14]:=",ExpressionUUID->"64b18ca9-49ac-487d-b48a-495f6d8fd8b1"],
-
-Cell[BoxData[
- RowBox[{"{", \
-"\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/OpenCascadeLink\"\>", 
-  "}"}]], "Output",
- CellLabel->"Out[14]=",ExpressionUUID->"a7909d9d-b282-46a7-a2f8-22087d9f18f0"]
-}, Open  ]],
-
-Cell["\<\
-Add the paclet directory. This is convenient for development as \
-PacletDirectoryAdd wins ties if the paclet version is the same as the paclet \
-the Wolfram language ships with:\
-\>", "Text",ExpressionUUID->"fda6454b-195a-4b34-b1c5-a7963f0c2a90"],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"PacletDirectoryAdd", "[", "pacletDir", "]"}]], "Input",
- CellLabel->"In[15]:=",ExpressionUUID->"d12b597f-8f33-4c92-b0d6-12b60d5fb449"],
-
-Cell[BoxData[
- RowBox[{"{", \
-"\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/OpenCascadeLink\"\>", 
-  "}"}]], "Output",
- CellLabel->"Out[15]=",ExpressionUUID->"ca77980a-1483-4705-8171-0ee7b04c50d9"]
-}, Open  ]],
-
-Cell["If you like you can create the paclet:", "Text",ExpressionUUID->"d0a94687-6a60-48d2-8fa9-2c69e0a8d395"],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"paclet", "=", 
-  RowBox[{"PackPaclet", "[", "pacletDir", "]"}]}]], "Input",
- CellLabel->"In[16]:=",ExpressionUUID->"263402d4-9eb2-4f2f-9d5b-4c46bbdb3569"],
-
-Cell[BoxData["\<\"/home/ruebenko/wri_git/OpenCascadeLink/build/\
-OpenCascadeLink-0.4.0.paclet\"\>"], "Output",
- CellLabel->"Out[16]=",ExpressionUUID->"2aac2361-cd6e-40e6-b3f4-088f6d775e7a"]
-}, Open  ]]
 }, Closed]],
 
 Cell[CellGroupData[{
@@ -1060,44 +1590,34 @@ previous versions of the link."
 f33751953da7"],
 
 Cell[TextData[{
- "First, load the ",
- StyleBox["OpenCascadeLink",
-  FontSlant->"Italic"],
- " and the test suite functionality provided by ",
+ "Load the test suite functionality provided by ",
  StyleBox["MUnit",
   FontSlant->"Italic"],
  "."
-}], "Text",
- CellChangeTimes->{{3.816659042862627*^9, 
-  3.816659080102583*^9}},ExpressionUUID->"b8e595c5-1086-49cb-b726-\
-853c46473db9"],
+}], "Text",ExpressionUUID->"b8e595c5-1086-49cb-b726-853c46473db9"],
 
-Cell[BoxData[{
- RowBox[{"Needs", "[", "\"\<OpenCascadeLink`\>\"", 
-  "]"}], "\[IndentingNewLine]", 
- RowBox[{"Needs", "[", "\"\<MUnit`\>\"", "]"}]}], "Input",
- CellChangeTimes->{{3.815792326951355*^9, 3.8157923323497972`*^9}, {
-  3.816658934012988*^9, 3.816658936350225*^9}},
- CellLabel->"In[32]:=",ExpressionUUID->"646aad41-106c-4e6c-bd20-873d7b0583c8"],
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<MUnit`\>\"", "]"}]], "Input",
+ CellLabel->"In[1]:=",ExpressionUUID->"243a98e9-d819-4688-bffc-e3d8ab688be3"],
 
-Cell["Run the test suite and store the results.", "Text",
- CellChangeTimes->{{3.816659110312292*^9, 
-  3.816659123141808*^9}},ExpressionUUID->"44d56105-93e4-4a36-9ce2-\
-8612beef2c1b"],
+Cell["\<\
+Run the test suite with the new paclet and store the results.\
+\>", "Text",ExpressionUUID->"44d56105-93e4-4a36-9ce2-8612beef2c1b"],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"testResults", "=", 
   RowBox[{"TestSuiteReport", "[", 
-   RowBox[{"FileNameJoin", "[", 
-    RowBox[{"{", 
-     RowBox[{
-      RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<Tests\>\""}], "}"}], 
-    "]"}], "]"}]}]], "Input",
- CellChangeTimes->{{3.815792376395155*^9, 3.815792389037668*^9}, {
-   3.815792554899836*^9, 3.815792555974052*^9}, 3.816658951636784*^9},
- CellLabel->"In[34]:=",ExpressionUUID->"1226e2bf-ea85-43ca-a9ef-49d46611ac16"],
+   RowBox[{
+    RowBox[{"FileNameJoin", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<Tests\>\""}], "}"}],
+      "]"}], ",", 
+    RowBox[{"Initialization", ":>", 
+     RowBox[{"PacletDirectoryLoad", "[", "pacletDir", "]"}]}]}], 
+   "]"}]}]], "Input",ExpressionUUID->"1226e2bf-ea85-43ca-a9ef-49d46611ac16"],
 
 Cell[BoxData[
  TagBox[
@@ -1252,7 +1772,7 @@ Cell[BoxData[
                     TagBox["\"Time elapsed : \"", "SummaryItemAnnotation"], 
                     "\[InvisibleSpace]", 
                     TagBox[
-                    TemplateBox[{"1", "27.999999999999993`", 
+                    TemplateBox[{"1", "33.4`", 
                     RowBox[{"\[ThinSpace]", "\"min\""}], 
                     RowBox[{"\[ThinSpace]", "\"s\""}], "minutes,seconds", 
                     RowBox[{"{", 
@@ -1285,12 +1805,12 @@ Cell[BoxData[
               "Local"], 
              Style["This object cannot be used as input.", "SummaryEmbed"], 
              BoxForm`EmbedSummaryLabel[
-             MUnit`TestSuiteReportObject, 10812864, 
+             MUnit`TestSuiteReportObject, 10809952, 
               Dynamic[Typeset`embedState$$], Automatic]], StandardForm]], 
           ButtonFunction :> 
           BoxForm`EmbedSummaryInterpretation[
-           "Choose", MUnit`TestSuiteReportObject, 10812864, 
-            11563986745121989157642602577143489322844169103916680386672, 
+           "Choose", MUnit`TestSuiteReportObject, 10809952, 
+            11565335673849227496779197956417208480509917914138321354448, 
             EvaluationBox[], 
             Dynamic[Typeset`embedState$$], StandardForm, 
             ElisionsDump`embedSummaryBoxes], DefaultBaseStyle -> 
@@ -1308,15 +1828,15 @@ Cell[BoxData[
     "TestSuiteReportObject[<|Results -> \
 <|/home/ruebenko/wri_git/OpenCascadeLink/Tests/OpenCascadeLink_Bugs.mt -> \
 TestReportObject[<|Title -> Test Report: OpenCascadeLink_Bugs.mt, Aborted -> \
-False, TestResults -> <|18961597402541359 -> TestResultObject[<|TestKey -> \
-18961597402541359, <<16>>|>], <<9>>|>, <<3>>, TestsFailedWithErrorsKeys -> \
-{}|>], <<6>>|>, TotalTimeElapsed -> 8<<14>>ds|>]"& )],
+False, TestResults -> <|5515008055287376487 -> TestResultObject[<|TestKey -> \
+5515008055287376487, <<16>>|>], <<9>>|>, <<3>>, TestsFailedWithErrorsKeys -> \
+{}|>], <<6>>|>, TotalTimeElapsed -> <<16>>s|>]"& )],
   False,
-  BoxID -> 11563986745121989157642602577143489322844169103916680386672,
+  BoxID -> 11565335673849227496779197956417208480509917914138321354448,
   Editable->False,
   SelectWithContents->True,
   Selectable->False]], "Output",
- CellLabel->"Out[34]=",ExpressionUUID->"8369b30e-93bf-4e91-847e-bed09e93868d"]
+ CellLabel->"Out[5]=",ExpressionUUID->"ae8a15a6-cebc-42df-ad52-b8f89c41d3e6"]
 }, Open  ]],
 
 Cell["Inspect the number of failed tests.", "Text",
@@ -1329,10 +1849,10 @@ Cell[CellGroupData[{
 Cell[BoxData[
  RowBox[{"testResults", "[", "\"\<TotalTestsFailedCount\>\"", "]"}]], "Input",\
 
- CellLabel->"In[35]:=",ExpressionUUID->"0aa55af7-295d-435a-b028-92da4a18524f"],
+ CellLabel->"In[27]:=",ExpressionUUID->"0aa55af7-295d-435a-b028-92da4a18524f"],
 
 Cell[BoxData["12"], "Output",
- CellLabel->"Out[35]=",ExpressionUUID->"bf979d05-617c-4bc3-885f-b5ebbb2bfeb3"]
+ CellLabel->"Out[27]=",ExpressionUUID->"da012aa9-5eec-416b-8cd4-1ccc49bd1017"]
 }, Open  ]],
 
 Cell["\<\
@@ -1380,7 +1900,7 @@ Cell[BoxData[{
      RowBox[{"failedTests", "[", 
       RowBox[{"[", "index", "]"}], "]"}]}]}], "\[IndentingNewLine]", 
    "]"}]}]}], "Input",
- CellLabel->"In[36]:=",ExpressionUUID->"e7f887ee-5d1f-4df3-80f3-55dfa0ac0f2f"],
+ CellLabel->"In[28]:=",ExpressionUUID->"e7f887ee-5d1f-4df3-80f3-55dfa0ac0f2f"],
 
 Cell["Get the first failed test.", "Text",
  CellChangeTimes->{{3.8166592553015747`*^9, 
@@ -1393,7 +1913,7 @@ Cell[BoxData[
  RowBox[{"failedTest", "=", 
   RowBox[{"GetFailedTest", "[", 
    RowBox[{"testResults", ",", "1"}], "]"}]}]], "Input",
- CellLabel->"In[38]:=",ExpressionUUID->"462a49ca-f68d-4de3-bbbb-eacf790769c6"],
+ CellLabel->"In[30]:=",ExpressionUUID->"462a49ca-f68d-4de3-bbbb-eacf790769c6"],
 
 Cell[BoxData[
  InterpretationBox[
@@ -2468,7 +2988,7 @@ $CellContext`bmesh["BoundaryElementMarkerUnion"]; $CellContext`temp = Most[
      "SummaryPanel"],
     DynamicModuleValues:>{}], "]"}],
   TestResultObject[<|
-   "TestKey" -> 6287140736673283215, "TestID" -> 
+   "TestKey" -> 1256327358133750789, "TestID" -> 
     "OpenCascadeLink_Docs_BooleanOperations-20200311-Difference-ShapeType-\
 regionUnionPolyhedron-Ellipsoid-bug-401678-bug-392674", "TestFileName" -> 
     "/home/ruebenko/wri_git/OpenCascadeLink/Tests/OpenCascadeLink_Docs_\
@@ -2546,13 +3066,13 @@ $CellContext`result["ElementMesh"] = If[False,
        "OpenCascadeShapeSolids" -> True, 
        "ElementMesh" -> <|"Actual" -> $Failed, "Expected" -> Graphics3D|>|>], 
     "ExpectedMessages" -> HoldForm[{}], "ActualMessages" -> {}, 
-    "AbsoluteTime" -> 3.870924660531962*^9, "AbsoluteTimeUsed" -> 
-    0.521735`5.867964969683763, "CPUTimeUsed" -> 0.5254909999999882, 
+    "AbsoluteTime" -> 3.8715288632805414`*^9, "AbsoluteTimeUsed" -> 
+    0.489298`5.8400884384218115, "CPUTimeUsed" -> 0.4910460000000114, 
     "MemoryUsed" -> 17456|>],
   Editable->False,
   SelectWithContents->True,
   Selectable->False]], "Output",
- CellLabel->"Out[38]=",ExpressionUUID->"7ec20137-3617-4ce9-adc2-bb482872f4af"]
+ CellLabel->"Out[30]=",ExpressionUUID->"97a012bd-b0d5-4333-9e71-e4d50668ac4c"]
 }, Open  ]],
 
 Cell["Inspect the input of the failed test.", "Text",
@@ -2564,7 +3084,7 @@ Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"failedTest", "[", "\"\<Input\>\"", "]"}]], "Input",
- CellLabel->"In[39]:=",ExpressionUUID->"b797b04b-3bc9-4f3a-b0fd-d9522bd732dd"],
+ CellLabel->"In[31]:=",ExpressionUUID->"b797b04b-3bc9-4f3a-b0fd-d9522bd732dd"],
 
 Cell[BoxData[
  TagBox[
@@ -2921,7 +3441,7 @@ OpenCascadeShapeExpressionQ]\"\>"}]}], "]"}]}]}], "]"}]}], ";",
           RowBox[{"\<\"Expected\"\>", "\[Rule]", "Graphics3D"}]}], 
          "]"}]}]}]}], "]"}]}], ";", "result"}],
   HoldForm]], "Output",
- CellLabel->"Out[39]=",ExpressionUUID->"67cbe195-00e2-4b83-93bc-405f87dc258f"]
+ CellLabel->"Out[31]=",ExpressionUUID->"8e6a124d-196e-4307-bc66-79c59b1dbcb6"]
 }, Open  ]],
 
 Cell["Run the test.", "Text",
@@ -2935,7 +3455,7 @@ Cell[BoxData[
  RowBox[{
   RowBox[{"failedTest", "[", "\"\<Input\>\"", "]"}], "//", 
   "ReleaseHold"}]], "Input",
- CellLabel->"In[40]:=",ExpressionUUID->"5b37734f-0f61-41cd-a4d1-33f06b2b1897"],
+ CellLabel->"In[32]:=",ExpressionUUID->"5b37734f-0f61-41cd-a4d1-33f06b2b1897"],
 
 Cell[BoxData[
  RowBox[{"\[LeftAssociation]", 
@@ -2954,7 +3474,7 @@ Cell[BoxData[
       RowBox[{"\<\"Actual\"\>", "\[Rule]", "$Failed"}], ",", 
       RowBox[{"\<\"Expected\"\>", "\[Rule]", "Graphics3D"}]}], 
      "\[RightAssociation]"}]}]}], "\[RightAssociation]"}]], "Output",
- CellLabel->"Out[40]=",ExpressionUUID->"e757ab51-c722-415a-be8d-77e285fc823c"]
+ CellLabel->"Out[32]=",ExpressionUUID->"4617d20a-a571-4be7-8680-28121b6c371d"]
 }, Open  ]],
 
 Cell["Compare to the expected output.", "Text",
@@ -2966,7 +3486,7 @@ Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"failedTest", "[", "\"\<ExpectedOutput\>\"", "]"}]], "Input",
- CellLabel->"In[41]:=",ExpressionUUID->"3e50934a-501c-4fe4-9ab9-6cf5b927942b"],
+ CellLabel->"In[33]:=",ExpressionUUID->"3e50934a-501c-4fe4-9ab9-6cf5b927942b"],
 
 Cell[BoxData[
  TagBox[
@@ -2978,15 +3498,15 @@ Cell[BoxData[
     RowBox[{"\<\"OpenCascadeShapeSolids\"\>", "\[Rule]", "True"}], ",", 
     RowBox[{"\<\"ElementMesh\"\>", "\[Rule]", "True"}]}], "]"}],
   HoldForm]], "Output",
- CellLabel->"Out[41]=",ExpressionUUID->"aecdf813-fb6d-488f-ada6-4f0f647e8f43"]
+ CellLabel->"Out[33]=",ExpressionUUID->"9af14c4a-b698-4f60-8a60-794f9b7575f0"]
 }, Open  ]]
 }, Closed]]
 }, Open  ]]
 },
-WindowSize->{717, 781},
-WindowMargins->{{176, Automatic}, {Automatic, 96}},
+WindowSize->{717., 780.75},
+WindowMargins->{{Automatic, 1.5}, {Automatic, 13.5}},
 TaggingRules->{"TryRealOnly" -> False},
-FrontEndVersion->"13.1 for Mac OS X ARM (64-bit) (June 16, 2022)",
+FrontEndVersion->"13.1 for Linux x86 (64-bit) (June 16, 2022)",
 StyleDefinitions->"Default.nb",
 ExpressionUUID->"7edc8073-c067-4d3d-b40a-daac57e462d0"
 ]
@@ -3002,227 +3522,247 @@ CellTagsIndex->{}
 (*NotebookFileOutline
 Notebook[{
 Cell[CellGroupData[{
-Cell[580, 22, 101, 0, 54, "Subsection",ExpressionUUID->"a128afc6-35b7-43fd-8da5-175a71c0b21d"],
-Cell[684, 24, 200, 3, 58, "Text",ExpressionUUID->"c9b067a2-feea-4117-b6e3-e6f4a3bf44eb"],
-Cell[887, 29, 791, 14, 150, "Text",ExpressionUUID->"52a6be59-d057-4dff-ac5f-649bbd860d2f"],
-Cell[1681, 45, 500, 9, 104, "Text",ExpressionUUID->"e21568a7-49e2-4d72-9316-e293ea9ac070"],
-Cell[2184, 56, 327, 8, 30, "Input",ExpressionUUID->"f126382f-88f0-41bc-835d-be6655701752"]
+Cell[580, 22, 101, 0, 68, "Subsection",ExpressionUUID->"a128afc6-35b7-43fd-8da5-175a71c0b21d"],
+Cell[684, 24, 200, 3, 72, "Text",ExpressionUUID->"c9b067a2-feea-4117-b6e3-e6f4a3bf44eb"],
+Cell[887, 29, 791, 14, 216, "Text",ExpressionUUID->"52a6be59-d057-4dff-ac5f-649bbd860d2f"],
+Cell[1681, 45, 500, 9, 187, "Text",ExpressionUUID->"e21568a7-49e2-4d72-9316-e293ea9ac070"],
+Cell[2184, 56, 327, 8, 62, "Input",ExpressionUUID->"f126382f-88f0-41bc-835d-be6655701752"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[2548, 69, 109, 0, 54, "Subsection",ExpressionUUID->"f3c0c75c-ee3f-4fef-b526-60aa215398a4"],
+Cell[2548, 69, 109, 0, 68, "Subsection",ExpressionUUID->"f3c0c75c-ee3f-4fef-b526-60aa215398a4"],
+Cell[2660, 71, 472, 9, 101, "Text",ExpressionUUID->"45ba7a1a-0dd1-4d3d-9e58-efa067427bf2"],
+Cell[3135, 82, 140, 2, 43, "Text",ExpressionUUID->"89a9b201-6610-40b9-b8cc-b10b5092de0c"],
+Cell[3278, 86, 122, 0, 43, "Text",ExpressionUUID->"d73ac2d7-2199-42f4-a532-f4312a8fcc3c"],
 Cell[CellGroupData[{
-Cell[2682, 73, 109, 0, 45, "Subsubsection",ExpressionUUID->"01eb8fd8-c499-4c8f-9e67-9ddeddada0a2"],
-Cell[2794, 75, 103, 0, 35, "Text",ExpressionUUID->"e8ed6464-ce1e-4767-945a-c42b4dbc23b1"],
-Cell[2900, 77, 351, 5, 104, "Text",ExpressionUUID->"7972f68a-5bed-4af1-93a7-67f10e8776c8"],
-Cell[3254, 84, 337, 9, 173, "Text",ExpressionUUID->"5df075dc-faef-49cf-9440-19389036420e"],
-Cell[3594, 95, 251, 4, 58, "Text",ExpressionUUID->"4b9ff5b1-d045-4dc5-a18d-d6bb421ab6c6"],
-Cell[3848, 101, 234, 5, 35, "Text",ExpressionUUID->"09ab2ace-c0f4-42f9-842b-14a39797767f"],
+Cell[3425, 90, 109, 0, 56, "Subsubsection",ExpressionUUID->"01eb8fd8-c499-4c8f-9e67-9ddeddada0a2"],
+Cell[3537, 92, 103, 0, 43, "Text",ExpressionUUID->"e8ed6464-ce1e-4767-945a-c42b4dbc23b1"],
+Cell[3643, 94, 351, 5, 130, "Text",ExpressionUUID->"7972f68a-5bed-4af1-93a7-67f10e8776c8"],
+Cell[3997, 101, 337, 9, 245, "Text",ExpressionUUID->"5df075dc-faef-49cf-9440-19389036420e"],
+Cell[4337, 112, 251, 4, 101, "Text",ExpressionUUID->"4b9ff5b1-d045-4dc5-a18d-d6bb421ab6c6"],
+Cell[4591, 118, 234, 5, 43, "Text",ExpressionUUID->"09ab2ace-c0f4-42f9-842b-14a39797767f"],
 Cell[CellGroupData[{
-Cell[4107, 110, 298, 6, 30, "Input",ExpressionUUID->"851031e9-9744-4464-9523-84716ed41ee9"],
-Cell[4408, 118, 188, 2, 34, "Output",ExpressionUUID->"c8ba4637-e64a-4974-b70c-9f58d8a8e3f0"]
+Cell[4850, 127, 298, 6, 62, "Input",ExpressionUUID->"851031e9-9744-4464-9523-84716ed41ee9"],
+Cell[5151, 135, 188, 2, 67, "Output",ExpressionUUID->"c8ba4637-e64a-4974-b70c-9f58d8a8e3f0"]
 }, Open  ]],
-Cell[4611, 123, 169, 3, 35, "Text",ExpressionUUID->"7503b866-b0a4-4acb-b2fd-393b92fe8d25"],
-Cell[4783, 128, 162, 3, 35, "Text",ExpressionUUID->"f2372ca8-68b3-47dd-9683-d0b99a6c4a83"],
+Cell[5354, 140, 169, 3, 72, "Text",ExpressionUUID->"7503b866-b0a4-4acb-b2fd-393b92fe8d25"],
+Cell[5526, 145, 162, 3, 35, "Text",ExpressionUUID->"f2372ca8-68b3-47dd-9683-d0b99a6c4a83"],
 Cell[CellGroupData[{
-Cell[4970, 135, 462, 9, 52, "Input",ExpressionUUID->"4b45cbfd-12f1-4d76-af5e-a9ae56397082"],
-Cell[5435, 146, 203, 2, 56, "Output",ExpressionUUID->"b20fa54f-e4eb-4443-bb8a-4163fe2f87dd"]
+Cell[5713, 152, 462, 9, 52, "Input",ExpressionUUID->"4b45cbfd-12f1-4d76-af5e-a9ae56397082"],
+Cell[6178, 163, 203, 2, 56, "Output",ExpressionUUID->"b20fa54f-e4eb-4443-bb8a-4163fe2f87dd"]
 }, Open  ]],
-Cell[5653, 151, 245, 6, 58, "Text",ExpressionUUID->"2f4bc48d-d7ec-4cff-81dd-90723c2476ee"]
+Cell[6396, 168, 245, 6, 58, "Text",ExpressionUUID->"2f4bc48d-d7ec-4cff-81dd-90723c2476ee"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[5935, 162, 226, 4, 37, "Subsubsection",ExpressionUUID->"908f8e5f-bc54-4208-8a69-ecf9579b2f53"],
-Cell[6164, 168, 759, 18, 311, "Text",ExpressionUUID->"1a4193e5-fb63-400b-8691-792a6c097d32"],
-Cell[6926, 188, 108, 0, 35, "Text",ExpressionUUID->"e796235c-e110-4cb9-91dd-c87fb18d02b4"],
-Cell[7037, 190, 277, 6, 30, "Input",ExpressionUUID->"1c71c351-07cb-41af-8594-77304b03d5a9"],
-Cell[7317, 198, 175, 3, 35, "Text",ExpressionUUID->"ca8e8830-c482-40f1-bc33-430e79381ac6"]
+Cell[6678, 179, 226, 4, 45, "Subsubsection",ExpressionUUID->"908f8e5f-bc54-4208-8a69-ecf9579b2f53"],
+Cell[6907, 185, 759, 18, 311, "Text",ExpressionUUID->"1a4193e5-fb63-400b-8691-792a6c097d32"],
+Cell[7669, 205, 108, 0, 35, "Text",ExpressionUUID->"e796235c-e110-4cb9-91dd-c87fb18d02b4"],
+Cell[7780, 207, 277, 6, 30, "Input",ExpressionUUID->"1c71c351-07cb-41af-8594-77304b03d5a9"],
+Cell[8060, 215, 175, 3, 35, "Text",ExpressionUUID->"ca8e8830-c482-40f1-bc33-430e79381ac6"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[7529, 206, 276, 4, 37, "Subsubsection",ExpressionUUID->"63e1cb79-991c-436b-82ec-1ff2cdd2dbb1"],
-Cell[7808, 212, 636, 15, 265, "Text",ExpressionUUID->"db0d407a-2da6-41d0-9b86-662594e6a593"],
-Cell[8447, 229, 537, 12, 150, "Text",ExpressionUUID->"6aa9c6d4-a8cb-4393-aadc-f9301cab6d50"],
-Cell[8987, 243, 252, 6, 35, "Text",ExpressionUUID->"cf597b56-bf0f-4364-80dc-96c6dd295f41"],
-Cell[9242, 251, 280, 6, 30, "Input",ExpressionUUID->"f515f3a3-5269-47e9-871c-254a6f157d3c"],
-Cell[9525, 259, 205, 4, 58, "Text",ExpressionUUID->"a179c6c5-1f8f-46f4-b65a-193df61f6870"],
-Cell[9733, 265, 277, 6, 30, "Input",ExpressionUUID->"f6b15d5f-b417-42f4-9cfa-a6ffb2c95ed0"]
+Cell[8272, 223, 276, 4, 45, "Subsubsection",ExpressionUUID->"63e1cb79-991c-436b-82ec-1ff2cdd2dbb1"],
+Cell[8551, 229, 636, 15, 265, "Text",ExpressionUUID->"db0d407a-2da6-41d0-9b86-662594e6a593"],
+Cell[9190, 246, 537, 12, 150, "Text",ExpressionUUID->"6aa9c6d4-a8cb-4393-aadc-f9301cab6d50"],
+Cell[9730, 260, 252, 6, 35, "Text",ExpressionUUID->"cf597b56-bf0f-4364-80dc-96c6dd295f41"],
+Cell[9985, 268, 280, 6, 30, "Input",ExpressionUUID->"f515f3a3-5269-47e9-871c-254a6f157d3c"],
+Cell[10268, 276, 205, 4, 58, "Text",ExpressionUUID->"a179c6c5-1f8f-46f4-b65a-193df61f6870"],
+Cell[10476, 282, 277, 6, 30, "Input",ExpressionUUID->"f6b15d5f-b417-42f4-9cfa-a6ffb2c95ed0"]
 }, Closed]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[10059, 277, 112, 0, 54, "Subsection",ExpressionUUID->"7ebee21d-a78d-44c7-9310-cb1f4df76ef7"],
+Cell[10802, 294, 112, 0, 68, "Subsection",ExpressionUUID->"7ebee21d-a78d-44c7-9310-cb1f4df76ef7"],
 Cell[CellGroupData[{
-Cell[10196, 281, 105, 0, 45, "Subsubsection",ExpressionUUID->"7ab88f83-cbf5-4b2c-adf6-aaf116615d3f"],
-Cell[10304, 283, 199, 3, 58, "Text",ExpressionUUID->"dd56c300-38a3-4d24-8475-fd6a3a22ed23"],
-Cell[10506, 288, 380, 10, 52, "Input",ExpressionUUID->"1d7cb5b8-b9ef-4d83-b69e-7e6d9aa1bf6c"],
-Cell[10889, 300, 103, 0, 35, "Text",ExpressionUUID->"42559dad-2c76-4949-9747-fb96754b651c"],
+Cell[10939, 298, 105, 0, 56, "Subsubsection",ExpressionUUID->"7ab88f83-cbf5-4b2c-adf6-aaf116615d3f"],
+Cell[11047, 300, 199, 3, 72, "Text",ExpressionUUID->"dd56c300-38a3-4d24-8475-fd6a3a22ed23"],
+Cell[11249, 305, 380, 10, 62, "Input",ExpressionUUID->"1d7cb5b8-b9ef-4d83-b69e-7e6d9aa1bf6c"],
+Cell[11632, 317, 103, 0, 43, "Text",ExpressionUUID->"42559dad-2c76-4949-9747-fb96754b651c"],
 Cell[CellGroupData[{
-Cell[11017, 304, 390, 8, 52, "Input",ExpressionUUID->"405c7967-b349-47b1-8e27-5e028c8719f1"],
-Cell[11410, 314, 157, 1, 34, "Output",ExpressionUUID->"23cb3b96-b418-4ba7-8de9-9dca83d25d46"]
+Cell[11760, 321, 390, 8, 94, "Input",ExpressionUUID->"405c7967-b349-47b1-8e27-5e028c8719f1"],
+Cell[12153, 331, 157, 1, 41, "Output",ExpressionUUID->"da1ec6b6-fd72-419a-a791-8f8b2a8b61a0"]
 }, Open  ]],
-Cell[11582, 318, 93, 0, 35, "Text",ExpressionUUID->"ed0f6cd1-df62-4727-8f52-b94ea7934eaa"],
-Cell[11678, 320, 293, 7, 30, "Input",ExpressionUUID->"e32adc6d-106e-4512-8755-767bbbbc4792"],
-Cell[11974, 329, 105, 0, 35, "Text",ExpressionUUID->"6bd89636-53d6-4318-894e-63ddefce951a"],
-Cell[12082, 331, 364, 9, 30, "Input",ExpressionUUID->"1053d118-7213-4dbb-b4dc-8e215810c459"],
-Cell[12449, 342, 100, 0, 35, "Text",ExpressionUUID->"3a3d1bd2-9121-4f36-ba0e-1cf44a925878"],
+Cell[12325, 335, 93, 0, 43, "Text",ExpressionUUID->"ed0f6cd1-df62-4727-8f52-b94ea7934eaa"],
+Cell[12421, 337, 293, 7, 88, "Input",ExpressionUUID->"e32adc6d-106e-4512-8755-767bbbbc4792"],
+Cell[12717, 346, 105, 0, 43, "Text",ExpressionUUID->"6bd89636-53d6-4318-894e-63ddefce951a"],
+Cell[12825, 348, 364, 9, 62, "Input",ExpressionUUID->"1053d118-7213-4dbb-b4dc-8e215810c459"],
+Cell[13192, 359, 100, 0, 43, "Text",ExpressionUUID->"3a3d1bd2-9121-4f36-ba0e-1cf44a925878"],
 Cell[CellGroupData[{
-Cell[12574, 346, 155, 2, 30, "Input",ExpressionUUID->"3ab5f839-05ca-4d29-9724-761dd7084782"],
-Cell[12732, 350, 232, 3, 56, "Output",ExpressionUUID->"1b26d900-50cd-450e-a819-d24bfb65c52c"]
+Cell[13317, 363, 155, 2, 36, "Input",ExpressionUUID->"3ab5f839-05ca-4d29-9724-761dd7084782"],
+Cell[13475, 367, 232, 3, 67, "Output",ExpressionUUID->"90396202-e3d9-4734-98e9-f1987868295c"]
 }, Open  ]],
-Cell[12979, 356, 333, 5, 101, "Text",ExpressionUUID->"dba0cf0d-4a87-46b1-bae5-194367ed0493"]
+Cell[13722, 373, 333, 5, 101, "Text",ExpressionUUID->"dba0cf0d-4a87-46b1-bae5-194367ed0493"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[13349, 366, 121, 0, 37, "Subsubsection",ExpressionUUID->"b437757f-5b61-48c5-b963-5a18c409fc8f"],
-Cell[13473, 368, 142, 2, 35, "Text",ExpressionUUID->"2832ab4c-4450-4532-a309-d073e178598d"],
-Cell[13618, 372, 290, 6, 29, "Input",ExpressionUUID->"97d9e24d-f028-438d-9609-649c61d97148"],
-Cell[13911, 380, 161, 3, 35, "Text",ExpressionUUID->"c9af4357-8880-45ec-95dc-f565a3194766"],
-Cell[14075, 385, 306, 6, 81, "Text",ExpressionUUID->"3a456ec6-010b-44ae-b9f4-a04ee7d32caf"],
-Cell[14384, 393, 409, 6, 104, "Text",ExpressionUUID->"c5b36d48-bb9e-4163-b537-2b6040c0304c"],
+Cell[14092, 383, 119, 0, 45, "Subsubsection",ExpressionUUID->"34ed6358-b785-4f7b-af0d-f08c986028cd"],
+Cell[14214, 385, 177, 3, 72, "Text",ExpressionUUID->"d79707bb-c1b2-4b2e-b3f9-07448c83f563"],
+Cell[14394, 390, 99, 0, 43, "Text",ExpressionUUID->"4a6b0479-b5d2-4c39-82f2-96ebfc40847f"],
+Cell[14496, 392, 276, 7, 36, "Input",ExpressionUUID->"2d65b802-6846-4d06-8c24-7927a619ad36"],
+Cell[14775, 401, 93, 0, 43, "Text",ExpressionUUID->"559e7e0d-04e8-4844-932a-aaba0ab44de9"],
 Cell[CellGroupData[{
-Cell[14818, 403, 114, 1, 29, "Input",ExpressionUUID->"7b128005-ba0a-4b88-92bc-628975cf7968"],
-Cell[14935, 406, 109, 1, 33, "Output",ExpressionUUID->"7bbc5525-b6a6-4b8a-8944-e44948320c0f"]
+Cell[14893, 405, 436, 12, 88, "Input",ExpressionUUID->"389119e3-c06d-4348-a14c-18c1dff54203"],
+Cell[15332, 419, 182, 2, 67, "Output",ExpressionUUID->"9a9d6f8a-f578-4dd3-bc02-1eb7837e7d46"]
 }, Open  ]],
-Cell[15059, 410, 268, 4, 58, "Text",ExpressionUUID->"4743dd77-3517-4b8c-bd9c-8c69f09e6333"]
-}, Closed]],
+Cell[15529, 424, 99, 0, 43, "Text",ExpressionUUID->"4c134813-261d-4d20-a011-4b67af6f9bc1"],
 Cell[CellGroupData[{
-Cell[15364, 419, 119, 0, 37, "Subsubsection",ExpressionUUID->"1fb53ba5-f5fe-4be3-a17d-58f25b5d6ceb"],
-Cell[15486, 421, 330, 8, 35, "Text",ExpressionUUID->"8149c8a0-139b-4dfc-a9da-cf5ef78358ce"],
-Cell[15819, 431, 592, 13, 150, "Text",ExpressionUUID->"4a717956-5e5e-434d-aff1-6e04cdb06d45"],
-Cell[16414, 446, 705, 15, 196, "Text",ExpressionUUID->"7e35ebb8-d6e1-4dc4-ac80-deb8916fc7df"],
-Cell[17122, 463, 149, 2, 35, "Text",ExpressionUUID->"04a008e2-f1ba-4275-9cc9-42c3404fd267"]
-}, Closed]],
-Cell[CellGroupData[{
-Cell[17308, 470, 119, 0, 37, "Subsubsection",ExpressionUUID->"34ed6358-b785-4f7b-af0d-f08c986028cd"],
-Cell[17430, 472, 177, 3, 72, "Text",ExpressionUUID->"d79707bb-c1b2-4b2e-b3f9-07448c83f563"],
-Cell[17610, 477, 99, 0, 43, "Text",ExpressionUUID->"4a6b0479-b5d2-4c39-82f2-96ebfc40847f"],
-Cell[17712, 479, 276, 7, 36, "Input",ExpressionUUID->"2d65b802-6846-4d06-8c24-7927a619ad36"],
-Cell[17991, 488, 93, 0, 43, "Text",ExpressionUUID->"559e7e0d-04e8-4844-932a-aaba0ab44de9"],
-Cell[CellGroupData[{
-Cell[18109, 492, 436, 12, 88, "Input",ExpressionUUID->"389119e3-c06d-4348-a14c-18c1dff54203"],
-Cell[18548, 506, 182, 2, 67, "Output",ExpressionUUID->"651b3591-aa97-4842-86b9-f91971382f6b"]
+Cell[15653, 428, 447, 12, 88, "Input",ExpressionUUID->"34f8c02e-b928-48f8-8523-f821fb0aada1"],
+Cell[16103, 442, 188, 2, 67, "Output",ExpressionUUID->"40ae23d7-13cd-46ba-ab56-b64809974541"]
 }, Open  ]],
-Cell[18745, 511, 99, 0, 43, "Text",ExpressionUUID->"4c134813-261d-4d20-a011-4b67af6f9bc1"],
+Cell[16306, 447, 103, 0, 43, "Text",ExpressionUUID->"a322e256-7cf3-4bbc-8dec-88c9225a13fb"],
 Cell[CellGroupData[{
-Cell[18869, 515, 447, 12, 88, "Input",ExpressionUUID->"34f8c02e-b928-48f8-8523-f821fb0aada1"],
-Cell[19319, 529, 188, 2, 67, "Output",ExpressionUUID->"c0bd9539-90d8-4081-bb98-65721612baf5"]
+Cell[16434, 451, 513, 13, 138, "Input",ExpressionUUID->"704a1be5-c475-44f6-8987-f5adca69b06e"],
+Cell[16950, 466, 194, 2, 67, "Output",ExpressionUUID->"8c89f15c-05cf-40a8-be8c-d8d9b05043a6"]
 }, Open  ]],
-Cell[19522, 534, 103, 0, 43, "Text",ExpressionUUID->"a322e256-7cf3-4bbc-8dec-88c9225a13fb"],
+Cell[17159, 471, 98, 0, 43, "Text",ExpressionUUID->"073fa7c7-5e7a-42e7-9129-e4c33035745e"],
 Cell[CellGroupData[{
-Cell[19650, 538, 513, 13, 138, "Input",ExpressionUUID->"704a1be5-c475-44f6-8987-f5adca69b06e"],
-Cell[20166, 553, 194, 2, 67, "Output",ExpressionUUID->"a9d9ed1e-ccc6-42c0-8a16-24b3e7644382"]
-}, Open  ]],
-Cell[20375, 558, 98, 0, 43, "Text",ExpressionUUID->"073fa7c7-5e7a-42e7-9129-e4c33035745e"],
-Cell[CellGroupData[{
-Cell[20498, 562, 454, 10, 88, "Input",ExpressionUUID->"d7b697c0-482d-4e4e-8563-fcbc91610247"],
-Cell[20955, 574, 189, 2, 67, "Output",ExpressionUUID->"99b66101-b7ad-4868-bcd9-8eb2633c2c6a"]
+Cell[17282, 475, 498, 12, 113, "Input",ExpressionUUID->"d7b697c0-482d-4e4e-8563-fcbc91610247"],
+Cell[17783, 489, 189, 2, 67, "Output",ExpressionUUID->"be097af1-c02b-49bf-8ca9-9965e2580a89"]
 }, Open  ]]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[21193, 582, 112, 0, 37, "Subsubsection",ExpressionUUID->"c8ab5b56-b2c1-4f79-be2e-1e7d87abc227"],
-Cell[21308, 584, 119, 0, 43, "Text",ExpressionUUID->"08f6297e-0175-418d-a615-cfdce1d8b2c4"],
-Cell[21430, 586, 115, 0, 43, "Text",ExpressionUUID->"74ecbd42-5f55-43cc-a593-f4a0c257a6a2"],
-Cell[21548, 588, 224, 3, 36, "Input",ExpressionUUID->"0faf7db5-2f0e-46bf-a9e6-1b9a2212b2a1"],
-Cell[21775, 593, 121, 0, 43, "Text",ExpressionUUID->"02dfa579-ff87-44ac-b061-3f4ca122f816"],
+Cell[18021, 497, 119, 0, 45, "Subsubsection",ExpressionUUID->"1fb53ba5-f5fe-4be3-a17d-58f25b5d6ceb"],
+Cell[18143, 499, 120, 0, 43, "Text",ExpressionUUID->"db5515a5-7e04-46c9-b6c4-52db86fa062f"],
+Cell[18266, 501, 156, 2, 36, "Input",ExpressionUUID->"3685fdd8-6086-4f9f-bf52-7ef19ac0dea3"],
 Cell[CellGroupData[{
-Cell[21921, 597, 173, 3, 36, "Input",ExpressionUUID->"64b18ca9-49ac-487d-b48a-495f6d8fd8b1"],
-Cell[22097, 602, 201, 4, 67, "Output",ExpressionUUID->"a7909d9d-b282-46a7-a2f8-22087d9f18f0"]
+Cell[18447, 507, 309, 7, 62, "Input",ExpressionUUID->"560e0ffd-e50c-4ed7-87d3-ed2bc57c39f3"],
+Cell[18759, 516, 24458, 494, 91, "Output",ExpressionUUID->"7986f712-037a-4428-b9af-f90c172978e6"]
 }, Open  ]],
-Cell[22313, 609, 256, 4, 101, "Text",ExpressionUUID->"fda6454b-195a-4b34-b1c5-a7963f0c2a90"],
+Cell[43232, 1013, 178, 3, 72, "Text",ExpressionUUID->"04a008e2-f1ba-4275-9cc9-42c3404fd267"]
+}, Closed]],
 Cell[CellGroupData[{
-Cell[22594, 617, 158, 2, 36, "Input",ExpressionUUID->"d12b597f-8f33-4c92-b0d6-12b60d5fb449"],
-Cell[22755, 621, 201, 4, 67, "Output",ExpressionUUID->"ca77980a-1483-4705-8171-0ee7b04c50d9"]
+Cell[43447, 1021, 112, 0, 45, "Subsubsection",ExpressionUUID->"c8ab5b56-b2c1-4f79-be2e-1e7d87abc227"],
+Cell[43562, 1023, 119, 0, 43, "Text",ExpressionUUID->"08f6297e-0175-418d-a615-cfdce1d8b2c4"],
+Cell[43684, 1025, 115, 0, 43, "Text",ExpressionUUID->"74ecbd42-5f55-43cc-a593-f4a0c257a6a2"],
+Cell[43802, 1027, 224, 3, 36, "Input",ExpressionUUID->"0faf7db5-2f0e-46bf-a9e6-1b9a2212b2a1"],
+Cell[44029, 1032, 121, 0, 43, "Text",ExpressionUUID->"02dfa579-ff87-44ac-b061-3f4ca122f816"],
+Cell[CellGroupData[{
+Cell[44175, 1036, 173, 3, 36, "Input",ExpressionUUID->"64b18ca9-49ac-487d-b48a-495f6d8fd8b1"],
+Cell[44351, 1041, 288, 5, 93, "Output",ExpressionUUID->"6427c854-bbda-4b1a-9f6a-a1733a8d557d"]
 }, Open  ]],
-Cell[22971, 628, 109, 0, 43, "Text",ExpressionUUID->"d0a94687-6a60-48d2-8fa9-2c69e0a8d395"],
+Cell[44654, 1049, 256, 4, 101, "Text",ExpressionUUID->"fda6454b-195a-4b34-b1c5-a7963f0c2a90"],
 Cell[CellGroupData[{
-Cell[23105, 632, 178, 3, 36, "Input",ExpressionUUID->"263402d4-9eb2-4f2f-9d5b-4c46bbdb3569"],
-Cell[23286, 637, 189, 2, 67, "Output",ExpressionUUID->"2aac2361-cd6e-40e6-b3f4-088f6d775e7a"]
+Cell[44935, 1057, 158, 2, 36, "Input",ExpressionUUID->"d12b597f-8f33-4c92-b0d6-12b60d5fb449"],
+Cell[45096, 1061, 201, 4, 67, "Output",ExpressionUUID->"63b7a168-ef8d-4eb2-9331-5168ebdde886"]
+}, Open  ]],
+Cell[45312, 1068, 109, 0, 43, "Text",ExpressionUUID->"d0a94687-6a60-48d2-8fa9-2c69e0a8d395"],
+Cell[CellGroupData[{
+Cell[45446, 1072, 178, 3, 36, "Input",ExpressionUUID->"263402d4-9eb2-4f2f-9d5b-4c46bbdb3569"],
+Cell[45627, 1077, 189, 2, 67, "Output",ExpressionUUID->"7a3985f4-e10d-49fc-8c8c-7fe9ad619120"]
 }, Open  ]]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[23524, 645, 97, 0, 37, "Subsubsection",ExpressionUUID->"15f26c59-6d19-4abb-8b3a-929d6494e0fc"],
-Cell[23624, 647, 464, 9, 158, "Text",ExpressionUUID->"df904a15-942d-4fd6-b8a9-646909e176f6"],
-Cell[24091, 658, 2085, 57, 498, "Input",ExpressionUUID->"5495cc52-950c-4795-90dc-4d3e2b722627"],
-Cell[26179, 717, 321, 5, 101, "Text",ExpressionUUID->"e02e80c6-332e-4b84-b5ad-309fb2b94771"],
-Cell[26503, 724, 109, 1, 36, "Input",ExpressionUUID->"29027f99-4065-427d-a57c-28fb15456f1b"],
-Cell[26615, 727, 327, 7, 62, "Input",ExpressionUUID->"3255c058-aca5-465c-b567-9b51c0b53e7c"],
+Cell[45865, 1085, 115, 0, 45, "Subsubsection",ExpressionUUID->"db5330f1-ad02-4660-96a3-f9da5a8b4ca4"],
+Cell[45983, 1087, 141, 2, 43, "Text",ExpressionUUID->"17ec6fe5-c335-4a0b-8158-62421b03129c"],
 Cell[CellGroupData[{
-Cell[26967, 738, 175, 3, 36, "Input",ExpressionUUID->"e281ad8c-bfab-4e5a-aa80-5d3e982e9ccd"],
-Cell[27145, 743, 159, 2, 41, "Output",ExpressionUUID->"44d531a3-803c-46a9-94e6-79ebf14c6e6c"]
+Cell[46149, 1093, 159, 2, 36, "Input",ExpressionUUID->"cc166fd1-4353-441d-be91-cc95f5d4f27e"],
+Cell[46311, 1097, 201, 4, 67, "Output",ExpressionUUID->"a3b6d248-3280-4d14-ba09-12e0a434a9be"]
+}, Open  ]],
+Cell[46527, 1104, 108, 0, 43, "Text",ExpressionUUID->"5628d5cd-e635-4742-b9ab-41231f72d924"],
+Cell[46638, 1106, 160, 2, 36, "Input",ExpressionUUID->"0d5da820-91de-4cab-ab78-66869c70cf0a"],
+Cell[CellGroupData[{
+Cell[46823, 1112, 124, 1, 36, "Input",ExpressionUUID->"c6bd01dd-3c26-4b80-8dd0-5cf0ae447158"],
+Cell[46950, 1115, 119, 1, 41, "Output",ExpressionUUID->"537af6aa-271d-4a2c-9511-eba7d34ae01b"]
 }, Open  ]]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[27353, 751, 92, 0, 37, "Subsubsection",ExpressionUUID->"fc7167bb-4fc5-4e85-a613-33f5b4ead6a6"],
-Cell[27448, 753, 160, 2, 36, "Input",ExpressionUUID->"1c5134cd-1298-4e20-81a2-7ba2522a2ac3"],
+Cell[47118, 1122, 121, 0, 45, "Subsubsection",ExpressionUUID->"b437757f-5b61-48c5-b963-5a18c409fc8f"],
+Cell[47242, 1124, 142, 2, 43, "Text",ExpressionUUID->"2832ab4c-4450-4532-a309-d073e178598d"],
+Cell[47387, 1128, 290, 6, 62, "Input",ExpressionUUID->"97d9e24d-f028-438d-9609-649c61d97148"],
+Cell[47680, 1136, 161, 3, 72, "Text",ExpressionUUID->"c9af4357-8880-45ec-95dc-f565a3194766"],
+Cell[47844, 1141, 306, 6, 101, "Text",ExpressionUUID->"3a456ec6-010b-44ae-b9f4-a04ee7d32caf"],
+Cell[48153, 1149, 409, 6, 158, "Text",ExpressionUUID->"c5b36d48-bb9e-4163-b537-2b6040c0304c"],
 Cell[CellGroupData[{
-Cell[27633, 759, 190, 2, 36, "Input",ExpressionUUID->"4891fc0e-e483-414c-9037-1eb43a25ca28"],
-Cell[27826, 763, 119, 1, 41, "Output",ExpressionUUID->"04b4fe08-b8df-4d2b-8c14-3a1b8d9b3063"]
+Cell[48587, 1159, 114, 1, 36, "Input",ExpressionUUID->"7b128005-ba0a-4b88-92bc-628975cf7968"],
+Cell[48704, 1162, 109, 1, 41, "Output",ExpressionUUID->"7bbc5525-b6a6-4b8a-8944-e44948320c0f"]
 }, Open  ]],
+Cell[48828, 1166, 268, 4, 101, "Text",ExpressionUUID->"4743dd77-3517-4b8c-bd9c-8c69f09e6333"]
+}, Closed]],
 Cell[CellGroupData[{
-Cell[27982, 769, 175, 3, 36, "Input",ExpressionUUID->"203492d9-8576-4ae4-82c6-8a9c7ca2e53c"],
-Cell[28160, 774, 159, 2, 41, "Output",ExpressionUUID->"d4b9d9e4-f26e-4a7b-a625-b5214ab5b101"]
-}, Open  ]],
+Cell[49133, 1175, 97, 0, 45, "Subsubsection",ExpressionUUID->"15f26c59-6d19-4abb-8b3a-929d6494e0fc"],
+Cell[49233, 1177, 464, 9, 158, "Text",ExpressionUUID->"df904a15-942d-4fd6-b8a9-646909e176f6"],
+Cell[49700, 1188, 2085, 57, 498, "Input",ExpressionUUID->"5495cc52-950c-4795-90dc-4d3e2b722627"],
+Cell[51788, 1247, 321, 5, 101, "Text",ExpressionUUID->"e02e80c6-332e-4b84-b5ad-309fb2b94771"],
+Cell[52112, 1254, 109, 1, 36, "Input",ExpressionUUID->"29027f99-4065-427d-a57c-28fb15456f1b"],
+Cell[52224, 1257, 327, 7, 62, "Input",ExpressionUUID->"3255c058-aca5-465c-b567-9b51c0b53e7c"],
 Cell[CellGroupData[{
-Cell[28356, 781, 162, 2, 36, "Input",ExpressionUUID->"05def6ba-91a0-4e69-92bb-ffae9b68a1cb"],
-Cell[28521, 785, 110, 1, 41, "Output",ExpressionUUID->"96e3513a-b454-4290-9beb-2ccae40b39f0"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[28668, 791, 179, 3, 36, "Input",ExpressionUUID->"0ed5ab37-9075-4dc7-8d7c-520c5d1e783e"],
-Cell[28850, 796, 182, 3, 41, "Output",ExpressionUUID->"7e407160-2f9f-44f4-98ab-dde571f18452"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[29069, 804, 208, 4, 36, "Input",ExpressionUUID->"33c9e9bb-130a-4a08-84b4-d582f6157ab1"],
-Cell[29280, 810, 107, 1, 41, "Output",ExpressionUUID->"acef1292-3fa2-4209-982b-c80fc662a5b7"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[29424, 816, 154, 2, 36, "Input",ExpressionUUID->"df18c87f-76a7-432a-970b-a8333cf21d36"],
-Cell[29581, 820, 124, 2, 41, "Output",ExpressionUUID->"df8021fb-3712-4b04-8b37-c09b78c1b590"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[29742, 827, 265, 6, 36, "Input",ExpressionUUID->"b8b5a512-4e15-4e4f-ad99-13b555b1ad95"],
-Cell[30010, 835, 159, 2, 41, "Output",ExpressionUUID->"321db9e4-d8d1-4490-b05a-921605f26e15"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[30206, 842, 205, 4, 36, "Input",ExpressionUUID->"be8ec323-b075-4811-9207-b242f9d1ebc0"],
-Cell[30414, 848, 546, 18, 67, "Output",ExpressionUUID->"0b222640-a95f-4767-96c5-9444b992d182"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[30997, 871, 154, 2, 36, "Input",ExpressionUUID->"eaf9a799-5635-4822-b6b7-c76a8d5f1385"],
-Cell[31154, 875, 9819, 165, 474, "Output",ExpressionUUID->"198cd35f-59e0-4929-94f7-0312fe48163d"]
+Cell[52576, 1268, 175, 3, 36, "Input",ExpressionUUID->"e281ad8c-bfab-4e5a-aa80-5d3e982e9ccd"],
+Cell[52754, 1273, 159, 2, 41, "Output",ExpressionUUID->"44d531a3-803c-46a9-94e6-79ebf14c6e6c"]
 }, Open  ]]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[41022, 1046, 173, 3, 37, "Subsubsection",ExpressionUUID->"fe3eb117-ee5c-495e-873d-0e583133b946"],
-Cell[41198, 1051, 316, 8, 72, "Text",ExpressionUUID->"23ccc69e-92f7-4964-acb9-f33751953da7"],
-Cell[41517, 1061, 326, 11, 72, "Text",ExpressionUUID->"b8e595c5-1086-49cb-b726-853c46473db9"],
-Cell[41846, 1074, 354, 6, 62, "Input",ExpressionUUID->"646aad41-106c-4e6c-bd20-873d7b0583c8"],
-Cell[42203, 1082, 183, 3, 43, "Text",ExpressionUUID->"44d56105-93e4-4a36-9ce2-8612beef2c1b"],
+Cell[52962, 1281, 92, 0, 45, "Subsubsection",ExpressionUUID->"fc7167bb-4fc5-4e85-a613-33f5b4ead6a6"],
+Cell[53057, 1283, 160, 2, 36, "Input",ExpressionUUID->"1c5134cd-1298-4e20-81a2-7ba2522a2ac3"],
 Cell[CellGroupData[{
-Cell[42411, 1089, 469, 10, 88, "Input",ExpressionUUID->"1226e2bf-ea85-43ca-a9ef-49d46611ac16"],
-Cell[42883, 1101, 10547, 217, 111, "Output",ExpressionUUID->"8369b30e-93bf-4e91-847e-bed09e93868d"]
+Cell[53242, 1289, 190, 2, 36, "Input",ExpressionUUID->"4891fc0e-e483-414c-9037-1eb43a25ca28"],
+Cell[53435, 1293, 119, 1, 41, "Output",ExpressionUUID->"04b4fe08-b8df-4d2b-8c14-3a1b8d9b3063"]
 }, Open  ]],
-Cell[53445, 1321, 177, 3, 43, "Text",ExpressionUUID->"f3e6600d-9fcf-446e-b62f-9bb2d24e7464"],
 Cell[CellGroupData[{
-Cell[53647, 1328, 173, 3, 36, "Input",ExpressionUUID->"0aa55af7-295d-435a-b028-92da4a18524f"],
-Cell[53823, 1333, 108, 1, 41, "Output",ExpressionUUID->"bf979d05-617c-4bc3-885f-b5ebbb2bfeb3"]
+Cell[53591, 1299, 175, 3, 36, "Input",ExpressionUUID->"203492d9-8576-4ae4-82c6-8a9c7ca2e53c"],
+Cell[53769, 1304, 159, 2, 41, "Output",ExpressionUUID->"d4b9d9e4-f26e-4a7b-a625-b5214ab5b101"]
 }, Open  ]],
-Cell[53946, 1337, 232, 6, 43, "Text",ExpressionUUID->"b4bb07a5-fe72-4516-988a-ec4ab0ca2bee"],
-Cell[54181, 1345, 1402, 37, 341, "Input",ExpressionUUID->"e7f887ee-5d1f-4df3-80f3-55dfa0ac0f2f"],
-Cell[55586, 1384, 170, 3, 43, "Text",ExpressionUUID->"dfc2878e-3c61-4bff-bc99-8c58b17381e1"],
 Cell[CellGroupData[{
-Cell[55781, 1391, 211, 4, 36, "Input",ExpressionUUID->"462a49ca-f68d-4de3-bbbb-eacf790769c6"],
-Cell[55995, 1397, 60392, 1157, 125, "Output",ExpressionUUID->"7ec20137-3617-4ce9-adc2-bb482872f4af"]
+Cell[53965, 1311, 162, 2, 36, "Input",ExpressionUUID->"05def6ba-91a0-4e69-92bb-ffae9b68a1cb"],
+Cell[54130, 1315, 110, 1, 41, "Output",ExpressionUUID->"96e3513a-b454-4290-9beb-2ccae40b39f0"]
 }, Open  ]],
-Cell[116402, 2557, 181, 3, 43, "Text",ExpressionUUID->"c45033d9-83b4-46f1-b48d-817919148a52"],
 Cell[CellGroupData[{
-Cell[116608, 2564, 154, 2, 36, "Input",ExpressionUUID->"b797b04b-3bc9-4f3a-b0fd-d9522bd732dd"],
-Cell[116765, 2568, 16865, 355, 840, "Output",ExpressionUUID->"67cbe195-00e2-4b83-93bc-405f87dc258f"]
+Cell[54277, 1321, 179, 3, 36, "Input",ExpressionUUID->"0ed5ab37-9075-4dc7-8d7c-520c5d1e783e"],
+Cell[54459, 1326, 182, 3, 41, "Output",ExpressionUUID->"7e407160-2f9f-44f4-98ab-dde571f18452"]
 }, Open  ]],
-Cell[133645, 2926, 155, 3, 43, "Text",ExpressionUUID->"f8fb2889-3dce-4d31-9c58-2e8d901f69f8"],
 Cell[CellGroupData[{
-Cell[133825, 2933, 191, 4, 36, "Input",ExpressionUUID->"5b37734f-0f61-41cd-a4d1-33f06b2b1897"],
-Cell[134019, 2939, 841, 17, 133, "Output",ExpressionUUID->"e757ab51-c722-415a-be8d-77e285fc823c"]
+Cell[54678, 1334, 208, 4, 36, "Input",ExpressionUUID->"33c9e9bb-130a-4a08-84b4-d582f6157ab1"],
+Cell[54889, 1340, 107, 1, 41, "Output",ExpressionUUID->"acef1292-3fa2-4209-982b-c80fc662a5b7"]
 }, Open  ]],
-Cell[134875, 2959, 175, 3, 43, "Text",ExpressionUUID->"58e8f075-53dc-452e-b294-3720eaa61c73"],
 Cell[CellGroupData[{
-Cell[135075, 2966, 163, 2, 36, "Input",ExpressionUUID->"3e50934a-501c-4fe4-9ab9-6cf5b927942b"],
-Cell[135241, 2970, 452, 10, 93, "Output",ExpressionUUID->"aecdf813-fb6d-488f-ada6-4f0f647e8f43"]
+Cell[55033, 1346, 154, 2, 36, "Input",ExpressionUUID->"df18c87f-76a7-432a-970b-a8333cf21d36"],
+Cell[55190, 1350, 124, 2, 41, "Output",ExpressionUUID->"df8021fb-3712-4b04-8b37-c09b78c1b590"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[55351, 1357, 265, 6, 36, "Input",ExpressionUUID->"b8b5a512-4e15-4e4f-ad99-13b555b1ad95"],
+Cell[55619, 1365, 159, 2, 41, "Output",ExpressionUUID->"321db9e4-d8d1-4490-b05a-921605f26e15"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[55815, 1372, 205, 4, 36, "Input",ExpressionUUID->"be8ec323-b075-4811-9207-b242f9d1ebc0"],
+Cell[56023, 1378, 546, 18, 67, "Output",ExpressionUUID->"0b222640-a95f-4767-96c5-9444b992d182"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[56606, 1401, 154, 2, 36, "Input",ExpressionUUID->"eaf9a799-5635-4822-b6b7-c76a8d5f1385"],
+Cell[56763, 1405, 9819, 165, 474, "Output",ExpressionUUID->"198cd35f-59e0-4929-94f7-0312fe48163d"]
+}, Open  ]]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[66631, 1576, 173, 3, 45, "Subsubsection",ExpressionUUID->"fe3eb117-ee5c-495e-873d-0e583133b946"],
+Cell[66807, 1581, 316, 8, 72, "Text",ExpressionUUID->"23ccc69e-92f7-4964-acb9-f33751953da7"],
+Cell[67126, 1591, 181, 5, 43, "Text",ExpressionUUID->"b8e595c5-1086-49cb-b726-853c46473db9"],
+Cell[67310, 1598, 149, 2, 36, "Input",ExpressionUUID->"243a98e9-d819-4688-bffc-e3d8ab688be3"],
+Cell[67462, 1602, 140, 2, 43, "Text",ExpressionUUID->"44d56105-93e4-4a36-9ce2-8612beef2c1b"],
+Cell[CellGroupData[{
+Cell[67627, 1608, 436, 11, 113, "Input",ExpressionUUID->"1226e2bf-ea85-43ca-a9ef-49d46611ac16"],
+Cell[68066, 1621, 10534, 217, 111, "Output",ExpressionUUID->"ae8a15a6-cebc-42df-ad52-b8f89c41d3e6"]
+}, Open  ]],
+Cell[78615, 1841, 177, 3, 43, "Text",ExpressionUUID->"f3e6600d-9fcf-446e-b62f-9bb2d24e7464"],
+Cell[CellGroupData[{
+Cell[78817, 1848, 173, 3, 36, "Input",ExpressionUUID->"0aa55af7-295d-435a-b028-92da4a18524f"],
+Cell[78993, 1853, 108, 1, 41, "Output",ExpressionUUID->"da012aa9-5eec-416b-8cd4-1ccc49bd1017"]
+}, Open  ]],
+Cell[79116, 1857, 232, 6, 43, "Text",ExpressionUUID->"b4bb07a5-fe72-4516-988a-ec4ab0ca2bee"],
+Cell[79351, 1865, 1402, 37, 341, "Input",ExpressionUUID->"e7f887ee-5d1f-4df3-80f3-55dfa0ac0f2f"],
+Cell[80756, 1904, 170, 3, 43, "Text",ExpressionUUID->"dfc2878e-3c61-4bff-bc99-8c58b17381e1"],
+Cell[CellGroupData[{
+Cell[80951, 1911, 211, 4, 36, "Input",ExpressionUUID->"462a49ca-f68d-4de3-bbbb-eacf790769c6"],
+Cell[81165, 1917, 60395, 1157, 125, "Output",ExpressionUUID->"97a012bd-b0d5-4333-9e71-e4d50668ac4c"]
+}, Open  ]],
+Cell[141575, 3077, 181, 3, 43, "Text",ExpressionUUID->"c45033d9-83b4-46f1-b48d-817919148a52"],
+Cell[CellGroupData[{
+Cell[141781, 3084, 154, 2, 36, "Input",ExpressionUUID->"b797b04b-3bc9-4f3a-b0fd-d9522bd732dd"],
+Cell[141938, 3088, 16865, 355, 840, "Output",ExpressionUUID->"8e6a124d-196e-4307-bc66-79c59b1dbcb6"]
+}, Open  ]],
+Cell[158818, 3446, 155, 3, 43, "Text",ExpressionUUID->"f8fb2889-3dce-4d31-9c58-2e8d901f69f8"],
+Cell[CellGroupData[{
+Cell[158998, 3453, 191, 4, 36, "Input",ExpressionUUID->"5b37734f-0f61-41cd-a4d1-33f06b2b1897"],
+Cell[159192, 3459, 841, 17, 133, "Output",ExpressionUUID->"4617d20a-a571-4be7-8680-28121b6c371d"]
+}, Open  ]],
+Cell[160048, 3479, 175, 3, 43, "Text",ExpressionUUID->"58e8f075-53dc-452e-b294-3720eaa61c73"],
+Cell[CellGroupData[{
+Cell[160248, 3486, 163, 2, 36, "Input",ExpressionUUID->"3e50934a-501c-4fe4-9ab9-6cf5b927942b"],
+Cell[160414, 3490, 452, 10, 93, "Output",ExpressionUUID->"9af14c4a-b698-4f60-8a60-794f9b7575f0"]
 }, Open  ]]
 }, Closed]]
 }, Open  ]]

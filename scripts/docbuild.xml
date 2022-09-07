@@ -116,7 +116,7 @@ or set Mathematica.DocumentationBuild.createHTML.setting to Mathematica.Document
 	</target>
 	
 	<target name="setupPaclet" if="buildNBDocs">
-		<copy file="${basedir}/PacletInfo.m" todir="${dist}/${pacletContainer}" overwrite="true" />
+		<copy file="${basedir}/OpenCascadeLink/PacletInfo.m" todir="${dist}/${pacletContainer}" overwrite="true" />
 		<copy todir="${dist}/${pacletContainer}/OpenCascadeLink/" overwrite="true" >
 		<fileset dir="${basedir}/">
 			<include name='SupportFiles/*' />
