@@ -160,11 +160,8 @@ Test[
 	{Graphics3D, "Rendering Errors" ->{}}
 	,
 	TestID->"OpenCascadeLink_Docs_ShapeProcessing-20200311-I8W6L2-bug-410647"
-]]
-
-TestExecute[
-	DeleteFile[fileName];
-]
+];
+DeleteFile[fileName]]
 
 With[{path = FileNameJoin[{DirectoryName[$CurrentFile], "Data/spikey.stl"}]},
 Test[
@@ -193,7 +190,9 @@ Test[
 	{Graphics3D, "Rendering Errors" ->{}}
 	,
 	TestID->"OpenCascadeLink_Docs_ShapeProcessing-20200311-I4H4N4"
-]]
+];
+
+DeleteFile[fileName]]
 
 With[{path = FileNameJoin[{DirectoryName[$CurrentFile], "Data/screw.step"}]},
 Test[
@@ -205,11 +204,6 @@ Test[
 	,
 	TestID->"OpenCascadeLink_Docs_ShapeProcessing-20200311-V8O1O7"
 ]]
-
-
-TestExecute[
-	DeleteFile[fileName];
-]
 
 (* BRep *)
 
@@ -227,7 +221,8 @@ Test[
 	{Graphics3D, "Rendering Errors" ->{}}
 	,
 	TestID->"OpenCascadeLink_Docs_ShapeProcessing-20200311-P4I1W0"
-]]
+];
+DeleteFile[fileName]]
 
 With[{path = FileNameJoin[{DirectoryName[$CurrentFile], "Data/Bottom.brep"}]},
 Test[
@@ -239,10 +234,5 @@ Test[
 	,
 	TestID->"OpenCascadeLink_Docs_ShapeProcessing-20200311-U1I7U8"
 ]]
-
-
-TestExecute[
-	DeleteFile[fileName];
-]
 
 CleaAll["Global`*"];
