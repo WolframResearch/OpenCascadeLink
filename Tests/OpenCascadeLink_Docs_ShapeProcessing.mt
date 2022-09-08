@@ -147,7 +147,7 @@ Test[
 
 (* STL *)
 
-With[{fileName = FileNameJoin[{DirectoryName[$CurrentFile], "Data/test.stl"}]},
+With[{fileName = FileNameJoin[{$TemporaryDirectory, "test.stl"}]},
 Test[
 	shape = OpenCascadeShape[Ball[{1, 0, 0}]];
 	OpenCascadeShapeExport[fileName, shape];
@@ -176,7 +176,7 @@ Test[
 
 (* STEP *)
 
-With[{fileName = FileNameJoin[{DirectoryName[$CurrentFile], "Data/test.stp"}]},
+With[{fileName = FileNameJoin[{$TemporaryDirectory, "test.stp"}]},
 Test[
 	shape = OpenCascadeShape[Cone[{{0, 0, 0}, {0, 0, 1}}, 1]];
 	OpenCascadeShapeExport[fileName, shape];
@@ -207,7 +207,7 @@ Test[
 
 (* BRep *)
 
-With[{fileName = FileNameJoin[{DirectoryName[$CurrentFile], "Data/test.brep"}]},
+With[{fileName = FileNameJoin[{$TemporaryDirectory, "test.brep"}]},
 Test[
 	shape = OpenCascadeShape[Cone[{{0, 0, 0}, {0, 0, 1}}, 1]];
 	OpenCascadeShapeExport[fileName, shape];
