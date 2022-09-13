@@ -1297,6 +1297,11 @@ DLLEXPORT int makeDifference(WolframLibraryData libData, mint Argc, MArgument *A
 	TopoDS_Shape *instance1 = get_ocShapeInstance( id1);
 	TopoDS_Shape *instance2 = get_ocShapeInstance( id2);
 
+	mint opt = MArgument_getInteger(Args[3]);
+
+	Standard_Boolean simplifyQ = Standard_False;
+	if (opt & (1 << 1)) simplifyQ = Standard_True;
+
 	if (instance == NULL || instance1 == NULL || instance2 == NULL ||
 		instance1->IsNull() || instance2->IsNull())
 	{
@@ -1319,6 +1324,16 @@ DLLEXPORT int makeDifference(WolframLibraryData libData, mint Argc, MArgument *A
 		return 0;
 	}
 
+	if (simplifyQ) {
+		try {
+			booleanOP.SimplifyResult();
+		}
+		catch (const Standard_Failure& theErr) {
+			MArgument_setInteger(res, ERROR);
+			return 0;
+		}
+	}
+
 	MArgument_setInteger(res, 0);
 	return 0;
 }
@@ -1328,6 +1343,11 @@ DLLEXPORT int makeIntersection(WolframLibraryData libData, mint Argc, MArgument 
 	mint id  = MArgument_getInteger(Args[0]);
 	mint id1 = MArgument_getInteger(Args[1]);
 	mint id2 = MArgument_getInteger(Args[2]);
+
+	mint opt = MArgument_getInteger(Args[3]);
+
+	Standard_Boolean simplifyQ = Standard_False;
+	if (opt & (1 << 1)) simplifyQ = Standard_True;
 
 	TopoDS_Shape *instance  = get_ocShapeInstance( id);
 	TopoDS_Shape *instance1 = get_ocShapeInstance( id1);
@@ -1345,6 +1365,16 @@ DLLEXPORT int makeIntersection(WolframLibraryData libData, mint Argc, MArgument 
 	if (!booleanOP.IsDone() || booleanOP.HasErrors()) {
 		MArgument_setInteger(res, ERROR);
 		return 0;
+	}
+
+	if (simplifyQ) {
+		try {
+			booleanOP.SimplifyResult();
+		}
+		catch (const Standard_Failure& theErr) {
+			MArgument_setInteger(res, ERROR);
+			return 0;
+		}
 	}
 
 	TopoDS_Shape shape = booleanOP.Shape();
@@ -1365,6 +1395,11 @@ DLLEXPORT int makeUnion(WolframLibraryData libData, mint Argc, MArgument *Args, 
 	mint id1 = MArgument_getInteger(Args[1]);
 	mint id2 = MArgument_getInteger(Args[2]);
 
+	mint opt = MArgument_getInteger(Args[3]);
+
+	Standard_Boolean simplifyQ = Standard_False;
+	if (opt & (1 << 1)) simplifyQ = Standard_True;
+
 	TopoDS_Shape *instance  = get_ocShapeInstance( id);
 	TopoDS_Shape *instance1 = get_ocShapeInstance( id1);
 	TopoDS_Shape *instance2 = get_ocShapeInstance( id2);
@@ -1381,6 +1416,16 @@ DLLEXPORT int makeUnion(WolframLibraryData libData, mint Argc, MArgument *Args, 
 	if (!booleanOP.IsDone() || booleanOP.HasErrors()) {
 		MArgument_setInteger(res, ERROR);
 		return 0;
+	}
+
+	if (simplifyQ) {
+		try {
+			booleanOP.SimplifyResult();
+		}
+		catch (const Standard_Failure& theErr) {
+			MArgument_setInteger(res, ERROR);
+			return 0;
+		}
 	}
 
 	TopoDS_Shape shape = booleanOP.Shape();

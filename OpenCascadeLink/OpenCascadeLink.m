@@ -109,6 +109,13 @@ Options[OpenCascadeShapeLoft] = Sort[ {
 	"CheckCompatibility" -> Automatic
 }];
 
+Options[OpenCascadeShapeBooleanRegion] = 
+Options[OpenCascadeShapeDifference] =
+Options[OpenCascadeShapeIntersection] =
+Options[OpenCascadeShapeUnion] = Sort[ {
+	"SimplifyResult" -> Automatic
+}];
+
 Begin["`Private`"]
 
 
@@ -174,9 +181,9 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	makeSolidFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSolid", {Integer, {Integer, 1, "Shared"}}, Integer];
 	makeWireFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeWire", {Integer, {Integer, 1, "Shared"}}, Integer];
 
-	makeDifferenceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeDifference", {Integer, Integer, Integer}, Integer];
-	makeIntersectionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeIntersection", {Integer, Integer, Integer}, Integer];
-	makeUnionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeUnion", {Integer, Integer, Integer}, Integer];
+	makeDifferenceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeDifference", {Integer, Integer, Integer, Integer}, Integer];
+	makeIntersectionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeIntersection", {Integer, Integer, Integer, Integer}, Integer];
+	makeUnionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeUnion", {Integer, Integer, Integer, Integer}, Integer];
 	makeDefeaturingFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeDefeaturing", {Integer, Integer, {Integer, 1, "Shared"}}, Integer];
 	makeSimplifyFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSimplify", {Integer, Integer, {Integer, 1, "Shared"}, {Integer, 1, "Shared"}, Integer, Real, Real}, Integer];
 
@@ -1323,98 +1330,117 @@ OpenCascadeShapeWire[{e}]
 	open cascade Boolean operation
 *)
 
-OpenCascadeShapeDifference[ shape1_] /; 
+OpenCascadeShapeDifference[ shape1_, OptionsPattern[OpenCascadeShapeDifference]] /; 
 	OpenCascadeShapeExpressionQ[shape1] := shape1
 
-OpenCascadeShapeDifference[ shape1_, shape2_] /; And[
+OpenCascadeShapeDifference[ shape1_, shape2_, opts:OptionsPattern[OpenCascadeShapeDifference]] /;
+And[
 	OpenCascadeShapeExpressionQ[shape1],
 	OpenCascadeShapeExpressionQ[shape2]
 ] := Module[
-	{instance, id1, id2, res, origin, radius},
+	{optParam, temp, instance, id1, id2, res, origin, radius},
+
+	optParam = 0;
+
+	temp = OptionValue["SimplifyResult"];
+	If[ temp === True, optParam = BitSet[ optParam, 1]; ];
 
 	instance = OpenCascadeShapeCreate[];
 	id1 = instanceID[ shape1];
 	id2 = instanceID[ shape2];
-	res = makeDifferenceFun[ instanceID[ instance], id1, id2];
+	res = makeDifferenceFun[ instanceID[ instance], id1, id2, optParam];
 	If[ res =!= 0, Return[$Failed, Module]];
 
 	instance
 ]
 
-OpenCascadeShapeDifference[eN__] /;
+OpenCascadeShapeDifference[eN__, opts:OptionsPattern[OpenCascadeShapeDifference]] /;
 	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === True :=
-Fold[OpenCascadeShapeDifference, {eN}]
+Fold[OpenCascadeShapeDifference[##, opts]&, {eN}]
 
-OpenCascadeShapeDifference[{eN__}] /;
+OpenCascadeShapeDifference[{eN__}, opts:OptionsPattern[OpenCascadeShapeDifference]] /;
 	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === True :=
-OpenCascadeShapeDifference[eN];
+OpenCascadeShapeDifference[eN, opts];
 
 
-OpenCascadeShapeIntersection[ shape1_] /; 
+OpenCascadeShapeIntersection[ shape1_, OptionsPattern[OpenCascadeShapeIntersection]] /; 
 	OpenCascadeShapeExpressionQ[shape1] := shape1
 
-OpenCascadeShapeIntersection[ shape1_, shape2_] /; And[
+OpenCascadeShapeIntersection[ shape1_, shape2_, opts:OptionsPattern[OpenCascadeShapeIntersection]] /;
+And[
 	OpenCascadeShapeExpressionQ[shape1],
 	OpenCascadeShapeExpressionQ[shape2]
 ] := Module[
-	{instance, id1, id2, res, origin, radius},
+	{optParam, temp, instance, id1, id2, res, origin, radius},
+
+	optParam = 0;
+
+	temp = OptionValue["SimplifyResult"];
+	If[ temp === True, optParam = BitSet[ optParam, 1]; ];
 
 	instance = OpenCascadeShapeCreate[];
 	id1 = instanceID[ shape1];
 	id2 = instanceID[ shape2];
-	res = makeIntersectionFun[ instanceID[ instance], id1, id2];
+	res = makeIntersectionFun[ instanceID[ instance], id1, id2, optParam];
 	If[ res =!= 0, Return[$Failed, Module]];
 
 	instance
 ]
 
-OpenCascadeShapeIntersection[eN__] /;
+OpenCascadeShapeIntersection[eN__, opts:OptionsPattern[OpenCascadeShapeIntersection]] /;
 	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === True :=
-Fold[OpenCascadeShapeIntersection, {eN}]
+Fold[OpenCascadeShapeIntersection[##, opts]&, {eN}]
 
-OpenCascadeShapeIntersection[{eN__}] /;
+OpenCascadeShapeIntersection[{eN__}, opts:OptionsPattern[OpenCascadeShapeIntersection]] /;
 	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === True :=
-OpenCascadeShapeIntersection[eN]
+OpenCascadeShapeIntersection[eN, opts]
 
 
-OpenCascadeShapeUnion[ shape1_] /; 
+OpenCascadeShapeUnion[ shape1_, OptionsPattern[OpenCascadeShapeUnion]] /; 
 	OpenCascadeShapeExpressionQ[shape1] := shape1
 
-OpenCascadeShapeUnion[shape1_, shape2_] /; And[ 
-		OpenCascadeShapeExpressionQ[shape1],
-		OpenCascadeShapeExpressionQ[shape2]
+OpenCascadeShapeUnion[shape1_, shape2_, opts:OptionsPattern[OpenCascadeShapeUnion]] /;
+And[ 
+	OpenCascadeShapeExpressionQ[shape1],
+	OpenCascadeShapeExpressionQ[shape2]
 ] := Module[
-	{instance, id1, id2, res, origin, radius},
+	{optParam, temp, instance, id1, id2, res, origin, radius},
+
+	optParam = 0;
+
+	temp = OptionValue["SimplifyResult"];
+	If[ temp === True, optParam = BitSet[ optParam, 1]; ];
 
 	instance = OpenCascadeShapeCreate[];
 	id1 = instanceID[ shape1];
 	id2 = instanceID[ shape2];
-	res = makeUnionFun[ instanceID[ instance], id1, id2];
+	res = makeUnionFun[ instanceID[ instance], id1, id2, optParam];
 	If[ res =!= 0, Return[$Failed, Module]];
 
 	instance
 ]
 
-OpenCascadeShapeUnion[eN__] /;
+OpenCascadeShapeUnion[eN__, opts:OptionsPattern[OpenCascadeShapeUnion]] /;
 	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === True :=
-Fold[OpenCascadeShapeUnion, {eN}]
+Fold[OpenCascadeShapeUnion[##, opts]&, {eN}]
 
-OpenCascadeShapeUnion[{eN__}] /;
+OpenCascadeShapeUnion[{eN__}, opts:OptionsPattern[OpenCascadeShapeUnion]] /;
 	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === True :=
-OpenCascadeShapeUnion[eN]
+OpenCascadeShapeUnion[eN, opts]
 
 
-OpenCascadeShapeBooleanRegion[ br_BooleanRegion] /; Length[br] == 2 :=
+OpenCascadeShapeBooleanRegion[ br_BooleanRegion,
+	opts:OptionsPattern[OpenCascadeShapeBooleanRegion]] /; Length[br] == 2 :=
 Module[
 	{booleanFunction, regions},
 
 	booleanFunction = br[[1]] //. {
-		Or :> OpenCascadeShapeUnion,
-		And[s1_, Not[s2_]] :> OpenCascadeShapeDifference[s1, s2],
-		And[Not[s2_], s1_] :> OpenCascadeShapeDifference[s1, s2],
-		And :> OpenCascadeShapeIntersection,
-		Xor[s1_, sn__] :> OpenCascadeShapeUnion @@
-			(OpenCascadeShapeDifference @@ Tuples[{s1, sn}, 2])
+		Or[args__] :> OpenCascadeShapeUnion[args, opts],
+		And[s1_, Not[s2_]] :> OpenCascadeShapeDifference[s1, s2, opts],
+		And[Not[s2_], s1_] :> OpenCascadeShapeDifference[s1, s2, opts],
+		And[args__] :> OpenCascadeShapeIntersection[args, opts],
+		Xor[s1_, sn__] :> OpenCascadeShapeUnion[##, opts]& @@
+			(OpenCascadeShapeDifference[##, opts]& @@ Tuples[{s1, sn}, 2])
 	};
 
 	regions = OpenCascadeShape /@ br[[2]];
