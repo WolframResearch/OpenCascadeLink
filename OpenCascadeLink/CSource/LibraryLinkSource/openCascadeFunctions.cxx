@@ -64,6 +64,10 @@
 #include <STEPControl_Reader.hxx>
 #include <STEPControl_Writer.hxx>
 
+#include <ShapeUpgrade_UnifySameDomain.hxx>
+#include <TopTools_ShapeMapHasher.hxx>
+#include <NCollection_Map.hxx>
+
 
 extern "C" {
 
@@ -92,7 +96,9 @@ extern "C" {
 	DLLEXPORT int makeDifference(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeIntersection(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeUnion(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+
 	DLLEXPORT int makeDefeaturing(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+	DLLEXPORT int makeSimplify(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int makeFillet(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeChamfer(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
@@ -1442,6 +1448,139 @@ DLLEXPORT int makeDefeaturing(WolframLibraryData libData, mint Argc, MArgument *
 	}
 
 	*instance = defeaturing.Shape();
+	MArgument_setInteger(res, 0);
+	return 0;
+}
+
+
+DLLEXPORT int makeSimplify(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+
+	mint id  = MArgument_getInteger(Args[0]);
+	mint id1 = MArgument_getInteger(Args[1]);
+	MTensor e = MArgument_getMTensor(Args[2]);
+	MTensor v = MArgument_getMTensor(Args[3]);
+	mint opt = MArgument_getInteger(Args[4]);
+	mreal linPrecision = MArgument_getReal(Args[5]);
+	mreal angPrecision = MArgument_getReal(Args[6]);
+
+	TopoDS_Shape *instance  = get_ocShapeInstance( id);
+	TopoDS_Shape *instance1 = get_ocShapeInstance( id1);
+
+	if (instance == NULL || instance1 == NULL || instance1->IsNull()) {
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	Standard_Boolean unifyFacesQ = Standard_False;
+	if (opt & (1 << 1)) unifyFacesQ = Standard_True;
+
+	Standard_Boolean unifyEdgesQ = Standard_False;
+	if (opt & (1 << 2)) unifyEdgesQ = Standard_True;
+
+	Standard_Boolean unifyBSplineContactQ = Standard_False;
+	if (opt & (1 << 3)) unifyBSplineContactQ = Standard_True;
+
+	Standard_Boolean allowInternalEdgesQ = Standard_False;
+	if (opt & (1 << 4)) allowInternalEdgesQ = Standard_True;
+
+	Standard_Boolean keepEdgesQ = Standard_False;
+	if (opt & (1 << 5)) keepEdgesQ = Standard_True;
+
+	Standard_Boolean keepVerticesQ = Standard_False;
+	if (opt & (1 << 6)) keepVerticesQ = Standard_True;
+
+	Standard_Real lintol = Precision::Confusion();
+	if (linPrecision != 0.) lintol = (Standard_Real) linPrecision;
+
+	Standard_Real angtol = Precision::Angular();
+	if (angPrecision != 0.) angtol = (Standard_Real) angPrecision;
+
+	TopTools_MapOfShape mos;
+
+	if (keepEdgesQ || keepVerticesQ) {
+		int type, rank, i, iter;
+		const mint* dims;
+		mint* indices;
+
+		if (keepEdgesQ) {
+			/* these are assumed to be sorted */
+			type = libData->MTensor_getType(e);
+			rank = libData->MTensor_getRank(e);
+			dims = libData->MTensor_getDimensions(e);
+
+			if (type != MType_Integer || rank != 1 || dims[0] < 1) {
+				libData->MTensor_disown(e);
+				MArgument_setInteger(res, 0);
+				return LIBRARY_FUNCTION_ERROR;
+			}
+
+			indices = libData->MTensor_getIntegerData(e);
+
+			i = 0;
+			iter = 0;
+			TopExp_Explorer explore(*instance1, TopAbs_EDGE);
+	    	while (explore.More() && (i < dims[0])) {
+				if ( indices[i] == iter) {
+					TopoDS_Edge edge = TopoDS::Edge(explore.Current());
+					mos.Add(edge);
+					i++;
+				};
+				iter++;
+				explore.Next();
+			}
+		}
+
+		if (keepVerticesQ) {
+			/* these are assumed to be sorted */
+			type = libData->MTensor_getType(v);
+			rank = libData->MTensor_getRank(v);
+			dims = libData->MTensor_getDimensions(v);
+
+			if (type != MType_Integer || rank != 1 || dims[0] < 1) {
+				if (keepEdgesQ) {
+					libData->MTensor_disown(e);
+				};
+				libData->MTensor_disown(v);
+				MArgument_setInteger(res, 0);
+				return LIBRARY_FUNCTION_ERROR;
+			}
+
+			indices = libData->MTensor_getIntegerData(v);
+
+			i = 0;
+			iter = 0;
+			TopExp_Explorer explore(*instance1, TopAbs_VERTEX);
+	    	while (explore.More() && (i < dims[0])) {
+				if ( indices[i] == iter) {
+					TopoDS_Vertex vertex = TopoDS::Vertex(explore.Current());
+					mos.Add(vertex);
+					i++;
+				};
+				iter++;
+				explore.Next();
+			}
+		}
+	}
+	
+	ShapeUpgrade_UnifySameDomain unify(*instance1, unifyFacesQ, unifyEdgesQ,
+		unifyBSplineContactQ);
+
+	/* do not work on the original shape */
+	unify.SetSafeInputMode(Standard_True);
+	unify.AllowInternalEdges(allowInternalEdgesQ);
+	unify.SetLinearTolerance(lintol);
+	unify.SetAngularTolerance(angtol);
+
+	if (keepEdgesQ || keepVerticesQ) {
+		unify.KeepShapes(mos);
+	}
+
+	unify.Build();
+
+	/* TODO: unclear how to test the result. Maybe not needed? */
+
+	*instance = unify.Shape();
 	MArgument_setInteger(res, 0);
 	return 0;
 }

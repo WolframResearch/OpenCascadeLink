@@ -26,6 +26,7 @@ OpenCascadeShapeIntersection::usage = "OpenCascadeShapeIntersection[ shape1, sha
 OpenCascadeShapeUnion::usage = "OpenCascadeShapeUnion[ shape1, shape2] returns a new instance of an OpenCascade expression representing the union of the shapes shape1 and shape2.";
 OpenCascadeShapeBooleanRegion::usage = "OpenCascadeShape[ expr] returns a new instance of an OpenCascade expression representing the BooleanRegion expr.";
 OpenCascadeShapeDefeaturing::usage = "OpenCascadeShapeDefeaturing[ shape, {face1, ..}] returns a new instance of an OpenCascade expression with faces faces1,.. removed.";
+OpenCascadeShapeSimplify::usage = "OpenCascadeShapeSimplify[ shape] returns a new instance of an OpenCascade expression with a simplified shape.";
 
 OpenCascadeShapeFillet::usage = "OpenCascadeShapeFillet[ shape, r] returns a new instance of an OpenCascade expression with edges filleted with radius r.";
 OpenCascadeShapeChamfer::usage = "OpenCascadeShapeChamfer[ shape, d] returns a new instance of an OpenCascade expression with edges chamfered with distance d.";
@@ -89,6 +90,18 @@ Options[OpenCascadeShapeSurfaceMeshToBoundaryMesh] = Sort[{
 
 Options[OpenCascadeShapeSewing] = Sort[ {
 	"BuildSolid" -> Automatic
+}];
+
+Options[OpenCascadeShapeSimplify] = Sort[ {
+	"SimplifyFaces" -> Automatic,
+	"SimplifyEdges" -> Automatic,
+	"SimplifyBSplineEdges" -> Automatic,
+	"LinearTolerance" -> Automatic,
+	"AngularTolerance" -> Automatic,
+	"AngularTolerance" -> Automatic,
+	"KeepEdges" -> Automatic,
+	"KeepVertices" -> Automatic,
+	"AllowInternalEdges" -> Automatic
 }];
 
 Options[OpenCascadeShapeLoft] = Sort[ {
@@ -165,6 +178,7 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	makeIntersectionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeIntersection", {Integer, Integer, Integer}, Integer];
 	makeUnionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeUnion", {Integer, Integer, Integer}, Integer];
 	makeDefeaturingFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeDefeaturing", {Integer, Integer, {Integer, 1, "Shared"}}, Integer];
+	makeSimplifyFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSimplify", {Integer, Integer, {Integer, 1, "Shared"}, {Integer, 1, "Shared"}, Integer, Real, Real}, Integer];
 
 	makeFilletFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeFillet", {Integer, Integer, Real, {Integer, 1, "Shared"}}, Integer];
 	makeChamferFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeChamfer", {Integer, Integer, Real, {Integer, 1, "Shared"}}, Integer];
@@ -1427,6 +1441,76 @@ Module[
 	id1 = instanceID[ shape];
 	(* - 1 since C uses 0 index start *)
 	res = makeDefeaturingFun[ instanceID[ instance], id1, fIDs - 1];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instance
+]
+
+OpenCascadeShapeSimplify[shape_,
+	opts:OptionsPattern[OpenCascadeShapeSimplify]] /; 
+OpenCascadeShapeExpressionQ[shape] :=
+Module[
+	{optParam, temp, linPrec, angPrec, eIDs, vIDs, numEdges, numVertices,
+	 instance, id1, res},
+
+	linPrec = N[ OptionValue["LinearTolerance"]];
+	If[ !NumericQ[ linPrec] || linPrec <= 0.,
+		linPrec = 0.;
+	];
+
+	angPrec = N[ OptionValue["AngularTolerance"]];
+	If[ !NumericQ[ angPrec] || angPrec <= 0.,
+		angPrec = 0.;
+	];
+
+	optParam = 0;
+
+	temp = OptionValue["SimplifyFaces"];
+	If[ !BooleanQ[temp], temp = True];
+	If[ temp === True, optParam = BitSet[ optParam, 1]; ];
+
+	temp = OptionValue["SimplifyEdges"];
+	If[ !BooleanQ[temp], temp = True];
+	If[ temp === True, optParam = BitSet[ optParam, 2]; ];
+
+	temp = OptionValue["SimplifyBSplineEdges"];
+	If[ !BooleanQ[temp], temp = False];
+	If[ temp === True, optParam = BitSet[ optParam, 3]; ];
+
+	temp = OptionValue["AllowInternalEdges"];
+	If[ !BooleanQ[temp], temp = False];
+	If[ temp === True, optParam = BitSet[ optParam, 4]; ];
+
+	eIDs = OptionValue["KeepEdges"];
+	If[ VectorQ[eIDs, IntegerQ] && Length[eIDs] > 0,
+		numEdges = getShapeNumberOfEdgesFun[ instanceID[ shape]];
+		eIDs = Sort[ pack[ eIDs]];
+		If[ Max[ eIDs] > numEdges, Return[ shape, Module]; ];
+
+		optParam = BitSet[ optParam, 5];
+	,
+		(* set up a dummy packed array *)
+		eIDs = pack[{0}];
+	];
+
+	vIDs = OptionValue["KeepVertices"];
+	If[ VectorQ[vIDs, IntegerQ] && Length[vIDs] > 0,
+		numVertices = getShapeNumberOfVerticesFun[ instanceID[ shape]];
+		vIDs = Sort[ pack[ vIDs]];
+		If[ Max[ vIDs] > numVertices, Return[ shape, Module]; ];
+
+		optParam = BitSet[ optParam, 6];
+	,
+		(* give a dummpy packed array *)
+		vIDs = pack[{0}];
+	];
+
+	instance = OpenCascadeShapeCreate[];
+	id1 = instanceID[ shape];
+	(* - 1 since C uses 0 index start *)
+	res = makeSimplifyFun[ instanceID[ instance], id1, eIDs - 1, vIDs - 1,
+		optParam, linPrec, angPrec];
+
 	If[ res =!= 0, Return[$Failed, Module]];
 
 	instance
