@@ -1051,81 +1051,118 @@ Module[{len = Length[d], i = 1},
 	]
 ]
 
+clamped[degree_, n_] :=
+Module[{t = 1},
+	Join[
+		Table[0, {degree + 1}],
+		Table[t++, {n - 1 - degree}],
+		Table[t, {degree + 1}]
+	]
+]
+
+unclamped[degree_, n_] :=
+Module[{t = -degree},
+	Table[t++, {n + degree + 1}]
+]
+
+computeKnots[ knots_, degree_, n_] :=
+Module[{newKnots},
+
+	newKnots = knots;
+
+	If[ !ListQ[ knots],
+        Switch[ knots,
+            "Clamped" | Automatic,
+			newKnots = clamped[degree, n];
+		, 
+            "Unclamped", 
+			newKnots = unclamped[degree, n];
+        ];
+	];
+
+	pack[N[newKnots]]
+]
+
 OpenCascadeShape[bss:BSplineSurface[pts_, OptionsPattern[]]] /;
 	Length[ Dimensions[ pts]] === 3 :=
 Module[
-	{poles, weights, uknots, vknots, umults, vmults, udegree, vdegree, 
-	uperiodic, vperiodic, instance, res, temp, nrows, ncols, k, w, d, c},
-
-	poles = pack[ N[ pts]];
-	{nrows, ncols} = Dimensions[poles][[{1,2}]];
+	{k, w, d, c, bsf},
 
 	{k, w, d, c} = OptionValue[BSplineSurface,
 		{SplineKnots, SplineWeights, SplineDegree, SplineClosed}];
 
-	c = c /. Automatic -> False;
-	c = Flatten[{c, c}][[{1,2}]];
-	If[ !VectorQ[ Boole[ c], IntegerQ],
+	bsf = BSplineFunction[pts,
+		SplineClosed -> c,
+		SplineDegree -> d,
+		SplineWeights -> w,
+		SplineKnots -> k
+	];
+
+	OpenCascadeShape[bsf]
+]
+
+OpenCascadeShape[bsf_BSplineFunction] /;
+	Length[ Dimensions[ bsf["ControlPoints"]]] === 3 :=
+Module[
+	{pts, poles, weights, uknots, vknots, umults, vmults, udegree, vdegree, 
+	uperiodic, vperiodic, uclosed, vclosed, instance, res, temp, nrows, ncols,
+	knots, degree, closed},
+
+	pts = bsf["ControlPoints"];
+
+	knots = bsf["Knots"];
+	weights = bsf["Weights"];
+	degree = bsf["Degree"];
+	closed = bsf["Closed"];
+
+	closed = closed /. Automatic -> False;
+	{uclosed, vclosed} = Flatten[{closed, closed}][[{1,2}]];
+	If[ !VectorQ[ Boole[ {uclosed, vclosed}], IntegerQ],
 		Return[ $Failed, Module];
 	];
 
-	{uperiodic, vperiodic} = c;
-	If[ ({uperiodic, vperiodic} =!= {False, False}) && (k === Automatic),
-		(* SplineClosed -> True currently needs at least the knots specified *)
-		Return[ $Failed, Module];
-	];
+	(* a closed BSpline is not the same as periodic BSpline *)
+	(* more needs to be implemented for the u/v-periodic case *)
+	{uperiodic, vperiodic} = {False, False};
 
-	d = d /. Automatic -> 3;
-	d = Flatten[{d, d}][[{1,2}]];
-	If[ !VectorQ[ d, (Positive[#] && IntegerQ[#]) &],
+	degree = degree /. Automatic -> 3;
+	degree = Flatten[{degree, degree}][[{1,2}]];
+	If[ !VectorQ[ degree, (Positive[#] && IntegerQ[#]) &],
 		Return[ $Failed, Module]
 	];
-	{udegree, vdegree} = d;
+	{udegree, vdegree} = degree;
 
-	If[ w === Automatic,
-		weights = ConstantArray[1., Most[Dimensions[poles]]];
+	poles = pack[ N[ pts]];
+
+	If[ Length[ knots] === 1 || knots === Automatic, knots = {knots, knots};];
+	{uknots, vknots} = knots;
+
+	If[ uclosed == True,
+		poles = Join[poles, poles[[1 ;; udegree]], 1];
+		If[ uknots == Automatic,
+			uknots = "Unclamped";
+		];
+	];
+
+	If[ vclosed == True,
+		poles = Join[poles, poles[[All, 1 ;; vdegree]], 2];
+		If[ vknots == Automatic,
+			vknots = "Unclamped";
+		];
+	];
+
+	{nrows, ncols} = Dimensions[poles][[{1,2}]];
+
+	If[ weights === Automatic,
+		weights = ConstantArray[1., {nrows, ncols}];
 	,
-		weights = pack[ N[ w]];
+		weights = pack[ N[ weights]];
 	];
 
-	If[ Length[ k] === 1 || k === Automatic, k = {k, k};];
-
-	If[ !ListQ[ k[[1]]],
-        Switch[k[[1]],
-            "Clamped" | Automatic,
-			t = 1;
-			temp = Join[
-				Table[0, {udegree + 1}],
-				Table[t++, {nrows - 1 - udegree}],
-				Table[t, {udegree + 1}]
-			];
-            k[[1]] = temp;
-		, 
-            "Unclamped", 
-			t = -udegree;
-			k[[1]] = Table[t++, {nrows + udegree + 1}];
-        ];
-	];
-
-	If[ !ListQ[ k[[2]]],
-        Switch[k[[2]],
-            "Clamped" | Automatic, 
-			t = 1;
-			temp = Join[
-				Table[0, {vdegree + 1}],
-				Table[t++, {ncols - 1 - vdegree}],
-				Table[t, {vdegree + 1}]
-			];
-            k[[2]] = temp;
-		, 
-            "Unclamped", 
-			t = -vdegree;
-			k[[2]] = Table[t++, {ncols + vdegree + 1}];
-        ];
-	]; 
-
-	{uknots, vknots} = N[ k];
+	uknots = computeKnots[uknots, udegree, nrows];
+	vknots = computeKnots[vknots, vdegree, ncols];
 	(* TODO: check (?) WL requitement: u_i >= u_i+1 *)
+
 	{uknots, umults} = pack /@ Transpose[Tally[uknots]];
 	{vknots, vmults} = pack /@ Transpose[Tally[vknots]];
 	(* u_i > u_i+1: This is an OpenCascde requirement *)
@@ -1139,15 +1176,11 @@ Module[
 		Return[ $Failed, Module];
 	]; 
 
-
-	(* more needs to be implemented for the u/v-periodic case
-	(SplineClosed->True) *)
-
 	If[ uperiodic === True,
 		If[ umults[[-1]] != umults[[1]], Return[ $Failed, Module]];
 		If[ Total[ umults[[1;;-2]]] =!= nrows, Return[ $Failed, Module]];
 	,
-		(* NON periodic surface (SplineClosed -> False) *)
+		(* NON periodic surface *)
 		If[ (Total[umults] - udegree -1) =!= nrows, Return[ $Failed, Module]];
 	];
 
@@ -1155,9 +1188,10 @@ Module[
 		If[ vmults[[-1]] != vmults[[1]], Return[ $Failed, Module]];
 		If[ Total[ vmults[[1;;-2]]] =!= ncols, Return[ $Failed, Module]];
 	,
-		(* NON periodic surface (SplineClosed -> False) *)
+		(* NON periodic surface *)
 		If[ (Total[vmults] - vdegree -1) =!= ncols, Return[ $Failed, Module]];
 	];
+
 
 	instance = OpenCascadeShapeCreate[];
 	res = makeBSplineSurfaceFun[ instanceID[ instance], poles, weights,
