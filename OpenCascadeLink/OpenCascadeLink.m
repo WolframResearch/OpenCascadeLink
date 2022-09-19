@@ -1893,6 +1893,10 @@ Module[
 			bmesh = NDSolve`FEM`ElementMesh[coords, Automatic, bEle,
 				elementMeshOpts];
 
+			If[ !NDSolve`FEM`BoundaryElementMeshQ[bmesh],
+				Return[$Failed, Module];
+			];
+
 			(* acount for deleted duplicates, intersecting faces, etc *)
 			coords = bmesh["Coordinates"];
 			bEle = bmesh["BoundaryElements"];
