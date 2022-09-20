@@ -692,7 +692,11 @@ Module[
 	bsurfs = Select[bsurfs, OpenCascadeShapeExpressionQ];
 
 	If[ Length[ bsurfs] > 0,
-		OpenCascadeShapeSewing[bsurfs, "BuildSolid" -> True]
+		bsss = OpenCascadeShapeSewing[bsurfs, "BuildSolid" -> True];
+		(* for some reason the orientation is not right, as a band aid
+			fix, we can have ShapeFix fix that. A better approach would be
+			to take a occt shpere and deform that *)
+		OpenCascadeShapeFix[bsss]
 	,
 		$Failed
 	]
