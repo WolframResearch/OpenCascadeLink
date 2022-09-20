@@ -1472,11 +1472,11 @@ Module[
 	{booleanFunction, regions},
 
 	booleanFunction = br[[1]] //. {
-		Or[args__] :> OpenCascadeShapeUnion[args, opts],
-		And[s1_, Not[s2_]] :> OpenCascadeShapeDifference[s1, s2, opts],
-		And[Not[s2_], s1_] :> OpenCascadeShapeDifference[s1, s2, opts],
-		And[args__] :> OpenCascadeShapeIntersection[args, opts],
-		Xor[s1_, sn__] :> OpenCascadeShapeUnion[##, opts]& @@
+		Verbatim[Or][args__] :> OpenCascadeShapeUnion[args, opts],
+		Verbatim[And][s1_, Verbatim[Not][s2_]] :> OpenCascadeShapeDifference[s1, s2, opts],
+		Verbatim[And][Verbatim[Not][s2_], s1_] :> OpenCascadeShapeDifference[s1, s2, opts],
+		Verbatim[And][args__] :> OpenCascadeShapeIntersection[args, opts],
+		Verbatim[Xor][s1_, sn__] :> OpenCascadeShapeUnion[##, opts]& @@
 			(OpenCascadeShapeDifference[##, opts]& @@ Tuples[{s1, sn}, 2])
 	};
 
