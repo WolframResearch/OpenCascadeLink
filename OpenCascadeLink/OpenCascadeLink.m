@@ -1629,7 +1629,7 @@ Module[{res},
 
 OpenCascadeShapeNumberOfEdges[shape_] /; OpenCascadeShapeExpressionQ[shape] :=
 Module[{res},
-	res getShapeNumberOfEdgesFun[ instanceID[ shape]];
+	res = getShapeNumberOfEdgesFun[ instanceID[ shape]];
 	If[ IntegerQ[res], res, 0]
 ]
 
