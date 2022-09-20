@@ -27,6 +27,7 @@ OpenCascadeShapeUnion::usage = "OpenCascadeShapeUnion[ shape1, shape2] returns a
 OpenCascadeShapeBooleanRegion::usage = "OpenCascadeShape[ expr] returns a new instance of an OpenCascade expression representing the BooleanRegion expr.";
 OpenCascadeShapeDefeaturing::usage = "OpenCascadeShapeDefeaturing[ shape, {face1, ..}] returns a new instance of an OpenCascade expression with faces faces1,.. removed.";
 OpenCascadeShapeSimplify::usage = "OpenCascadeShapeSimplify[ shape] returns a new instance of an OpenCascade expression with a simplified shape.";
+OpenCascadeShapeFix::usage = "OpenCascadeShapeFix[ shape] returns a new instance of an OpenCascade expression with a fixed shape.";
 
 OpenCascadeShapeFillet::usage = "OpenCascadeShapeFillet[ shape, r] returns a new instance of an OpenCascade expression with edges filleted with radius r.";
 OpenCascadeShapeChamfer::usage = "OpenCascadeShapeChamfer[ shape, d] returns a new instance of an OpenCascade expression with edges chamfered with distance d.";
@@ -186,6 +187,7 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	makeUnionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeUnion", {Integer, Integer, Integer, Integer}, Integer];
 	makeDefeaturingFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeDefeaturing", {Integer, Integer, {Integer, 1, "Shared"}}, Integer];
 	makeSimplifyFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSimplify", {Integer, Integer, {Integer, 1, "Shared"}, {Integer, 1, "Shared"}, Integer, Real, Real}, Integer];
+	makeShapeFixFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeShapeFix", {Integer, Integer}, Integer];
 
 	makeFilletFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeFillet", {Integer, Integer, Real, {Integer, 1, "Shared"}}, Integer];
 	makeChamferFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeChamfer", {Integer, Integer, Real, {Integer, 1, "Shared"}}, Integer];
@@ -1571,6 +1573,20 @@ Module[
 	(* - 1 since C uses 0 index start *)
 	res = makeSimplifyFun[ instanceID[ instance], id1, eIDs - 1, vIDs - 1,
 		optParam, linPrec, angPrec];
+
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instance
+]
+
+OpenCascadeShapeFix[shape_] /; 
+	OpenCascadeShapeExpressionQ[shape] :=
+Module[
+	{instance, id1, res},
+
+	instance = OpenCascadeShapeCreate[];
+	id1 = instanceID[ shape];
+	res = makeShapeFixFun[ instanceID[ instance], id1];
 
 	If[ res =!= 0, Return[$Failed, Module]];
 

@@ -57,6 +57,7 @@
 
 #include <ShapeExtend_WireData.hxx>
 #include <ShapeFix_Wire.hxx>
+#include <ShapeFix_Shape.hxx>
 
 #include <StlAPI_Writer.hxx>
 #include <StlAPI_Reader.hxx>
@@ -99,6 +100,7 @@ extern "C" {
 
 	DLLEXPORT int makeDefeaturing(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeSimplify(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+	DLLEXPORT int makeShapeFix(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int makeFillet(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeChamfer(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
@@ -1626,6 +1628,36 @@ DLLEXPORT int makeSimplify(WolframLibraryData libData, mint Argc, MArgument *Arg
 	/* TODO: unclear how to test the result. Maybe not needed? */
 
 	*instance = unify.Shape();
+	MArgument_setInteger(res, 0);
+	return 0;
+}
+
+DLLEXPORT int makeShapeFix(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	mint id  = MArgument_getInteger(Args[0]);
+	mint id1 = MArgument_getInteger(Args[1]);
+
+	TopoDS_Shape *instance  = get_ocShapeInstance( id);
+	TopoDS_Shape *instance1 = get_ocShapeInstance( id1);
+
+	if (instance == NULL || instance1 == NULL || instance1->IsNull())
+	{
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	Handle(ShapeFix_Shape) aFixShape = new ShapeFix_Shape();
+	aFixShape->Init (*instance1);
+
+	aFixShape->Perform();
+
+	if (aFixShape->Status (ShapeExtend_FAIL)) {
+		MArgument_setInteger(res, ERROR);
+		return 0;
+	}
+
+	*instance = aFixShape->Shape();
+
 	MArgument_setInteger(res, 0);
 	return 0;
 }
