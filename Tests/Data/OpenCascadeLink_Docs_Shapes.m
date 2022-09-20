@@ -14,7 +14,8 @@ solidsList = {Ball[{1,0,0}],
 	Polyhedron[{{-(1 + 2 5^Rational[-1, 2])^Rational[1, 2], 0, Root[1 - 20 #^2 + 80 #^4& , 3, 0]}, {(1 + 2 5^Rational[-1, 2])^Rational[1, 2], 0, Root[1 - 20 #^2 + 80 #^4& , 2, 0]}, {Root[1 - 20 #^2 + 80 #^4& , 1, 0], Rational[1, 4] (-3 - 5^Rational[1, 2]), Root[1 - 20 #^2 + 80 #^4& , 3, 0]}, {Root[1 - 20 #^2 + 80 #^4& , 1, 0], Rational[1, 4] (3 + 5^Rational[1, 2]), Root[1 - 20 #^2 + 80 #^4& , 3, 0]}, {(Rational[5, 8] + Rational[11, 8] 5^Rational[-1, 2])^Rational[1, 2], Rational[1, 4] (-1 - 5^Rational[1, 2]), Root[1 - 20 #^2 + 80 #^4& , 3, 0]}, {(Rational[5, 8] + Rational[11, 8] 5^Rational[-1, 2])^Rational[1, 2], Rational[1, 4] (1 + 5^Rational[1, 2]), Root[1 - 20 #^2 + 80 #^4& , 3, 0]}, {Root[1 - 20 #^2 + 80 #^4& , 2, 0], Rational[1, 4] (-1 - 5^Rational[1, 2]), (Rational[5, 8] + Rational[11, 8] 5^Rational[-1, 2])^Rational[1, 2]}, {Root[1 - 20 #^2 + 80 #^4& , 2, 0], Rational[1, 4] (1 + 5^Rational[1, 2]), (Rational[5, 8] + Rational[11, 8] 5^Rational[-1, 2])^Rational[1, 2]}, {Rational[-1, 2] (1 + 2 5^Rational[-1, 2])^Rational[1, 2], Rational[-1, 2], Root[1 - 100 #^2 + 80 #^4& , 1, 0]}, {Rational[-1, 2] (1 + 2 5^Rational[-1, 2])^Rational[1, 2], Rational[1, 2], Root[1 - 100 #^2 + 80 #^4& , 1, 0]}, {(Rational[1, 4] + Rational[1, 2] 5^Rational[-1, 2])^Rational[1, 2], Rational[-1, 2], (Rational[5, 8] + Rational[11, 8] 5^Rational[-1, 2])^Rational[1, 2]}, {(Rational[1, 4] + Rational[1, 2] 5^Rational[-1, 2])^Rational[1, 2], Rational[1, 2], (Rational[5, 8] + Rational[11, 8] 5^Rational[-1, 2])^Rational[1, 2]}, {(Rational[1, 10] (5 + 5^Rational[1, 2]))^Rational[1, 2], 0, Root[1 - 100 #^2 + 80 #^4& , 1, 0]}, {Root[1 - 100 #^2 + 80 #^4& , 1, 0], Rational[1, 4] (-1 - 5^Rational[1, 2]), Root[1 - 20 #^2 + 80 #^4& , 2, 0]}, {Root[1 - 100 #^2 + 80 #^4& , 1, 0], Rational[1, 4] (1 + 5^Rational[1, 2]), Root[1 - 20 #^2 + 80 #^4& , 2, 0]}, {Root[1 - 5 #^2 + 5 #^4& , 1, 0], 0, (Rational[5, 8] + Rational[11, 8] 5^Rational[-1, 2])^Rational[1, 2]}, {Root[1 - 20 #^2 + 80 #^4& , 3, 0], Rational[1, 4] (-1 - 5^Rational[1, 2]), Root[1 - 100 #^2 + 80 #^4& , 1, 0]}, {Root[1 - 20 #^2 + 80 #^4& , 3, 0], Rational[1, 4] (1 + 5^Rational[1, 2]), Root[1 - 100 #^2 + 80 #^4& , 1, 0]}, {(Rational[1, 8] + Rational[1, 8] 5^Rational[-1, 2])^Rational[1, 2], Rational[1, 4] (-3 - 5^Rational[1, 2]), Root[1 - 20 #^2 + 80 #^4& , 2, 0]}, {(Rational[1, 8] + Rational[1, 8] 5^Rational[-1, 2])^Rational[1, 2], Rational[1, 4] (3 + 5^Rational[1, 2]), Root[1 - 20 #^2 + 80 #^4& , 2, 0]}, {0., 0., 0.8879400317589019}, {-0.41857894516247873`, -0.725, -0.29598001058630075`}, {-0.41857894516247873`, 0.725, -0.29598001058630075`}, {0.8371578903249575, 0., -0.29598001058630075`}}, {{15, 10, 9, 14, 1}, {2, 6, 12, 11, 5}, {5, 11, 7, 3, 19}, {11, 12, 8, 16, 7}, {12, 6, 20, 4, 8}, {6, 2, 13, 18, 20}, {2, 5, 19, 17, 13}, {4, 20, 18, 10, 15}, {18, 13, 17, 9, 10}, {17, 19, 3, 14, 9}, {3, 7, 16, 1, 14}, {16, 8, 4, 15, 1}, {22, 23, 24}, {23, 22, 21}, {24, 21, 22}, {21, 24, 23}}],
 	Pyramid[{{0,0,0},{2,0,0},{2,2,0},{0,2,0},{1,1,2}}],
 	SphericalShell[],
-	Tetrahedron[{{0,0,0},{1,0,0},{0,1,0},{0,0,2}}]};
+	Tetrahedron[{{0,0,0},{1,0,0},{0,1,0},{0,0,2}}],
+	FilledTorus[{1, 1, 1}, {1/2, 1}]};
 
 r1 = TransformedRegion[Cuboid[],RotationTransform[Pi/8,{1,0,0}]];
 r2 = TransformedRegion[Cuboid[],RotationTransform[Pi/8,{0,1,0}]];
@@ -47,6 +48,7 @@ additionalSurfaces = <|polygonWithHole -> Polygon[{{0,0,0},{3,0,0},{3,3,0},{0,3,
 
 surfaceList = {(*bss, *)
 	Polygon[{{0,0,0},{1,0,0},{1,1,0},{0,1,0}}], 
-	Triangle[{{0,0,0},{1,0,0},{1,1,0}}]
+	Triangle[{{0,0,0},{1,0,0},{1,1,0}}],
+	Torus[{0, 0, 0}, {1/2, 1}]
 	};
 surfaces = <|Thread[(Head[#]->#)&/@surfaceList], additionalSurfaces|>;
