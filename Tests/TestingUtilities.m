@@ -53,13 +53,23 @@ boolOperationTest[shapeAssoc_Association, operation_String, bugID_ : ""] :=
 	                                            <|"Actual" -> head, "Expected" -> Graphics3D|>
 	                                        ];
 	                                        
-	                result["SimplifyResult"] = <|"True" -> OpenCascadeShapeNumberOfSolids[ocOp[Sequence @@ openCascadeShapes, "SimplifyResult" -> True]],
-	                							"False" -> OpenCascadeShapeNumberOfSolids[ocOp[Sequence @@ openCascadeShapes, "SimplifyResult" -> False]]|>;
+	                result["SimplifyResult"] = <|"True" -> Block[{simplifiedShape = ocOp[Sequence @@ openCascadeShapes, "SimplifyResult" -> True]}, 
+	                											If[FailureQ@simplifiedShape,
+	                												$Failed,
+	                												OpenCascadeShapeNumberOfSolids[simplifiedShape]
+	                											]
+	                										],
+	                							"False" -> Block[{simplifiedShape = ocOp[Sequence @@ openCascadeShapes, "SimplifyResult" -> False]}, 
+	                											If[FailureQ@simplifiedShape,
+	                												$Failed,
+	                												OpenCascadeShapeNumberOfSolids[simplifiedShape]
+	                											]
+	                										]|>;
 	                result]
                 ,
                 True | <| "CompoundQ" -> True, "OpenCascadeShapeNumberOfSolids" -> True,
                     "OpenCascadeShapeSolids" -> True, "ElementMesh" -> True,
-                    "SimplifyResult" -> <|"True" -> numOfSolids, "False" -> numOfSolids|>|>
+                    "SimplifyResult" -> _?(MatchQ[Values[#], {OrderlessPatternSequence[$Failed, numOfSolids]} | {numOfSolids, numOfSolids}] &)|>
                 ,
                 TestID -> "OpenCascadeLink_Docs_BooleanOperations-20200311-"
                   <> operation <> "-ShapeType" <> 
