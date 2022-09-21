@@ -53,13 +53,13 @@ boolOperationTest[shapeAssoc_Association, operation_String, bugID_ : ""] :=
 	                                            <|"Actual" -> head, "Expected" -> Graphics3D|>
 	                                        ];
 	                                        
-	                result["SimplifyResults"] = <|"True" -> OpenCascadeShapeNumberOfSolids[ocOp[Sequence @@ openCascadeShapes, "SimplifyResults" -> True]],
-	                							"False" -> OpenCascadeShapeNumberOfSolids[ocOp[Sequence @@ openCascadeShapes, "SimplifyResults" -> False]]|>;
+	                result["SimplifyResult"] = <|"True" -> OpenCascadeShapeNumberOfSolids[ocOp[Sequence @@ openCascadeShapes, "SimplifyResult" -> True]],
+	                							"False" -> OpenCascadeShapeNumberOfSolids[ocOp[Sequence @@ openCascadeShapes, "SimplifyResult" -> False]]|>;
 	                result]
                 ,
                 True | <| "CompoundQ" -> True, "OpenCascadeShapeNumberOfSolids" -> True,
                     "OpenCascadeShapeSolids" -> True, "ElementMesh" -> True,
-                    "SimplifyResults" -> <|"True" -> numOfSolids, "False" -> numOfSolids|>|>
+                    "SimplifyResult" -> <|"True" -> numOfSolids, "False" -> numOfSolids|>|>
                 ,
                 TestID -> "OpenCascadeLink_Docs_BooleanOperations-20200311-"
                   <> operation <> "-ShapeType" <> 
