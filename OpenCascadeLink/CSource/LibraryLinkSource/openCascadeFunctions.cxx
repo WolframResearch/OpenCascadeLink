@@ -802,7 +802,13 @@ DLLEXPORT int makePolygon(WolframLibraryData libData, mint Argc, MArgument *Args
 			(Standard_Real) rawPts1[i + 2]
 		));
 	}
-	polygon.Close();
+	try {
+		polygon.Close();
+	}
+	catch (const Standard_Failure& theErr) {
+			MArgument_setInteger(res, ERROR);
+			return 0;
+	}
 	libData->MTensor_disown(p1);
 
 	if (!polygon.IsDone()) {

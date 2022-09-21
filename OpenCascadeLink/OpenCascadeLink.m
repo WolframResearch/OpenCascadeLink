@@ -1224,7 +1224,7 @@ Module[{closedQ = False, mesh},
 		closed *)
 	mesh = Quiet[ NDSolve`FEM`ToElementMesh[ bmesh, "MeshOrder" -> 1,
 		"MaxCellMeasure" -> Infinity]];
-	If[ Head[ mesh] === NDSolve`FEM`ElementMesh,
+	If[ NDSolve`FEM`ElementMeshQ[mesh],
 		closedQ = True
 	];
 
@@ -1233,7 +1233,7 @@ Module[{closedQ = False, mesh},
 
 OpenCascadeShapeInternal[bmesh_, closedQ_] /;
 	NDSolve`FEM`BoundaryElementMeshQ[ bmesh] :=
-Module[{coords, faces, polygons, faceCoords, shape},
+Module[{coords, faces, polygons, faceCoords, shape, numPoly},
 	coords = bmesh["Coordinates"];
 	faces = NDSolve`FEM`ElementIncidents[bmesh["BoundaryElements"]];
 	polygons = {};
@@ -1247,7 +1247,13 @@ Module[{coords, faces, polygons, faceCoords, shape},
 	, {f, faces}
 	];
 	polygons = Flatten[polygons];
+	numPoly = Length[polygons];
+	polygons = Select[polygons, OpenCascadeShapeExpressionQ];
 	shape = OpenCascadeShapeSewing[polygons];
+	(* if there was a problem, maybe we can repair it *)
+	If[ numPoly =!= Length[polygons],
+		shape = OpenCascadeShapeFix[shape];
+	];
 
 	If[ TrueQ[ closedQ],
 		shape = OpenCascadeShapeSolid[shape];
