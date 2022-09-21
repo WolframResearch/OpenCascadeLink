@@ -1253,7 +1253,8 @@ Module[{coords, faces, polygons, faceCoords, shape},
 		shape = OpenCascadeShapeSolid[shape];
 	];
 
-	shape
+	(* fix possible orientation issues *)
+	OpenCascadeShapeFix[shape]
 ]
 
 
