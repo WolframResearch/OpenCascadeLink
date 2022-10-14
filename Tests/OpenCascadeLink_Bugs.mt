@@ -141,4 +141,20 @@ NTest[
 	TestID->"OpenCascadeLink_Bugs-20210506-Z8J9G9-bug-408840"
 ]
 
+NTest[
+	shape = OpenCascadeShape[CapsuleShape[{{0, -2, 0}, {0, 0, 1}}, 1]];
+	r = ImplicitRegion[x^4 + y^4 + z^4 - 1 == 0, {x, y, z}];
+	bmesh = ToBoundaryMesh[r, {{-2, 2}, {-2, 2}, {-2, 2}}];
+	shape2 = OpenCascadeShape[bmesh];
+	union = OpenCascadeShapeUnion[shape2, shape];
+	mesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[union];
+	NIntegrate[1, {x, y, z} \[Element] mesh]
+	,
+	32.86149300689737
+	,
+	PrecisionGoal -> 5
+	,
+	TestID->"OpenCascadeLink_Bugs-20221014-K8Z2U4-bug-404068"
+]
+
 Clear["Global`*"];

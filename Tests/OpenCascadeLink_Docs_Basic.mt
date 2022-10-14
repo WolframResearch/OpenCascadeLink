@@ -101,8 +101,8 @@ MapIndexed[
 
 MapIndexed[
     basicShapeTests[#, OCShapeType -> 
-        Switch[ First[First[#2]],
-        	closedMesh, "Solid",
+        Switch[ First[First[#2]],(*
+        	closedMesh, "Solid",*)
             polygonWithHole|openMesh, "Shell",
             _, "Face"
         ], TestIDSuffix -> ToString[First[First[#2]]]] &,
