@@ -157,4 +157,17 @@ NTest[
 	TestID->"OpenCascadeLink_Bugs-20221014-K8Z2U4-bug-404068"
 ]
 
+With[{d = 0.001, w = 0.005, h = 0.02},
+	Test[
+		side = Cuboid[{0, 0, 0}, {d, w, h}];
+		top = Cuboid[{0, 0, h - 2 d}, {h, w, h - d}];
+		shape = OpenCascadeShape[RegionUnion[side, top]];
+		FailureQ /@ {OpenCascadeShapeFillet[shape, d, {2}], OpenCascadeShapeChamfer[shape, d, {2}]}
+		,
+		{True, True}
+		,
+		TestID->"OpenCascadeLink_Bugs-20221014-S6S5V5-bug-405722"
+	]
+]
+
 Clear["Global`*"];
