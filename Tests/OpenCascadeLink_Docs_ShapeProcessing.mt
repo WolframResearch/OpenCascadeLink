@@ -235,4 +235,81 @@ Test[
 	TestID->"OpenCascadeLink_Docs_ShapeProcessing-20200311-U1I7U8"
 ]]
 
+NTest[
+	reg = Block[{t = 1/2, positions, base}, 
+  		positions = Flatten[Table[{x, y, z}, {x, {-1, 1}}, {y, {-1, 1}}, {z, {-1, 1}}],
+     		2];
+		RegionUnion@Table[base = t*positions[[i]];
+		    RegionIntersection[Ball[base, 2], 
+		     Cube[base + positions[[i]], 2]], {i, Length[positions]}]];
+	shape = OpenCascadeShape[reg];
+	bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shape];
+	mesh = ToElementMesh[bmesh];
+	<|"SurfaceArea" -> NIntegrate[1, {x, y, z} \[Element] bmesh], 
+	"Volume" -> NIntegrate[1, {x, y, z} \[Element] mesh]|>
+	,
+	<|"SurfaceArea" -> 124.87056798704569,
+	"Volume" ->  33.123951954863465|>
+	,
+	PrecisionGoal -> 5
+	,
+	TestID->"OpenCascadeLink_Docs_ShapeProcessing-20221110-I1T3P1"
+]
+
+NTest[
+	reg = RegionDifference[Octahedron[1], 
+  			RegionUnion[Octahedron[0.8], Cube[{0, 0, 5}, 9.5]]];
+  	shape = OpenCascadeShape[reg];
+  	bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shape];
+  	mesh = ToElementMesh[bmesh];
+  	<|"SurfaceArea" -> NIntegrate[1, {x, y, z} \[Element] bmesh], 
+	"Volume" -> NIntegrate[1, {x, y, z} \[Element] mesh]|>
+	,
+	<|"SurfaceArea" -> 4.830670034788291,
+	"Volume" -> 0.18734503354334794|>
+	,
+	PrecisionGoal -> 5
+	,
+	TestID->"OpenCascadeLink_Docs_ShapeProcessing-20221110-V4H5Z3"
+]
+
+NTest[
+	reg = BooleanRegion[Or, {TransformedRegion[Cuboid[], 
+	    RotationTransform[Pi/8, {1, 0, 0}]], 
+	   TransformedRegion[Cuboid[], RotationTransform[Pi/8, {0, 1, 0}]]}];
+	shape = OpenCascadeShape[reg];
+	bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shape];
+	mesh = ToElementMesh[bmesh];
+	<|"SurfaceArea" -> NIntegrate[1, {x, y, z} \[Element] bmesh], 
+	"Volume" -> NIntegrate[1, {x, y, z} \[Element] mesh]|>
+	,
+	<|"SurfaceArea" -> 8.475776582833172,
+	"Volume" -> 1.5771928687959273|>
+	,
+	PrecisionGoal -> 5
+	,
+	TestID->"OpenCascadeLink_Docs_ShapeProcessing-20221110-J7C0T2"
+]
+
+NTest[
+	data = Table[{Sqrt[40^2 - r^2] Cos[5 Pi*r/40], 
+    	Sqrt[40^2 - r^2] Sin[5 Pi*r/40], r}, {r, 0, 40, 0.2}];
+	reg = RegionDifference[RegionDifference[Ball[{0, 0, 0}, 40], 
+   	 	Cuboid[{-40, -40, -40}, {40, 40, 0}]], 
+   		RegionUnion @@ (Ball[#, 1] & /@ data[[;; 100]])];
+   	shape = OpenCascadeShape[reg];
+	bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shape];
+	mesh = ToElementMesh[bmesh];
+	<|"SurfaceArea" -> NIntegrate[1, {x, y, z} \[Element] bmesh], 
+	(* Volume takes a while to compute, checking head instead *)
+	"MeshHead" -> Head@mesh|>
+	,
+	<|"SurfaceArea" -> 15279.06147509381,
+	"MeshHead" -> ElementMesh|>
+	,
+	PrecisionGoal -> 5
+	,
+	TestID->"OpenCascadeLink_Docs_ShapeProcessing-20221110-C7F3F8"
+]
+
 CleaAll["Global`*"];

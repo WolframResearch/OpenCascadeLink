@@ -170,4 +170,28 @@ With[{d = 0.001, w = 0.005, h = 0.02},
 	]
 ]
 
+NTest[
+	geometricParameters = {d -> 0.01, w -> 0.05, h -> 0.2};
+	side = Cuboid[{0, 0, 0}, {d, w, h}] /. geometricParameters;
+	top = Cuboid[{0, 0, h - 2 d}, {h, w, h - d}] /. geometricParameters;
+	mount1 =
+	  Cylinder[{{-d, w/2, 5 d}, {2 d, w/2, 5 d}}, w/10] /.
+	   geometricParameters;
+	mount2 =
+	  Cylinder[{{-d, w/2, h - 5 d}, {2 d, w/2, h - 5 d}}, w/10] /.
+	   geometricParameters;
+	region =
+	  RegionDifference[RegionDifference[RegionUnion[side, top], mount1],
+	   mount2];
+	shape = OpenCascadeShape[region];
+	bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[shape];
+	NIntegrate[1, {x, y, z} \[Element] bmesh]
+	,
+	0.04811568037375386
+	,
+	AccuracyGoal -> 2
+	,
+	TestID->"OpenCascadeLink_Bugs-20221110-B9U6C3"
+]
+
 Clear["Global`*"];
