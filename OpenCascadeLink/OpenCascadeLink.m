@@ -1901,7 +1901,7 @@ https://dev.opencascade.org/doc/overview/html/occt_user_guides__mesh.html
 *)
 
 OpenCascadeShapeSurfaceMesh[
-	OpenCascadeShapeExpression[ id_]?(testOpenCascadeShapeExpression[OpenCascadeShapeSurfaceMesh]),
+	instance:OpenCascadeShapeExpression[ id_]?(testOpenCascadeShapeExpression[OpenCascadeShapeSurfaceMesh]),
 	opts:OptionsPattern[OpenCascadeShapeSurfaceMesh]
 ] := 
 Module[
@@ -1944,7 +1944,7 @@ Module[
 	res = makeSurfaceMeshFun[ id, realParams, boolParams];
 	If[ res =!= 0, Return[$Failed, Module]];
 
-	Null
+	instance
 ]
 
 OpenCascadeShapeSurfaceMeshCoordinates[
