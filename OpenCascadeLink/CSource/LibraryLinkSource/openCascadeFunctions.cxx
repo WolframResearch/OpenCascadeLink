@@ -1932,8 +1932,9 @@ DLLEXPORT int makeSurfaceMesh(WolframLibraryData libData, mint Argc, MArgument *
 	}
 	libData->MTensor_disown(tenPts2);
 
-	/* possibly allow switching this off via an option */
-	BRepTools::Clean( *instance);
+	if (meshParams.CleanModel) {
+		BRepTools::Clean( *instance);
+	}
 
 	BRepMesh_IncrementalMesh Mesh( *instance, meshParams);
 	Mesh.Perform();

@@ -80,7 +80,8 @@ Options[OpenCascadeShapeSurfaceMesh] = Sort[ {
 	"LinearDeflection"->Automatic,
 	"AngularDeflection"->Automatic,
 	"ComputeInParallel"->Automatic,
-	"RelativeDeflection"->Automatic
+	"RelativeDeflection"->Automatic,
+	"Rediscretization"->Automatic
 }];
 
 Options[OpenCascadeShapeSurfaceMeshToBoundaryMesh] = Sort[{
@@ -1906,7 +1907,7 @@ OpenCascadeShapeSurfaceMesh[
 ] := 
 Module[
 	{res, realParams, boolParams, ldeflection, adeflection, parallelQ,
-	relativeQ},
+	relativeQ, cleanQ},
 
 	ldeflection = N[ OptionValue["LinearDeflection"]];
 	If[ !NumericQ[ ldeflection] || ldeflection <= 0.,
@@ -1924,6 +1925,9 @@ Module[
 	relativeQ = OptionValue["RelativeDeflection"];
 	If[ !BooleanQ[ relativeQ], relativeQ = True];
 
+	cleanQ = OptionValue["Rediscretization"];
+	If[ !BooleanQ[ cleanQ], cleanQ = True];
+
 	realParams = pack[{
 		(* Angle *)				adeflection,
 		(* Deflection *)		ldeflection,
@@ -1937,7 +1941,7 @@ Module[
 		(* Relative *)					relativeQ,
 		(* InternalVerticesMode *)		True,
 		(* ControlSurfaceDeflection *)	True,
-		(* CleanModel *) 				False,
+		(* CleanModel *) 				cleanQ,
 		(* AdjustMinSize *)				False
 	}]];
 
