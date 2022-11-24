@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[   1897326,      32769]
+NotebookDataLength[   1897346,      32770]
 NotebookOptionsPosition[   1864449,      32034]
-NotebookOutlinePosition[   1865798,      32075]
-CellTagsIndexPosition[   1865654,      32068]
+NotebookOutlinePosition[   1865818,      32076]
+CellTagsIndexPosition[   1865674,      32069]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -54,7 +54,7 @@ Cell["OpenCascadeLink`", "Categorization",
  CellLabel->"Context",
  CellID->468444828,ExpressionUUID->"21201865-aa1e-4e67-adb0-f7396d3e096a"],
 
-Cell["OpenCascadeLink/tutorial/DiskBrake", "Categorization",
+Cell["OpenCascadeLink/tutorial/DiscBrake", "Categorization",
  CellLabel->"URI",ExpressionUUID->"b275ff7f-3647-4757-b0f0-80e9bd7f6efd"]
 }, Closed]],
 
@@ -3821,7 +3821,7 @@ Cell["\<\
 The disc plate will be created by specifying a cross-section in the x-y \
 plane. This cross-section will then serve as a basis for a solid created from \
 a revolution around the x-axis. The cross section is shown below in dark gray \
-inside the opaque disk break.\
+inside the opaque disc break.\
 \>", "Text",
  CellID->35461358,ExpressionUUID->"c1f875d5-4a71-4bfa-bdeb-f392168124cc"],
 
@@ -4468,13 +4468,13 @@ Cell[BoxData[{
      RowBox[{"{", 
       RowBox[{"60", ",", "0", ",", "0"}], "}"}]}], "}"}]}], ";"}], "\n", 
  RowBox[{
-  RowBox[{"disk", "=", 
+  RowBox[{"disc", "=", 
    RowBox[{"OpenCascadeShapeRotationalSweep", "[", 
     RowBox[{"shape", ",", "axisRotation", ",", 
      RowBox[{"2", " ", "Pi"}]}], "]"}]}], ";"}], "\n", 
  RowBox[{
   RowBox[{"bmesh", "=", 
-   RowBox[{"OpenCascadeShapeSurfaceMeshToBoundaryMesh", "[", "disk", "]"}]}], 
+   RowBox[{"OpenCascadeShapeSurfaceMeshToBoundaryMesh", "[", "disc", "]"}]}], 
   ";"}], "\n", 
  RowBox[{"Show", "[", 
   RowBox[{
@@ -32033,15 +32033,16 @@ Cell["XXXX", "TutorialRelatedLinks",
 }, Open  ]]
 },
 WindowToolbars->"MultipurposeBar",
-WindowSize->{1407.673469387755, 764.0816326530612},
-WindowMargins->{{0, Automatic}, {Automatic, 13.224489795918366`}},
+WindowSize->{936.734693877551, 764.0816326530612},
+WindowMargins->{{Automatic, 3.8759440784190247`}, {
+  Automatic, 13.224489795918366`}},
 Visible->True,
 TaggingRules-><|
  "SaveDialogDataSavesBlog" -> False, "Author" -> "sebas", "CreationDate" -> 
   "11-08-2022 09:55:16"|>,
 ShowCellTags->True,
 TrackCellChangeTimes->False,
-FrontEndVersion->"13.2 for Linux x86 (64-bit) (November 10, 2022)",
+FrontEndVersion->"13.2 for Linux x86 (64-bit) (November 18, 2022)",
 StyleDefinitions->FrontEnd`FileName[{"Wolfram"}, "TutorialPageStyles.nb", 
   CharacterEncoding -> "UTF-8"],
 ExpressionUUID->"1637c339-ae23-480f-8d96-d43b4e559dc1"
@@ -32067,9 +32068,9 @@ CellTagsIndex->{
 *)
 (*CellTagsIndex
 CellTagsIndex->{
- {"eqn: heat equation axis", 1865148, 32053},
- {"ref1", 1865333, 32057},
- {"ref2", 1865488, 32061}
+ {"eqn: heat equation axis", 1865168, 32054},
+ {"ref1", 1865353, 32058},
+ {"ref2", 1865508, 32062}
  }
 *)
 (*NotebookFileOutline
