@@ -194,4 +194,22 @@ NTest[
 	TestID->"OpenCascadeLink_Bugs-20221110-B9U6C3"
 ]
 
+NTest[
+	sur21 = BSplineSurface[{curv1, curv2}, SplineClosed -> {False, True}, 
+	   SplineDegree -> {1, 3}];
+	sur22 = BSplineSurface[{curv2, curv3}, SplineClosed -> {False, True}, 
+	   SplineDegree -> {1, 3}];
+	s1 = OpenCascadeShape[sur21];
+	s2 = OpenCascadeShape[sur22];
+	surface = OpenCascadeShapeSewing[{s1, s2}];
+	bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[surface];
+	NIntegrate[1, {x, y, z} \[Element] bmesh]
+	,
+	74.61852471806743
+	,
+	PrecisionGoal -> 5
+	,
+	TestID->"OpenCascadeLink_Bugs-20221208-T5O4L1-bug-399314"
+]
+
 Clear["Global`*"];
