@@ -212,4 +212,46 @@ NTest[
 	TestID->"OpenCascadeLink_Bugs-20221208-T5O4L1-bug-399314"
 ]
 
+NTest[
+	bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[
+ 		OpenCascadeShapeBooleanRegion@
+  		RegionDifference[Ball[{0, 0, 0}], Ball[{0, 1, 1}]]];
+  	mesh = ToElementMesh[bmesh];
+  	{NIntegrate[1, {x, y, z} \[Element] bmesh], NIntegrate[1, {x, y, z} \[Element] mesh]}
+  	,
+  	{4 Pi, (5 Pi)/(3 Sqrt[2])}
+  	,
+  	PrecisionGoal -> 1.5
+	,
+	TestID->"OpenCascadeLink_Bugs-20221213-Z4Z4Y5-bug-392674"
+]
+
+NTest[
+	bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[
+		OpenCascadeShapeDifference @@
+ 		OpenCascadeShape /@ {Ball[{0, 0, 0}], Ball[{0, 1, 1}]}];
+  	mesh = ToElementMesh[bmesh];
+  	{NIntegrate[1, {x, y, z} \[Element] bmesh], NIntegrate[1, {x, y, z} \[Element] mesh]}
+  	,
+  	{4 Pi, (5 Pi)/(3 Sqrt[2])}
+  	,
+  	PrecisionGoal -> 1.5
+	,
+	TestID->"OpenCascadeLink_Bugs-20221213-I2B9R7-bug-392674"
+]
+
+NTest[
+	bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[
+		OpenCascadeShapeDifference @@
+ 		OpenCascadeShape /@ {Ball[{0, 0, 0}], Ball[{0, 11/10, 1}]}];
+  	mesh = ToElementMesh[bmesh];
+  	{NIntegrate[1, {x, y, z} \[Element] bmesh], NIntegrate[1, {x, y, z} \[Element] mesh]}
+  	,
+  	{4 Pi, (5 Pi)/(3 Sqrt[2])}
+  	,
+  	PrecisionGoal -> 1.5
+	,
+	TestID->"OpenCascadeLink_Bugs-20221213-L1M9I4-bug-392674"
+]
+
 Clear["Global`*"];
