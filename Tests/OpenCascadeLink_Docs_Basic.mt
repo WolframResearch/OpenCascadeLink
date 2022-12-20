@@ -357,7 +357,8 @@ Test[
 	Options[OpenCascadeShapeSurfaceMesh]
 	,
 	{"AngularDeflection" -> Automatic, "ComputeInParallel" -> Automatic, 
-	"LinearDeflection" -> Automatic, "RelativeDeflection" -> Automatic}
+	 "LinearDeflection" -> Automatic, "Rediscretization" -> Automatic, 
+	 "RelativeDeflection" -> Automatic}
 	,
 	TestID->"OpenCascadeLink_Docs_Basic-20200501-D9P2E7-bug-391736"
 ]
