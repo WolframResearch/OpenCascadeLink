@@ -1591,6 +1591,8 @@ Module[
 	instance
 ]
 
+(* TODO: set precision *)
+(* https://dev.opencascade.org/comment/24206#comment-24206 *)
 OpenCascadeShapeFix[shape_] /; 
 	OpenCascadeShapeExpressionQ[shape] :=
 Module[
