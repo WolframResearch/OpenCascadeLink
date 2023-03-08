@@ -80,6 +80,7 @@ OpenCascadeAxis3D::usage = "OpenCascadeAxis3D[o, s] returns a Graphics3D with an
 (* Pipes:
 https://dev.opencascade.org/doc/occt-7.6.0/refman/html/class_b_rep_offset_a_p_i___make_pipe.html#details
 https://dev.opencascade.org/doc/occt-7.6.0/refman/html/class_b_rep_feat___make_pipe.html#a34a5e6e5c648a9d951e9d403f6bcf53f
+https://dev.opencascade.org/comment/24234#comment-24234
 *)
 
 
