@@ -142,8 +142,6 @@ baseLibraryName = FileNameJoin[{ $OpenCascadeInstallationDirectory,
 $OpenCascadeLibrary = FindLibrary[ FileNameJoin[{ baseLibraryName,
 		"openCascadeWolframDLL" }]];
 
-pack = Developer`ToPackedArray;
-
 needInitialization = True;
 
 (*
