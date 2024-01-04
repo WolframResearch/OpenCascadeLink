@@ -44,6 +44,7 @@ OpenCascadeShapeLoft::usage = "OpenCascadeShapeLoft[ {shape1, shape2,..}] return
 OpenCascadeShapeTransformation::usage = "OpenCascadeShapeTransformation[ shape, tfun] returns a new instance of an OpenCascade expression that applies the transformation function tfun to the OpenCascade expression shape.";
 
 OpenCascadeShapeSolid::usage = "OpenCascadeShapeSolid[ {shape1,..}] returns a new instance of an OpenCascade expression with a solid from shape1, ...";
+OpenCascadeShapeFace::usage = "OpenCascadeShapeFace[ {shape1,..}] returns a new instance of an OpenCascade expression with a face from shape1, ...";
 OpenCascadeShapeWire::usage = "OpenCascadeShapeWire[ {shape1,..}] returns a new instance of an OpenCascade expression with a wire from shape1, ...";
 
 OpenCascadeShapeSurfaceMesh::usage = "OpenCascadeShapeSurfaceMesh[ shape] returns a new instance of an OpenCascade expression with it's surface meshed.";
@@ -189,6 +190,7 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	makeLineFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeLine", {Integer, {Real, 2, "Shared"}}, Integer];
 
 	makeSolidFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSolid", {Integer, {Integer, 1, "Shared"}}, Integer];
+	makeFaceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeFace", {Integer, {Integer, 1, "Shared"}}, Integer];
 	makeWireFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeWire", {Integer, {Integer, 1, "Shared"}}, Integer];
 
 	makeDifferenceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeDifference", {Integer, Integer, Integer, Integer}, Integer];
@@ -1362,8 +1364,25 @@ OpenCascadeShapeSolid[e__] /;
 	 And @@ (OpenCascadeShapeExpressionQ /@ {e}) :=
 OpenCascadeShapeSolid[{e}]
 
-(* OCSFace can not construct a face from wires without
-a 'reference' surface *)
+
+OpenCascadeShapeFace[oces:{e__}] /;
+	 And @@ (OpenCascadeShapeExpressionQ /@ oces) :=
+Module[{p, instance, res},
+
+	ids = pack[ instanceID /@ oces];
+	ids = DeleteDuplicates[ ids];
+
+	instance = OpenCascadeShapeCreate[];
+	res = makeFaceFun[ instanceID[ instance], ids];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instance
+]
+
+OpenCascadeShapeFace[e__] /;
+	 And @@ (OpenCascadeShapeExpressionQ /@ {e}) :=
+OpenCascadeShapeFace[{e}]
+
 
 OpenCascadeShapeWire[oces:{e__}] /;
 	 And @@ (OpenCascadeShapeExpressionQ /@ oces) :=

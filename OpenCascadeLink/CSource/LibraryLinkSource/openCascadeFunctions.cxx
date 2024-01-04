@@ -92,6 +92,7 @@ extern "C" {
 	DLLEXPORT int makeLine(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int makeSolid(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+	DLLEXPORT int makeFace(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeWire(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int makeDifference(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
@@ -1020,6 +1021,77 @@ DLLEXPORT int makeSolid(WolframLibraryData libData, mint Argc, MArgument *Args, 
 	}
 
 	TopoDS_Shape shape  = solid.Shape();
+
+	*instance = shape;
+
+	MArgument_setInteger(res, 0);
+	return 0;
+}
+
+DLLEXPORT int makeFace(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	mint id = MArgument_getInteger(Args[0]);
+
+	MTensor p1 = MArgument_getMTensor(Args[1]);
+	int type1 = libData->MTensor_getType(p1);
+	int rank1 = libData->MTensor_getRank(p1);
+	const mint* dims1 = libData->MTensor_getDimensions(p1);
+
+	TopoDS_Shape *instance = get_ocShapeInstance( id);
+
+	if (instance == NULL || type1 != MType_Integer ||
+			 rank1 != 1 || dims1[0] < 0) {
+		libData->MTensor_disown(p1);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	mint * rawP1 = libData->MTensor_getIntegerData(p1);
+
+	Handle(ShapeExtend_WireData) theData = new ShapeExtend_WireData();
+	BRepBuilderAPI_MakeWire wire;
+	TopoDS_Shape *anID;
+	for (int i = 0; i < dims1[0]; i++) {
+		anID = get_ocShapeInstance( rawP1[ i]);
+		if (anID->IsNull()) {
+			libData->MTensor_disown(p1);
+			MArgument_setInteger(res, 0);
+			return LIBRARY_FUNCTION_ERROR;
+		}
+
+		for (TopExp_Explorer e (*anID, TopAbs_EDGE);
+				e.More(); e.Next()) {
+			theData->Add(TopoDS::Edge (e.Current()));
+		}
+
+	}
+	libData->MTensor_disown(p1);
+
+	ShapeFix_Wire fixWire;
+
+	fixWire.Load(theData);
+
+	fixWire.Perform();
+	fixWire.FixReorder();
+	fixWire.FixConnected();
+
+	wire = fixWire.WireAPIMake();
+
+	if (!wire.IsDone()) {
+		/* this leaves *instance undefined */
+		MArgument_setInteger(res, ERROR);
+		return 0;
+	}
+
+	BRepBuilderAPI_MakeFace face(wire, Standard_True); 
+
+	if (!face.IsDone()) {
+		/* this leaves *instance undefined */
+		MArgument_setInteger(res, ERROR);
+		return 0;
+	}
+
+	TopoDS_Shape shape  = face.Shape();
 
 	*instance = shape;
 
