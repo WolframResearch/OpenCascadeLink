@@ -71,6 +71,7 @@ OpenCascadeShapeImport::usage = "OpenCascadeShapeImport[ \"file.ext\", expr] imp
 
 
 OpenCascadeTorus::usage = "OpenCascadeTorus[ axis, r1, r2] represents an open cascade torus.";
+OpenCascadeDisk::usage = "OpenCascadeDisk[{center, vector}, radius, {angle1, angle2}] represents an open cascade disk.";
 OpenCascadeCircle::usage = "OpenCascadeCircle[{center, vector}, radius, {angle1, angle2}] represents an open cascade circle.";
 
 OpenCascadeAxis3D::usage = "OpenCascadeAxis3D[o, s] returns a Graphics3D with an axis system with origin o and possibly scaled by s."
@@ -1274,6 +1275,31 @@ Module[{coords, faces, polygons, faceCoords, shape, numPoly},
 	OpenCascadeShapeFix[shape]
 ]
 
+
+OpenCascadeShape[OpenCascadeDisk[axis:{center_, normal_}]] := 
+	OpenCascadeSahpeFace[OpenCascadeShape[OpenCascadeCircle[axis, 1, {0, 2 Pi}]]]
+
+OpenCascadeShape[OpenCascadeDisk[axis:{center_, normal_}, r_]] := 
+	OpenCascadeShapeFace[OpenCascadeShape[OpenCascadeCircle[axis, r, {0, 2 Pi}]]]
+
+OpenCascadeShape[OpenCascadeDisk[axis:{center_, normal_}, radius_, a:{angle1_, angle2_}]] /;
+		Dimensions[axis] === {2, 3} && MatrixQ[axis, NumericQ] &&
+		NumericQ[radius] && radius > 0 && 
+		(* we need a line a circle and a third line for the < 2 Pi case 
+		and not <= 2 Pi*)
+		NumericQ[angle1] && NumericQ[angle2] && (0 < Abs[(angle1 - angle2)] < 2 Pi) :=
+Module[{r, a1, a2, l1, c, l2},
+
+	r = N[radius];
+	a1 = N[angle1];
+	a2 = N[angle2];
+
+	l1 = OpenCascadeShape[Line[{center, {r Cos[a1], r Sin[a1], 0} + center}]];
+	c = OpenCascadeShape[OpenCascadeCircle[axis, r, a]];
+	l2 = OpenCascadeShape[Line[{{r Cos[a2], r Sin[a2], 0} + center, center}]];
+
+	OpenCascadeShapeFace[{l1, c, l2}]
+]
 
 (* wires in 3D *)
 
