@@ -37,9 +37,11 @@
 #include <BRepBuilderAPI_MakeEdge.hxx>
 
 #include <BRepBuilderAPI_MakePolygon.hxx>
-#include <Geom_BSplineSurface.hxx>	
 #include <BRepBuilderAPI_Sewing.hxx>
 #include <BRepBuilderAPI_Transform.hxx>
+
+#include <Geom_BSplineSurface.hxx>	
+#include <Geom_BezierCurve.hxx>
 
 #include <gp_Circ.hxx>
 #include <Geom_Circle.hxx>
@@ -87,6 +89,7 @@ extern "C" {
 
 	DLLEXPORT int makePolygon(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeBSplineSurface(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+	DLLEXPORT int makeBezierCurve(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int makeCircle(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeLine(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
@@ -1359,6 +1362,74 @@ DLLEXPORT int makeBSplineSurface(WolframLibraryData libData, mint Argc, MArgumen
 	libData->MTensor_disown(vknots);
 	libData->MTensor_disown(umults);
 	libData->MTensor_disown(vmults);
+
+	MArgument_setInteger(res, 0);
+	return 0;
+}
+
+
+
+DLLEXPORT int makeBezierCurve(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+
+	mint id = MArgument_getInteger(Args[0]);
+
+	TopoDS_Shape *instance = get_ocShapeInstance( id);
+	if (instance == NULL) {
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	} 
+
+	MTensor curvePoles = MArgument_getMTensor(Args[1]);                                 
+	int type1 = libData->MTensor_getType(curvePoles);
+	int rank1 = libData->MTensor_getRank(curvePoles);
+	const mint* dims1 = libData->MTensor_getDimensions(curvePoles);
+	if ((type1 != MType_Real) || (rank1 != 2) || (dims1[1] != 3)) {
+		libData->MTensor_disown(curvePoles);
+		MArgument_setInteger(res, 0);
+    	return LIBRARY_FUNCTION_ERROR;
+	}
+
+	TColgp_Array1OfPnt CurvePoles(1, dims1[0]);                                 
+	mreal* realData = libData->MTensor_getRealData(curvePoles);                                
+	for (int i = 1; i <= dims1[0]; i++) {
+		CurvePoles.SetValue(i, gp_Pnt(
+			(Standard_Real) realData[0],
+			(Standard_Real) realData[1],
+			(Standard_Real) realData[2]
+			)
+		);
+		realData += 3;
+	}
+
+	Handle(Geom_Curve) curve;
+
+	try {
+		curve = new Geom_BezierCurve(CurvePoles);
+	}
+	catch (Standard_ConstructionError) {
+		/* this leaves *instance undefined */
+		MArgument_setInteger(res, ERROR);
+		return 0;
+	}
+
+	BRepBuilderAPI_MakeEdge edge(curve);
+	if (!edge.IsDone()) {
+		/* this leaves *instance undefined */
+		MArgument_setInteger(res, ERROR);
+		return 0;
+	}
+
+	TopoDS_Shape shape = edge.Shape();
+	if (shape.IsNull()) {
+		/* this leaves *instance undefined */
+		MArgument_setInteger(res, ERROR);
+		return 0;
+	}
+
+	*instance = shape;
+
+	libData->MTensor_disown(curvePoles);
 
 	MArgument_setInteger(res, 0);
 	return 0;

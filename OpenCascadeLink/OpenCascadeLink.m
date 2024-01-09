@@ -186,6 +186,7 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	makePolygonFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makePolygon", {Integer, {Real, 2, "Shared"}}, Integer];
 	makeBSplineSurfaceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeBSplineSurface", {Integer, {Real, 3, "Shared"}, {Real, 2, "Shared"},
 		{Real, 1, "Shared"}, {Real, 1, "Shared"}, {Integer, 1, "Shared"}, {Integer, 1, "Shared"}, Integer, Integer, Integer, Integer}, Integer];
+	makeBezierCurveFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeBezierCurve", {Integer, {Real, 2, "Shared"}}, Integer];
 
 	makeCircleFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeCircle", {Integer, {Real, 2, "Shared"}, Real, Integer, Real, Real, {Real, 2, "Shared"}}, Integer];
 	makeLineFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeLine", {Integer, {Real, 2, "Shared"}}, Integer];
@@ -1215,6 +1216,33 @@ Module[
 	res = makeBSplineSurfaceFun[ instanceID[ instance], poles, weights,
 		uknots, vknots, umults, vmults, udegree, vdegree,
 		Boole[uperiodic], Boole[vperiodic]];
+	If[ res =!= 0, Return[ $Failed, Module]];
+
+	instance
+]
+
+OpenCascadeShape[bc:BezierCurve[pts_, OptionsPattern[]]] /;
+	Length[ Dimensions[ pts]] === 2 :=
+Module[
+	{bf},
+
+	bf = BezierFunction[pts];
+	(* bf["Properties"] *)
+
+	OpenCascadeShape[bf]
+]
+
+OpenCascadeShape[bf_BezierFunction] /;
+	Length[ Dimensions[ bf["ControlPoints"]]] === 2 :=
+Module[
+	{pts},
+
+	pts = bf["ControlPoints"];
+	pts = pack[N[pts]];
+
+	instance = OpenCascadeShapeCreate[];
+
+	res = makeBezierCurveFun[ instanceID[ instance], pts];
 	If[ res =!= 0, Return[ $Failed, Module]];
 
 	instance
