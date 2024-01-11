@@ -1223,19 +1223,20 @@ Module[
 	instance
 ]
 
-OpenCascadeShape[bc:BezierCurve[pts_, OptionsPattern[]]] /;
-	Length[ Dimensions[ pts]] === 2 :=
+OpenCascadeShape[bc:BezierCurve[pts_, opts:OptionsPattern[]]] /;
+	MatrixQ[pts, NumericQ] && MatchQ[ Dimensions[pts], {_, 3}] :=
 Module[
 	{bf},
 
-	bf = BezierFunction[pts];
+	bf = BezierFunction[pts, opts];
 	(* bf["Properties"] *)
 
 	OpenCascadeShape[bf]
 ]
 
 OpenCascadeShape[bf_BezierFunction] /;
-	Length[ Dimensions[ bf["ControlPoints"]]] === 2 :=
+	MatrixQ[bf["ControlPoints"], NumericQ] &&
+	MatchQ[ Dimensions[bf["ControlPoints"]], {_, 3}] :=
 Module[
 	{pts},
 
@@ -1307,10 +1308,12 @@ Module[{coords, faces, polygons, faceCoords, shape, numPoly},
 
 
 OpenCascadeShape[OpenCascadeDisk[axis:{center_, normal_}]] := 
-	OpenCascadeSahpeFace[OpenCascadeShape[OpenCascadeCircle[axis, 1, {0, 2 Pi}]]]
+	OpenCascadeShapeFace[OpenCascadeShape[OpenCascadeCircle[axis, 1, {0, 2 Pi}]]]
 
 OpenCascadeShape[OpenCascadeDisk[axis:{center_, normal_}, r_]] := 
 	OpenCascadeShapeFace[OpenCascadeShape[OpenCascadeCircle[axis, r, {0, 2 Pi}]]]
+
+(* TODO: {0, 2 Pi} case *)
 
 OpenCascadeShape[OpenCascadeDisk[axis:{center_, normal_}, radius_, a:{angle1_, angle2_}]] /;
 		Dimensions[axis] === {2, 3} && MatrixQ[axis, NumericQ] &&
@@ -1399,6 +1402,23 @@ Module[{p, instance, res},
 	If[ res =!= 0, Return[$Failed, Module]];
 
 	instance
+]
+
+OpenCascadeShape[Line[coords_]] /;
+		MatchQ[ Dimensions[coords], {_, _, 3}] :=
+Module[{wires, wire},
+
+	wires = OpenCascadeShape /@ (Line /@ coords);
+	If[ !AllTrue[wires, OpenCascadeShapeExpressionQ],
+		Return[$Failed, Module];
+	];
+
+	wire = OpenCascadeShapeUnion[ wires];
+	If[ !OpenCascadeShapeExpressionQ[ wire],
+		Return[$Failed, Module];
+	];
+
+	wire
 ]
 
 
@@ -2224,7 +2244,9 @@ Module[
 (* Drafting *)
 (**)
 
-Make2DShape[e_] := OpenCascadeShapeExpression2D[e];
+Make2DShape[$Failed] := $Failed;
+(*Make2DShape[e_] := OpenCascadeShapeExpression2D[e];*)
+Make2DShape[e_] := e;
 OpenCascadeShape[OpenCascadeShapeExpression2D[e_]] := e
 
 $OpenCascadeDraftAxis = {0,0,1};
@@ -2235,6 +2257,155 @@ Module[{center, instance},
 	center = Join[c, {0}];
 	instance = OpenCascadeShape[OpenCascadeDisk[{center, $OpenCascadeDraftAxis}, radius, a]];
 	instance = Make2DShape[ instance];
+
+	instance
+]
+
+
+OpenCascadeShape[(Parallelepiped|Parallelogram)[base_, {c1_, c2_}]] /;
+		VectorQ[base, NumericQ] && (Length[ base] === 2) && 
+		VectorQ[c1, NumericQ] && (Length[ c1] === 2) && 
+		VectorQ[c2, NumericQ] && (Length[ c2] === 2) := 
+	OpenCascadeShape[Polygon[{base, base + c1, base + c1 + c2, base + c2}]]
+
+OpenCascadeShape[Polygon[coords_]] /;
+		MatrixQ[coords, NumericQ] && MatchQ[ Dimensions[coords], {_, 2}] :=
+Module[{p, instance},
+
+	p = pack[ N[ coords]];
+	p = Join[p, ConstantArray[{0.}, {Length[p]}], 2];
+
+	instance = OpenCascadeShape[Polygon[p]];
+	instance = Make2DShape[ instance];
+
+	instance
+]
+
+OpenCascadeShape[Polygon[coords_]] /;
+		MatchQ[ Dimensions[coords], {_, _, 2}] :=
+Module[{p, instance},
+
+	p = pack[ N[ #]]& /@ coords;
+	p = Join[#, ConstantArray[{0.}, {Length[#]}], 2]& /@ p;
+
+	instance = OpenCascadeShape[Polygon[p]];
+	instance = Make2DShape[ instance];
+
+	instance
+]
+
+OpenCascadeShape[p:Polygon[coords_, data_]] /;
+	MatrixQ[coords, NumericQ] && MatchQ[ Dimensions[coords], {_, 2}] :=
+Module[{p, instance},
+
+	p = pack[ N[ coords]];
+	p = Join[p, ConstantArray[{0.}, {Length[p]}], 2];
+
+	instance = OpenCascadeShape[Polygon[p, data]];
+	instance = Make2DShape[ instance];
+
+	instance
+]
+
+OpenCascadeShape[Rectangle[{xmin_, ymin_}]] :=
+	OpenCascadeShape[Rectangle[{xmin, ymin}, {1, 1}]]
+
+OpenCascadeShape[Rectangle[{xmin_, ymin_}, {xmax_, ymax_}]] :=
+	OpenCascadeShape[Polygon[{{xmin, ymin}, {xmax, ymin}, {xmax, ymax}, {xmin, ymax}}]];
+
+
+OpenCascadeShape[RegularPolygon[d__]] :=
+	OpenCascadeShape[Polygon[CirclePoints[d]]];
+
+
+
+OpenCascadeShape[Triangle[coords_]] /;
+		MatrixQ[coords, NumericQ] && MatchQ[ Dimensions[coords], {3, 2}] :=
+OpenCascadeShape[Polygon[coords]]
+
+OpenCascadeShape[Triangle[coords_]] /;
+		ArrayQ[coords, 3, NumericQ] && MatchQ[ Dimensions[coords], {_, 3, 2}] :=
+OpenCascadeShape[Polygon[coords]]
+
+
+(* 1D primitives *)
+
+OpenCascadeShape[BezierCurve[coords_, opts:OptionsPattern[]]] /;
+		MatrixQ[coords, NumericQ] && MatchQ[ Dimensions[coords], {_, 2}] :=
+Module[{p, instance},
+
+	p = pack[ N[ coords]];
+	p = Join[p, ConstantArray[{0.}, {Length[p]}], 2];
+
+	instance = OpenCascadeShape[BezierCurve[p, opts]];
+	instance = Make2DShape[ instance];
+
+	instance
+]
+
+
+OpenCascadeShape[Circle[c:{_, _}]] := 
+	OpenCascadeShape[Circle[c, 1, {0, 2 Pi}]]
+
+OpenCascadeShape[Circle[c:{_, _}, r_]] := 
+	OpenCascadeShape[Circle[c, r, {0, 2 Pi}]]
+
+
+OpenCascadeShape[Circle[{x_, y_}, radius_, a:{angle1_, angle2_}]] /;
+		NumericQ[radius] && radius > 0 && 
+		NumericQ[angle1] && NumericQ[angle2] && (0 < Abs[(angle1 - angle2)] <= 2 Pi) :=
+Module[{axis, instance},
+
+	axis = {{x, y, 0.}, $OpenCascadeDraftAxis};
+
+	instance = OpenCascadeShape[OpenCascadeCircle[axis, radius, a]];
+	instance = Make2DShape[ instance];
+
+	instance
+]
+
+OpenCascadeShape[Line[coords_]] /;
+		MatrixQ[coords, NumericQ] && MatchQ[ Dimensions[coords], {_, 2}] :=
+Module[{p, instance},
+
+	p = pack[ N[ coords]];
+	p = Join[p, ConstantArray[{0.}, {Length[p]}], 2];
+
+	instance = OpenCascadeShape[Line[p]];
+	instance = Make2DShape[ instance];
+
+	instance
+]
+
+OpenCascadeShape[Line[coords_]] /;
+		MatchQ[ Dimensions[coords], {_, _, 2}] :=
+Module[{p, instance},
+
+	p = pack[ N[ #]]& /@ coords;
+	p = Join[#, ConstantArray[{0.}, {Length[#]}], 2]& /@ p;
+
+	instance = OpenCascadeShape[Line[p]];
+	instance = Make2DShape[ instance];
+
+	instance
+]
+
+OpenCascadeShape[JoinedCurve[curves_]] /;
+	Union[RegionDimension/@ curves] === {1} :=
+Module[{shapes, instance},
+	shapes = OpenCascadeShape /@ curves;
+
+	instance = OpenCascadeShapeWire[shapes];
+
+	instance
+]
+
+OpenCascadeShape[FilledCurve[curves_]] /;
+	Union[RegionDimension/@ curves] === {1} :=
+Module[{shape, instance},
+
+	shape = OpenCascadeShape[JoinedCurve[curves]];
+	instance = OpenCascadeShapeFace[shape];
 
 	instance
 ]
