@@ -9,6 +9,8 @@ $OpenCascadeVersion::usage = "$OpenCascadeVersion gives the version number of th
 
 OpenCascadeShapeExpression::usage = "OpenCascadeShapeExpression[ id] represents an instance of a OpenCascadeShape object."
 
+OpenCascadeShapeExpression2D::usage = "OpenCascadeShapeExpressionw2D[ id] represents an instance of a 2D OpenCascadeShape object."
+
 OpenCascadeShapeExpressionQ::usage = "OpenCascadeShapeExpressionQ[ expr] returns True if expr represents an active instance of a OpenCascadeShape object."
 
 LoadOpenCascade::usage = "LoadOpenCascade[] loads the OpenCascade Library."
@@ -1313,8 +1315,8 @@ OpenCascadeShape[OpenCascadeDisk[axis:{center_, normal_}, r_]] :=
 OpenCascadeShape[OpenCascadeDisk[axis:{center_, normal_}, radius_, a:{angle1_, angle2_}]] /;
 		Dimensions[axis] === {2, 3} && MatrixQ[axis, NumericQ] &&
 		NumericQ[radius] && radius > 0 && 
-		(* we need a line a circle and a third line for the < 2 Pi case 
-		and not <= 2 Pi*)
+		(* we need a line, a circle and a third line for the < 2 Pi case 
+		but for the <= 2 Pi case we only need a circle *)
 		NumericQ[angle1] && NumericQ[angle2] && (0 < Abs[(angle1 - angle2)] < 2 Pi) :=
 Module[{r, a1, a2, l1, c, l2},
 
@@ -2216,6 +2218,27 @@ Module[
 
 	bmesh
 ]
+
+
+(**)
+(* Drafting *)
+(**)
+
+Make2DShape[e_] := OpenCascadeShapeExpression2D[e];
+OpenCascadeShape[OpenCascadeShapeExpression2D[e_]] := e
+
+$OpenCascadeDraftAxis = {0,0,1};
+
+OpenCascadeShape[Disk[c_, radius_, a:{angle1_, angle2_}]] := 
+Module[{center, instance},
+
+	center = Join[c, {0}];
+	instance = OpenCascadeShape[OpenCascadeDisk[{center, $OpenCascadeDraftAxis}, radius, a]];
+	instance = Make2DShape[ instance];
+
+	instance
+]
+
 
 End[]
 
