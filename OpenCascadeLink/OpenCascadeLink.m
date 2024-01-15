@@ -76,6 +76,8 @@ OpenCascadeTorus::usage = "OpenCascadeTorus[ axis, r1, r2] represents an open ca
 OpenCascadeDisk::usage = "OpenCascadeDisk[{center, vector}, radius, {angle1, angle2}] represents an open cascade disk.";
 OpenCascadeCircle::usage = "OpenCascadeCircle[{center, vector}, radius, {angle1, angle2}] represents an open cascade circle.";
 
+Circle3D::usage = "Circle3D[{centre_, normal_}, radius_ : 1, angle_ : {0, 2 Pi}] returns a 3D circle graphics primitive to be used in Graphics3D."
+Disk3D::usage = "Disk3D[{centre_, normal_}, radius_ : 1, angle_ : {0, 2 Pi}] returns a 3D disk graphics primitive to be used in Graphics3D."
 OpenCascadeAxis3D::usage = "OpenCascadeAxis3D[o, s] returns a Graphics3D with an axis system with origin o and possibly scaled by s."
 
 (**)
@@ -234,6 +236,23 @@ Module[{libDir, oldpath, preLoadLibs, success},
 
 
 (* Utility functions *)
+
+Circle3D[{centre_, normal_}, radius_:1, angle_:{0, 2 Pi}] :=
+Module[{r, mp, mp3D},
+	r = DiscretizeRegion[Circle[centre[[{1, 2}]], radius, angle]];
+	mp = MeshPrimitives[r, 1, Multicells -> True];
+	mp3D = mp /. {x_Real, y_Real} :> {x, y, centre[[3]]};
+	RotationTransform[{{0, 0, 1}, normal}, centre] /@ mp3D
+]
+
+
+Disk3D[{centre_, normal_}, radius_ : 1, angle_ : {0, 2 Pi}] :=
+Module[{r, mp, mp3D},
+	r = BoundaryDiscretizeRegion[ Disk[centre[[{1, 2}]], radius, angle]];
+	mp = MeshPrimitives[r, 2, Multicells -> True];
+	mp3D = mp /. {x_Real, y_Real} :> {x, y, centre[[3]]};
+	RotationTransform[{{0, 0, 1}, normal}, centre] /@ mp3D
+]
 
 OpenCascadeAxis3D[o_ : {0, 0, 0}, s_ : 1] := OpenCascadeAxis3D[o, {s, s, s}]
 OpenCascadeAxis3D[o_ : {0, 0, 0}, {sx_, sy_, sz_}] :=
@@ -2390,22 +2409,59 @@ Module[{p, instance},
 	instance
 ]
 
-OpenCascadeShape[JoinedCurve[curves_]] /;
-	Union[RegionDimension/@ curves] === {1} :=
+
+ClearAll[validOCCurvesQ]
+(* OpenCascadeLink is missing BSplineCurve *)
+validOCCurvesQ[_BezierCurve] := True
+validOCCurvesQ[_Line] := True
+(* Circle is not supported by (Joined|Filled)Curve *)
+validOCCurvesQ[Circle[{x_, y_}, r_, {a1_, a2_}]] /; Abs[a2 - a1] < (2 Pi) := True
+validOCCurvesQ[_] := False
+
+getFirstCoord[BezierCurve[pts_, OptionsPattern[]]] := pts[[1]]
+getFirstCoord[Line[pts_]] := pts[[1]]
+getFirstCoord[Circle[c : {x_, y_}, r_, {a1_, a2_}]] := c + r {Cos[a1], Sin[a1]}
+
+getLastCoord[BezierCurve[pts_, OptionsPattern[]]] := pts[[-1]]
+getLastCoord[Line[pts_]] := pts[[-1]]
+getLastCoord[Circle[c : {x_, y_}, r_, {a1_, a2_}]] := c + r {Cos[a2], Sin[a2]}
+
+FilledCurve::discon = JoinedCurve::discon = "The last coordinate of segment `1` is not connected to the first coordinate of segment `2`."
+
+getCurveShapes[curves_, head_] :=
 Module[{shapes, instance},
+
+	Do[
+ 		If[getLastCoord[curves[[i]]] != getFirstCoord[curves[[i + 1]]],
+			Message[head::discon, curves[[i]], curves[[i+1]]];
+			Return[$Failed, Module];
+		];
+	, {i, Length[curves] - 1} ];
+
 	shapes = OpenCascadeShape /@ curves;
 
+	shapes
+]
+
+OpenCascadeShape[JoinedCurve[curves:{__?validOCCurvesQ}, opts:OptionsPattern[]]] /;
+	Union[RegionDimension/@ curves] === {1} :=
+Module[{shapes, instance},
+
+	shapes = getCurveShapes[curves, JoinedCurve];
+	If[ FailureQ[shapes], Return[$Failed, Module];];
 	instance = OpenCascadeShapeWire[shapes];
 
 	instance
 ]
 
-OpenCascadeShape[FilledCurve[curves_]] /;
+OpenCascadeShape[FilledCurve[curves:{__?validOCCurvesQ}, opts:OptionsPattern[]]] /;
 	Union[RegionDimension/@ curves] === {1} :=
-Module[{shape, instance},
+Module[{shapes, wire, instance},
 
-	shape = OpenCascadeShape[JoinedCurve[curves]];
-	instance = OpenCascadeShapeFace[shape];
+	shapes = getCurveShapes[curves, FilledCurve];
+	If[ FailureQ[shapes], Return[$Failed, Module];];
+	wire = OpenCascadeShapeWire[shapes];
+	instance = OpenCascadeShapeFace[wire];
 
 	instance
 ]
