@@ -2499,18 +2499,20 @@ Module[{p, instance},
 
 
 ClearAll[validOCCurvesQ]
-(* OpenCascadeLink is missing BSplineCurve *)
 validOCCurvesQ[_BezierCurve] := True
+validOCCurvesQ[_BSplineCurve] := True
 validOCCurvesQ[_Line] := True
 (* Circle is not supported by (Joined|Filled)Curve *)
 validOCCurvesQ[Circle[{x_, y_}, r_, {a1_, a2_}]] /; Abs[a2 - a1] < (2 Pi) := True
 validOCCurvesQ[_] := False
 
 getFirstCoord[BezierCurve[pts_, OptionsPattern[]]] := pts[[1]]
+getFirstCoord[BSplineCurve[pts_, OptionsPattern[]]] := pts[[1]]
 getFirstCoord[Line[pts_]] := pts[[1]]
 getFirstCoord[Circle[c : {x_, y_}, r_, {a1_, a2_}]] := c + r {Cos[a1], Sin[a1]}
 
 getLastCoord[BezierCurve[pts_, OptionsPattern[]]] := pts[[-1]]
+getLastCoord[BSplineCurve[pts_, OptionsPattern[]]] := pts[[-1]]
 getLastCoord[Line[pts_]] := pts[[-1]]
 getLastCoord[Circle[c : {x_, y_}, r_, {a1_, a2_}]] := c + r {Cos[a2], Sin[a2]}
 
