@@ -187,11 +187,13 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	makeLinearSweepFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeLinearSweep", {Integer, Integer, {Real, 2, "Shared"}}, Integer];
 	makeTransformationFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeTransformation", {Integer, Integer, {Real, 2, "Shared"}}, Integer];
 
-	makePolygonFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makePolygon", {Integer, {Real, 2, "Shared"}}, Integer];
 	makeBSplineSurfaceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeBSplineSurface", {Integer, {Real, 3, "Shared"}, {Real, 2, "Shared"},
 		{Real, 1, "Shared"}, {Real, 1, "Shared"}, {Integer, 1, "Shared"}, {Integer, 1, "Shared"}, Integer, Integer, Integer, Integer}, Integer];
+	makeBSplineCurveFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeBSplineCurve", {Integer, {Real, 2, "Shared"}, {Real, 1, "Shared"},
+		{Real, 1, "Shared"}, {Integer, 1, "Shared"}, Integer, Integer}, Integer];
 	makeBezierCurveFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeBezierCurve", {Integer, {Real, 2, "Shared"}}, Integer];
 
+	makePolygonFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makePolygon", {Integer, {Real, 2, "Shared"}}, Integer];
 	makeCircleFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeCircle", {Integer, {Real, 2, "Shared"}, Real, Integer, Real, Real, {Real, 2, "Shared"}}, Integer];
 	makeLineFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeLine", {Integer, {Real, 2, "Shared"}}, Integer];
 
@@ -1142,7 +1144,7 @@ Module[
 ]
 
 OpenCascadeShape[bsf_BSplineFunction] /;
-	Length[ Dimensions[ bsf["ControlPoints"]]] === 3 :=
+	Length[ Dimensions[ bsf["ControlPoints"]]] === 3 && bsf["Rank"] === 2 :=
 Module[
 	{pts, poles, weights, uknots, vknots, umults, vmults, udegree, vdegree, 
 	uperiodic, vperiodic, uclosed, vclosed, instance, res, temp, nrows, ncols,
@@ -1237,6 +1239,92 @@ Module[
 	res = makeBSplineSurfaceFun[ instanceID[ instance], poles, weights,
 		uknots, vknots, umults, vmults, udegree, vdegree,
 		Boole[uperiodic], Boole[vperiodic]];
+	If[ res =!= 0, Return[ $Failed, Module]];
+
+	instance
+]
+
+
+OpenCascadeShape[BSplineCurve[pts_, OptionsPattern[]]] /;
+	Length[ Dimensions[ pts]] === 2 :=
+Module[
+	{k, w, d, c, bsf, cpts, poles, weights, knots, mults, degree, periodic,
+	closed, instance, res, npoles},
+
+	{k, w, d, c} = OptionValue[BSplineCurve,
+		{SplineKnots, SplineWeights, SplineDegree, SplineClosed}];
+
+	bsf = BSplineFunction[pts,
+		SplineClosed -> c,
+		SplineDegree -> d,
+		SplineWeights -> w,
+		SplineKnots -> k
+	];
+	cpts = bsf["ControlPoints"];
+
+	knots = bsf["Knots"];
+	weights = bsf["Weights"];
+	degree = bsf["Degree"];
+	closed = bsf["Closed"];
+
+	closed = closed /. Automatic -> False;
+	closed = Flatten[{closed}][[1]];
+	If[ !BooleanQ[closed],
+		Return[ $Failed, Module];
+	];
+
+	(* a closed BSpline is not the same as periodic BSpline *)
+	(* more needs to be implemented for the u/v-periodic case *)
+	periodic = False;
+
+	degree = degree /. Automatic -> 3;
+	degree = Flatten[{degree}][[1]];
+	If[ !Positive[degree] || !IntegerQ[degree],
+		Return[ $Failed, Module]
+	];
+
+	poles = pack[ N[ cpts]];
+
+	If[ closed == True,
+		poles = Join[poles, poles[[1 ;; degree]], 1];
+		If[ knots == Automatic,
+			knots = "Unclamped";
+		];
+	];
+
+	npoles = Length[poles];
+
+	If[ weights === Automatic,
+		weights = ConstantArray[1., {npoles}];
+	,
+		weights = pack[ N[ weights]];
+	];
+
+	knots = computeKnots[knots, degree, npoles];
+	knots = Flatten[{knots}];
+	(* TODO: check (?) WL requitement: u_i >= u_i+1 *)
+
+	{knots, mults} = pack /@ Transpose[Tally[knots]];
+	(* u_i > u_i+1: This is an OpenCascde requirement *)
+	If[ !strictIncreaseQ[ knots],
+		Return[ $Failed, Module];
+	];
+
+	If[ (Length[ mults] != Length[ knots]) || Length[ knots] < 2,
+		Return[ $Failed, Module];
+	]; 
+
+	If[ periodic === True,
+		If[ mults[[-1]] != mults[[1]], Return[ $Failed, Module]];
+		If[ Total[ mults[[1;;-2]]] =!= npoles, Return[ $Failed, Module]];
+	,
+		(* NON periodic surface *)
+		If[ (Total[mults] - degree -1) =!= npoles, Return[ $Failed, Module]];
+	];
+
+	instance = OpenCascadeShapeCreate[];
+	res = makeBSplineCurveFun[ instanceID[ instance], poles, weights,
+		knots, mults, degree, Boole[periodic]];
 	If[ res =!= 0, Return[ $Failed, Module]];
 
 	instance

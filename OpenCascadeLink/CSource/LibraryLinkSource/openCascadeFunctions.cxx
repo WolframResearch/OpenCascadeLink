@@ -41,6 +41,7 @@
 #include <BRepBuilderAPI_Transform.hxx>
 
 #include <Geom_BSplineSurface.hxx>	
+#include <Geom_BSplineCurve.hxx>
 #include <Geom_BezierCurve.hxx>
 
 #include <gp_Circ.hxx>
@@ -87,10 +88,11 @@ extern "C" {
 	DLLEXPORT int makeLoft(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeTransformation(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
-	DLLEXPORT int makePolygon(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeBSplineSurface(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+	DLLEXPORT int makeBSplineCurve(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeBezierCurve(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
+	DLLEXPORT int makePolygon(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeCircle(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeLine(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
@@ -1362,6 +1364,143 @@ DLLEXPORT int makeBSplineSurface(WolframLibraryData libData, mint Argc, MArgumen
 	libData->MTensor_disown(vknots);
 	libData->MTensor_disown(umults);
 	libData->MTensor_disown(vmults);
+
+	MArgument_setInteger(res, 0);
+	return 0;
+}
+
+
+
+/*
+ *Geom_BSplineSurface::Geom_BSplineCurve(
+    	const TColgp_Array1OfPnt &  	Poles,
+		const TColStd_Array1OfReal &  	Weights,
+		const TColStd_Array1OfReal &  	Knots,
+		const TColStd_Array1OfInteger &	Mults,
+		const Standard_Integer  	Degree,
+		const Standard_Boolean  	Periodic = Standard_False
+	) 	
+ */
+
+DLLEXPORT int makeBSplineCurve(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	mint error = 0;
+	mint pos;
+	mint * mintData;
+	mreal * realData;
+
+	mint id = MArgument_getInteger(Args[0]);
+
+	TopoDS_Shape *instance = get_ocShapeInstance( id);
+	if (instance == NULL) {
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	} 
+
+	MTensor poles = MArgument_getMTensor(Args[1]);
+	int type1 = libData->MTensor_getType(poles);
+	int rank1 = libData->MTensor_getRank(poles);
+	const mint* dims1 = libData->MTensor_getDimensions(poles);
+	if (type1 != MType_Real || rank1 != 2) {
+		libData->MTensor_disown(poles);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	} 
+	TColgp_Array1OfPnt Poles(1, dims1[0]);
+
+	realData = libData->MTensor_getRealData(poles);
+	pos = 0;
+	for (int i = 1; i <= dims1[0]; i++) {
+			Poles.SetValue(i, gp_Pnt(
+				(Standard_Real) realData[pos],
+				(Standard_Real) realData[pos + 1],
+				(Standard_Real) realData[pos + 2]
+			));
+			pos += 3;
+	}
+
+	MTensor weights = MArgument_getMTensor(Args[2]);
+	int type2 = libData->MTensor_getType(weights);
+	int rank2 = libData->MTensor_getRank(weights);
+	const mint* dims2 = libData->MTensor_getDimensions(weights);
+	if (type2 != MType_Real || rank2 != 1) {
+		libData->MTensor_disown(poles);
+		libData->MTensor_disown(weights);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	} 
+	TColStd_Array1OfReal Weights(1, dims2[0]);
+	realData = libData->MTensor_getRealData(weights);
+	for (int i = 0; i < dims2[0]; i++) {
+		Weights.SetValue(i + 1, (Standard_Real) realData[i]);
+	}
+
+
+	MTensor knots = MArgument_getMTensor(Args[3]);
+	int type3 = libData->MTensor_getType(knots);
+	int rank3 = libData->MTensor_getRank(knots);
+	const mint* dims3 = libData->MTensor_getDimensions(knots);
+	if (type3 != MType_Real || rank3 != 1) {
+		libData->MTensor_disown(poles);
+		libData->MTensor_disown(knots);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+	TColStd_Array1OfReal Knots(1, dims3[0]);
+	realData = libData->MTensor_getRealData(knots);
+	for (int i = 0; i < dims3[0]; i++) {
+		Knots.SetValue(i + 1, (Standard_Real) realData[i]);
+	}
+
+	MTensor mults = MArgument_getMTensor(Args[4]);
+	int type5 = libData->MTensor_getType(mults);
+	int rank5 = libData->MTensor_getRank(mults);
+	const mint* dims5 = libData->MTensor_getDimensions(mults);
+	if (type5 != MType_Integer || rank5 != 1) {
+		libData->MTensor_disown(poles);
+		libData->MTensor_disown(knots);
+		libData->MTensor_disown(mults);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	} 
+	TColStd_Array1OfInteger Mults(1, dims5[0]);
+	mintData = libData->MTensor_getIntegerData(mults);
+	for (int i = 0; i < dims5[0]; i++) {
+		Mults.SetValue(i + 1, (Standard_Integer) mintData[i]);
+	}
+
+	const Standard_Integer Degree = (Standard_Integer) MArgument_getInteger(Args[5]);
+
+	const Standard_Boolean Periodic = (Standard_Boolean) MArgument_getInteger(Args[6]); 
+
+
+	Handle(Geom_Curve) curve;
+
+	try {
+	curve = new Geom_BSplineCurve(
+		Poles, Weights, Knots, Mults, Degree, Periodic); 
+	}
+	catch (Standard_ConstructionError) {
+		/* this leaves *instance undefined */
+		MArgument_setInteger(res, ERROR);
+		return 0;
+	}
+
+	BRepBuilderAPI_MakeEdge edge(curve);
+	if (!edge.IsDone()) {
+		/* this leaves *instance undefined */
+		MArgument_setInteger(res, ERROR);
+		return 0;
+	}
+
+	TopoDS_Shape shape  = edge.Shape();
+
+	*instance = shape;
+
+	libData->MTensor_disown(poles);
+	libData->MTensor_disown(weights);
+	libData->MTensor_disown(knots);
+	libData->MTensor_disown(mults);
 
 	MArgument_setInteger(res, 0);
 	return 0;
