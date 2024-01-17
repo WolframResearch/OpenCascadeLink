@@ -13,6 +13,10 @@
 
 #include "openCascadeWolframDLL.h"
 
+#include <Message.hxx>
+#include <Message_Messenger.hxx>
+#include <Message_PrinterOStream.hxx>
+
 #include <unordered_map>
 
 EXTERN_C DLLEXPORT mint WolframLibrary_getVersion( ) ;
@@ -29,6 +33,8 @@ DLLEXPORT mint WolframLibrary_getVersion( ) {
 DLLEXPORT mint WolframLibrary_initialize( WolframLibraryData libData) 
 {
 	mint b = (*libData->registerLibraryExpressionManager)("OpenCascadeShapeManager", manage_ocShapeInstance);
+	// Suppress all OCCT messages by removing all printers within default messenger
+	Message::DefaultMessenger()->RemovePrinters (STANDARD_TYPE(Message_PrinterOStream));
 	return b;
 }
 
