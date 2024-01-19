@@ -17,9 +17,11 @@
 #include <BRepPrimAPI_MakeCone.hxx>
 #include <BRepPrimAPI_MakeCylinder.hxx>
 #include <BRepPrimAPI_MakeSphere.hxx>                                           
+#include <BRepPrimAPI_MakeTorus.hxx>
+
 #include <BRepPrimAPI_MakePrism.hxx>
 #include <BRepPrimAPI_MakeRevol.hxx>
-#include <BRepPrimAPI_MakeTorus.hxx>
+#include <BRepOffsetAPI_MakePipe.hxx>
 
 #include <BRepAlgoAPI_Cut.hxx>
 #include <BRepAlgoAPI_Common.hxx>
@@ -85,6 +87,7 @@ extern "C" {
 	DLLEXPORT int makeSewing(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeRotationalSweep(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeLinearSweep(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+	DLLEXPORT int makePathSweep(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeLoft(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeTransformation(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
@@ -660,6 +663,65 @@ DLLEXPORT int makeLinearSweep(WolframLibraryData libData, mint Argc, MArgument *
 	}
 
 	TopoDS_Shape shape = prism.Shape();
+	*instance = shape;
+
+	MArgument_setInteger(res, 0);
+	return 0;
+}
+
+
+DLLEXPORT int makePathSweep(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	mint id = MArgument_getInteger(Args[0]);
+	mint id1 = MArgument_getInteger(Args[1]);
+	mint id2 = MArgument_getInteger(Args[2]);
+	mint opts = MArgument_getInteger(Args[3]);
+	mint flag = MArgument_getInteger(Args[4]);
+
+	TopoDS_Shape *instance = get_ocShapeInstance( id);
+	TopoDS_Shape *aShape = get_ocShapeInstance( id1);
+	TopoDS_Shape *aPath = get_ocShapeInstance( id2);
+
+	if (instance == NULL || aShape == NULL || aShape->IsNull() ||
+			aPath == NULL || aPath->IsNull()
+		) {
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	/* shape must not contain solids or compund solids */
+	TopExp_Explorer exS(*aShape, TopAbs_SOLID);
+	TopExp_Explorer exC(*aShape, TopAbs_COMPSOLID);
+	if (exS.More() || exC.More()) {
+		MArgument_setInteger(res, -1);
+		return 0;
+	}
+
+	TopExp_Explorer exW(*aPath, TopAbs_WIRE);
+	if( !exW.More()) {
+		MArgument_setInteger(res, -1);
+		return 0;
+	}
+
+	TopoDS_Wire wire = TopoDS::Wire (exW.Current());
+
+	Standard_Boolean forceC1ContinuityQ = Standard_False;
+	if (flag & (1 << 1)) forceC1ContinuityQ = Standard_True;
+
+	/* does not seem to have an effect */
+	enum GeomFill_Trihedron mode;
+	mode = GeomFill_IsCorrectedFrenet;
+
+	BRepOffsetAPI_MakePipe pipe = BRepOffsetAPI_MakePipe(wire, *aShape, mode, flag);
+	pipe.Build();
+
+	if (!pipe.IsDone()) {
+		/* this leaves *instance undefined */
+		MArgument_setInteger(res, ERROR);
+		return 0;
+	}
+
+	TopoDS_Shape shape = pipe.Shape();
 	*instance = shape;
 
 	MArgument_setInteger(res, 0);

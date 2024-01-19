@@ -38,6 +38,7 @@ OpenCascadeShapeShelling::usage = "OpenCascadeShapeShelling[ shape, t, {face1, .
 OpenCascadeShapeSewing::usage = "OpenCascadeShapeSewing[ {shape1, shape2,..}] returns a new instance of an OpenCascade expression with sewn shape1, shape2,...";
 OpenCascadeShapeRotationalSweep::usage = "OpenCascadeShapeRotationalSweep[ shape, {p1, p2}, angle] returns a new instance of an OpenCascade expression that rotates shape by angle radians around the axis between p1 and p2.";
 OpenCascadeShapeLinearSweep::usage = "OpenCascadeShapeLinearSweep[ shape, {p1, p2}] returns a new instance of an OpenCascade expression that linearly sweepes shape from p1 to p2.";
+OpenCascadeShapePathSweep::usage = "OpenCascadeShapePathSweep[ shape, path] returns a new instance of an OpenCascade expression that sweepes shape along path.";
 
 OpenCascadeShapeLoft::usage = "OpenCascadeShapeLoft[ {shape1, shape2,..}] returns a new instance of an OpenCascade expression with a shape that is lofted through shape1, shape2,...";
 
@@ -134,6 +135,11 @@ Options[OpenCascadeShapeUnion] = Sort[ {
 	"SimplifyResult" -> Automatic
 }];
 
+
+Options[OpenCascadeShapePathSweep] = Sort[{
+	"ForceC1Continuity" -> Automatic
+}]
+
 Begin["`Private`"]
 
 
@@ -185,6 +191,7 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	makeSewingFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSewing", {Integer, {Integer, 1, "Shared"}, Integer}, Integer];
 	makeRotationalSweepFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeRotationalSweep", {Integer, Integer, {Real, 2, "Shared"}, Real}, Integer];
 	makeLinearSweepFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeLinearSweep", {Integer, Integer, {Real, 2, "Shared"}}, Integer];
+	makePathSweepFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makePathSweep", {Integer, Integer, Integer, Integer, Integer}, Integer];
 	makeTransformationFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeTransformation", {Integer, Integer, {Real, 2, "Shared"}}, Integer];
 
 	makeBSplineSurfaceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeBSplineSurface", {Integer, {Real, 3, "Shared"}, {Real, 2, "Shared"},
@@ -970,6 +977,41 @@ Module[
 	instance = OpenCascadeShapeCreate[];
 	id1 = instanceID[ shape1];
 	res = makeLinearSweepFun[ instanceID[ instance], id1, direction];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instance
+]
+
+OpenCascadeShapePathSweep::needwire = "`1` needs to be an OpenCascadeShapeType \"Wire\" or an \"Edge\", it is, however, a `2`."
+
+OpenCascadeShapePathSweep[ shape_, path_, opts:OptionsPattern[]] /;
+	OpenCascadeShapeExpressionQ[shape] &&
+	OpenCascadeShapeExpressionQ[ path] :=
+Module[
+	{optParam, temp, instance, spine, id1, id2, res},
+
+
+	optParam = 0;
+	flagParam = 0;
+
+	temp = OptionValue["ForceC1Continuity"];
+	If[ !BooleanQ[temp], temp = False];
+	If[ temp === True, flagParam = BitSet[ flagParam, 1]; ];
+
+	spine = path;
+	If[ OpenCascadeShapeType[path] === "Edge",
+		spine = OpenCascadeShapeWire[path];
+	];
+
+	If[ OpenCascadeShapeType[spine] =!= "Wire",
+		Message[OpenCascadeShapePathSweep::needwire, path, OpenCascadeShapeType[spine]];
+		Return[$Failed, Module];
+	];
+
+	instance = OpenCascadeShapeCreate[];
+	id1 = instanceID[ shape];
+	id2 = instanceID[ spine];
+	res = makePathSweepFun[ instanceID[ instance], id1, id2, optParam, flagParam];
 	If[ res =!= 0, Return[$Failed, Module]];
 
 	instance
