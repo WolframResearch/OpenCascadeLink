@@ -1115,6 +1115,29 @@ Module[{mesh, c, cells, inci, poly, shapes},
 	]
 ]
 
+OpenCascadeShape[Polygon[Rule[ coords_, {}]]] /;
+	MatrixQ[coords, NumericQ] && MatchQ[ Dimensions[coords], {_, 3}] :=
+OpenCascadeShape[Polygon[coords]]
+
+pholeQ[h_]:= MatrixQ[h, NumericQ] && MatchQ[ Dimensions[h], {_, 3}];
+
+OpenCascadeShape[Polygon[Rule[ coords_, holesCoords:{h1__?pholeQ}]]] /;
+	MatrixQ[coords, NumericQ] && MatchQ[ Dimensions[coords], {_, 3}] := 
+Module[{basePolygon, result},
+
+	basePolygon = OpenCascadeShape[Polygon[ coords]];
+	holes = OpenCascadeShape[Polygon[#]]& /@ holesCoords;
+
+	result = OpenCascadeShapeDifference[Flatten[{basePolygon, holes}]];
+
+	If[ !OpenCascadeShapeExpressionQ[ result],
+		result = $Failed;
+	];
+
+	result
+]
+
+
 OpenCascadeShape[Triangle[coords_]] /;
 		MatrixQ[coords, NumericQ] && MatchQ[ Dimensions[coords], {3, 3}] :=
 OpenCascadeShape[Polygon[coords]]
