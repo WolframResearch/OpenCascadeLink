@@ -2423,6 +2423,19 @@ OpenCascadeShape[OpenCascadeShapeExpression2D[e_]] := e
 
 $OpenCascadeDraftAxis = {0,0,1};
 
+OpenCascadeShape[Annulus[c_, {rIn_, rOut_}, a:{angle1_, angle2_}]] := 
+Module[{center, iOut, iIn, instance},
+
+	center = Join[c, {0}];
+	iOut = OpenCascadeShape[OpenCascadeDisk[{center, $OpenCascadeDraftAxis}, rOut, a]];
+	iIn = OpenCascadeShape[OpenCascadeDisk[{center, $OpenCascadeDraftAxis}, rIn, a]];
+	instance = OpenCascadeShapeDifference[iOut, iIn];
+	instance = OpenCascadeShapeFace[instance];
+	instance = Make2DShape[ instance];
+
+	instance
+]
+
 OpenCascadeShape[Disk[c_, radius_, a:{angle1_, angle2_}]] := 
 Module[{center, instance},
 
