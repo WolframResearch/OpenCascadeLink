@@ -27,6 +27,9 @@ OpenCascadeShapeDifference::usage = "OpenCascadeShapeDifference[ shape1, shape2]
 OpenCascadeShapeIntersection::usage = "OpenCascadeShapeIntersection[ shape1, shape2] returns a new instance of an OpenCascade expression representing the intersection of the shapes shape1 and shape2.";
 OpenCascadeShapeUnion::usage = "OpenCascadeShapeUnion[ shape1, shape2] returns a new instance of an OpenCascade expression representing the union of the shapes shape1 and shape2.";
 OpenCascadeShapeBooleanRegion::usage = "OpenCascadeShape[ expr] returns a new instance of an OpenCascade expression representing the BooleanRegion expr.";
+
+OpenCascadeShapeSplit::usage = "OpenCascadeShapeSplit[ shapes, tools] returns a list of instances of OpenCascade expressions representing the shapes split by tools.";
+
 OpenCascadeShapeDefeaturing::usage = "OpenCascadeShapeDefeaturing[ shape, {face1, ..}] returns a new instance of an OpenCascade expression with faces faces1,.. removed.";
 OpenCascadeShapeSimplify::usage = "OpenCascadeShapeSimplify[ shape] returns a new instance of an OpenCascade expression with a simplified shape.";
 OpenCascadeShapeFix::usage = "OpenCascadeShapeFix[ shape] returns a new instance of an OpenCascade expression with a fixed shape.";
@@ -211,6 +214,9 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	makeDifferenceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeDifference", {Integer, Integer, Integer, Integer}, Integer];
 	makeIntersectionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeIntersection", {Integer, Integer, Integer, Integer}, Integer];
 	makeUnionFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeUnion", {Integer, Integer, Integer, Integer}, Integer];
+
+	makeSplitFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSplit", {Integer, {Integer, 1, "Shared"}, {Integer, 1, "Shared"}, Integer, Integer, Integer}, Integer];
+
 	makeDefeaturingFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeDefeaturing", {Integer, Integer, {Integer, 1, "Shared"}}, Integer];
 	makeSimplifyFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSimplify", {Integer, Integer, {Integer, 1, "Shared"}, {Integer, 1, "Shared"}, Integer, Real, Real}, Integer];
 	makeShapeFixFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeShapeFix", {Integer, Integer}, Integer];
@@ -1772,6 +1778,105 @@ Module[
 
 	booleanFunction @@ regions
 ]
+
+OpenCascadeShapeSplit::stype = "To split shapes,the list of shapes must be of the same type and also the list of tools must of the same type. In this case the `1` had types `2`."
+OpenCascadeShapeSplit::ttype = "If the shapes to be split are of type `1` then the tools must not be of type `2`."
+OpenCascadeShapeSplit::badtype = "OpenCascadeShapeSplit is currently not implemented for shape types `1`."
+
+getIntShapeType["Solid"] := 0
+getIntShapeType["Face"] := 1
+getIntShapeType["Wire"] := 2
+getIntShapeType["Vertex"] := 3
+
+OpenCascadeShapeSplit[shapes_, toolsIn_] /;
+		VectorQ[shapes, OpenCascadeShapeExpressionQ] &&
+		VectorQ[toolsIn, OpenCascadeShapeExpressionQ] :=
+Module[
+	{tools, optsParam, instance, shapeTypes1, shapeTypes2, ids1, ids2, st1, st2},
+
+	tools = toolsIn;
+
+	(* is not implemented because I don't have a case where setting
+		the destruction of input shapes would be useful. See C code.  *)
+	optsParam = 0;
+
+	instance = OpenCascadeShapeCreate[];
+
+	shapeTypes1 = Union[ OpenCascadeShapeType /@ shapes];
+	shapeTypes2 = Union[ OpenCascadeShapeType /@ tools];
+
+	If[ Length[shapeTypes1] =!= 1,
+		Message[OpenCascadeShapeSplit::stype, "shapes", shapeTypes1];
+		Return[$Failed, Module]l
+	];
+
+	If[ Length[shapeTypes2] =!= 1,
+		Message[OpenCascadeShapeSplit::stype, "tools", shapeTypes2];
+		Return[$Failed, Module]l
+	];
+
+	shapeTypes1 = shapeTypes1[[1]];
+	shapeTypes2 = shapeTypes2[[1]];
+
+	(* for conveniance *)
+	If[ shapeTypes2 === "Edge",
+		tools = OpenCascadeShapeWire /@ tools;
+		shapeTypes2 = "Wire";
+	];
+
+	If[shapeTypes1 === "Solid" && !(shapeTypes2 === "Solid" || shapeTypes2 === "Face"),
+		Message[OpenCascadeShapeSplit::ttype, shapeTypes1, shapeTypes2];
+		Return[$Failed, Module];
+	];
+
+	If[shapeTypes1 === "Face" && !(shapeTypes2 === "Face" || shapeTypes2 === "Wire"),
+		Message[OpenCascadeShapeSplit::ttype, shapeTypes1, shapeTypes2];
+		Return[$Failed, Module];
+	];
+(* OpenCascadeShape[Point[{0,0,0}]] is missing *)
+(*
+	If[shapeTypes1 === "Wire" && (shapeTypes2 =!= "Wire" || shapeTypes2 =!= "Vertex"),
+		Message[OpenCascadeShapeSplit::ttype, shapeTypes1, shapeTypes2];
+		Return[$Failed, Module];
+	];
+*)
+(*	If[ shapeTypes1 =!= "Solid" && shapeTypes1 =!= "Face" && shapeTypes1 =!= "Wire", *)
+	If[ shapeTypes1 =!= "Solid" && shapeTypes1 =!= "Face",
+		Message[OpenCascadeShapeSplit::badtype, shapeType1];
+		Return[$Failed, Module];
+	];
+
+	st1 = getIntShapeType[shapeTypes1];
+	st2 = getIntShapeType[shapeTypes2];
+
+	ids1 = pack[ instanceID /@ shapes];
+	ids1 = DeleteDuplicates[ ids1];
+
+	ids2 = pack[ instanceID /@ tools];
+	ids2 = DeleteDuplicates[ ids2];
+
+	res = makeSplitFun[ instanceID[ instance], ids1, ids2, st1, st2, optsParam];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	If[ OpenCascadeShapeNumberOfSolids[instance] > 1,
+		Return[ OpenCascadeShapeSolids[instance], Module]
+	];
+
+	If[ OpenCascadeShapeNumberOfFaces[instance] > 1,
+		Return[ OpenCascadeShapeFaces[instance], Module]
+	];
+
+	If[ OpenCascadeShapeNumberOfWires[instance] > 1,
+		Return[ OpenCascadeShapeWires[instance], Module]
+	];
+
+	{instance}
+] 
+
+OpenCascadeShapeSplit[shape_, tool_] /;
+		OpenCascadeShapeExpressionQ[shape] &&
+		OpenCascadeShapeExpressionQ[tool] :=
+OpenCascadeShapeSplit[{shape}, {tool}]
 
 
 OpenCascadeShapeDefeaturing[shape_, faceIDs_] /; 

@@ -27,6 +27,8 @@
 #include <BRepAlgoAPI_Common.hxx>
 #include <BRepAlgoAPI_Fuse.hxx>
 
+#include <BOPAlgo_Splitter.hxx>
+
 #include <BRepAlgoAPI_Defeaturing.hxx>
 #include <BRepFilletAPI_MakeFillet.hxx>
 #include <BRepFilletAPI_MakeChamfer.hxx>
@@ -106,6 +108,8 @@ extern "C" {
 	DLLEXPORT int makeDifference(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeIntersection(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeUnion(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+
+	DLLEXPORT int makeSplit(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int makeDefeaturing(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeSimplify(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
@@ -1781,6 +1785,157 @@ DLLEXPORT int makeUnion(WolframLibraryData libData, mint Argc, MArgument *Args, 
 	}
 
 	TopoDS_Shape shape = booleanOP.Shape();
+	*instance = shape;
+
+	if (shape.IsNull()) {
+		MArgument_setInteger(res, ERROR);
+		return 0;
+	}
+
+	MArgument_setInteger(res, 0);
+	return 0;
+}
+
+DLLEXPORT int makeSplit(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	mint id  = MArgument_getInteger(Args[0]);
+
+	MTensor p1 = MArgument_getMTensor(Args[1]);
+	int type1 = libData->MTensor_getType(p1);
+	int rank1 = libData->MTensor_getRank(p1);
+	const mint* dims1 = libData->MTensor_getDimensions(p1);
+
+	MTensor p2 = MArgument_getMTensor(Args[2]);
+	int type2 = libData->MTensor_getType(p2);
+	int rank2 = libData->MTensor_getRank(p2);
+	const mint* dims2 = libData->MTensor_getDimensions(p2);
+
+	mint st1 = MArgument_getInteger(Args[3]);
+	mint st2 = MArgument_getInteger(Args[4]);
+
+	mint opt = MArgument_getInteger(Args[5]);
+
+	/* not implemented from top level code */
+	Standard_Boolean destructiveQ = Standard_False;
+	if (opt & (1 << 1)) destructiveQ = Standard_True;
+
+	TopoDS_Shape *instance  = get_ocShapeInstance( id);
+
+	if (instance == NULL ||
+			type1 != MType_Integer || rank1 != 1 || dims1[0] < 0 ||
+			type2 != MType_Integer || rank2 != 1 || dims2[0] < 0 
+		) {
+		libData->MTensor_disown(p1);
+		libData->MTensor_disown(p2);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	BOPAlgo_Splitter splitter;
+	splitter.SetNonDestructive(destructiveQ);
+
+	TopTools_ListOfShape objects;
+	TopTools_ListOfShape tools;
+	TopoDS_Shape *anID;
+
+	mint * rawP1 = libData->MTensor_getIntegerData(p1);
+	for (int i = 0; i < dims1[0]; i++) {
+		anID = get_ocShapeInstance( rawP1[ i]);
+		if (anID->IsNull()) {
+			libData->MTensor_disown(p1);
+			libData->MTensor_disown(p2);
+			MArgument_setInteger(res, 0);
+			return LIBRARY_FUNCTION_ERROR;
+		}
+
+		switch (st1) {
+	   		case 0: {
+				TopoDS_Solid anObject = TopoDS::Solid(*anID);
+				objects.Append(anObject);		
+				break;
+			}
+
+	   		case 1: {
+				TopoDS_Face anObject = TopoDS::Face(*anID);
+				objects.Append(anObject);		
+				break;
+			}
+
+	   		case 2: {
+				TopoDS_Wire anObject = TopoDS::Wire(*anID);
+				objects.Append(anObject);		
+				break;
+			}
+
+			default: {
+				libData->MTensor_disown(p1);
+				libData->MTensor_disown(p2);
+				MArgument_setInteger(res, 0);
+				return LIBRARY_FUNCTION_ERROR;
+			}
+		}
+	}
+	libData->MTensor_disown(p1);
+
+	mint * rawP2 = libData->MTensor_getIntegerData(p2);
+	for (int i = 0; i < dims1[0]; i++) {
+		anID = get_ocShapeInstance( rawP2[ i]);
+		if (anID->IsNull()) {
+			libData->MTensor_disown(p1);
+			libData->MTensor_disown(p2);
+			MArgument_setInteger(res, 0);
+			return LIBRARY_FUNCTION_ERROR;
+		}
+
+		switch (st2) {
+	   		case 0: {
+				TopoDS_Solid aTool = TopoDS::Solid(*anID);
+				tools.Append(aTool);		
+				break;
+			}
+
+	   		case 1: {
+				TopoDS_Face aTool = TopoDS::Face(*anID);
+				tools.Append(aTool);		
+				break;
+			}
+
+	   		case 2: {
+				TopoDS_Wire aTool = TopoDS::Wire(*anID);
+				tools.Append(aTool);		
+				break;
+			}
+
+	   		case 3: {
+				TopoDS_Vertex aTool = TopoDS::Vertex(*anID);
+				tools.Append(aTool);		
+				break;
+			}
+
+			default: {
+				libData->MTensor_disown(p1);
+				libData->MTensor_disown(p2);
+				MArgument_setInteger(res, 0);
+				return LIBRARY_FUNCTION_ERROR;
+			}
+		}
+	}
+	libData->MTensor_disown(p2);
+
+	/* shape to cut */
+	splitter.SetArguments(objects);
+
+	/* tool to use make the cut with */
+	splitter.SetTools(tools);
+
+	splitter.Perform();
+
+	if (splitter.HasErrors()) {
+		MArgument_setInteger(res, ERROR);
+		return 0;
+	}
+
+	TopoDS_Shape shape = splitter.Shape();
 	*instance = shape;
 
 	if (shape.IsNull()) {
