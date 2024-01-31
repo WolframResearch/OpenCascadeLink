@@ -27,6 +27,7 @@ OpenCascadeShapeDifference::usage = "OpenCascadeShapeDifference[ shape1, shape2]
 OpenCascadeShapeIntersection::usage = "OpenCascadeShapeIntersection[ shape1, shape2] returns a new instance of an OpenCascade expression representing the intersection of the shapes shape1 and shape2.";
 OpenCascadeShapeUnion::usage = "OpenCascadeShapeUnion[ shape1, shape2] returns a new instance of an OpenCascade expression representing the union of the shapes shape1 and shape2.";
 OpenCascadeShapeBooleanRegion::usage = "OpenCascadeShape[ expr] returns a new instance of an OpenCascade expression representing the BooleanRegion expr.";
+OpenCascadeShapeCSGRegion::usage = "OpenCascadeShape[ expr] returns a new instance of an OpenCascade expression representing the CSGRegion expr.";
 
 OpenCascadeShapeSplit::usage = "OpenCascadeShapeSplit[ shapes, tools] returns a list of instances of OpenCascade expressions representing the shapes split by tools.";
 
@@ -132,6 +133,7 @@ Options[OpenCascadeShapeLoft] = Sort[ {
 }];
 
 Options[OpenCascadeShapeBooleanRegion] = 
+Options[OpenCascadeShapeCSGRegion] = 
 Options[OpenCascadeShapeDifference] =
 Options[OpenCascadeShapeIntersection] =
 Options[OpenCascadeShapeUnion] = Sort[ {
@@ -882,6 +884,8 @@ Module[{c, inci, sewenFaces},
 	sewenFaces
 ]
 
+OpenCascadeShape[Rotate[g_, spec__]] :=
+	OpenCascadeShape[TransformedRegion[g, RotationTransform[spec]]]
 
 OpenCascadeShape[TransformedRegion[r_, tf:TransformationFunction[mat_]]] /;
 	MatrixQ[mat, NumericQ] && (Dimensions[mat] == {4,4}) :=
@@ -922,6 +926,9 @@ Module[{instance, tm, res},
 
 OpenCascadeShape[ br_BooleanRegion] /; Length[br] == 2 :=
 	OpenCascadeShapeBooleanRegion[ br]
+
+OpenCascadeShape[ cr_CSGRegion] /; Length[cr] == 2 :=
+	OpenCascadeShapeCSGRegion[ cr]
 
 
 
@@ -1491,14 +1498,18 @@ OpenCascadeShape[OpenCascadeDisk[axis:{center_, normal_}]] :=
 OpenCascadeShape[OpenCascadeDisk[axis:{center_, normal_}, r_]] := 
 	OpenCascadeShapeFace[OpenCascadeShape[OpenCascadeCircle[axis, r, {0, 2 Pi}]]]
 
-(* TODO: {0, 2 Pi} case *)
+OpenCascadeShape[OpenCascadeDisk[axis:{center_, normal_}, radius_, a:{angle1_, angle2_}]] /;
+		Dimensions[axis] === {2, 3} && MatrixQ[axis, NumericQ] &&
+		NumericQ[radius] && radius > 0 && 
+		NumericQ[angle1] && NumericQ[angle2] && (Abs[angle1 - angle2] == 2 Pi) :=
+	OpenCascadeShapeFace[OpenCascadeShape[OpenCascadeCircle[axis, radius, a]]]
 
 OpenCascadeShape[OpenCascadeDisk[axis:{center_, normal_}, radius_, a:{angle1_, angle2_}]] /;
 		Dimensions[axis] === {2, 3} && MatrixQ[axis, NumericQ] &&
 		NumericQ[radius] && radius > 0 && 
 		(* we need a line, a circle and a third line for the < 2 Pi case 
-		but for the <= 2 Pi case we only need a circle *)
-		NumericQ[angle1] && NumericQ[angle2] && (0 < Abs[(angle1 - angle2)] < 2 Pi) :=
+		but for the == 2 Pi case we only need a circle *)
+		NumericQ[angle1] && NumericQ[angle2] && (0 < Abs[angle1 - angle2] < 2 Pi) :=
 Module[{r, a1, a2, l1, c, l2},
 
 	r = N[radius];
@@ -1759,6 +1770,8 @@ OpenCascadeShapeUnion[{eN__}, opts:OptionsPattern[OpenCascadeShapeUnion]] /;
 OpenCascadeShapeUnion[eN, opts]
 
 
+OpenCascadeShape::badconv = "The expression `1` could not be converted to OpenCascade."
+
 OpenCascadeShapeBooleanRegion[ br_BooleanRegion,
 	opts:OptionsPattern[OpenCascadeShapeBooleanRegion]] /; Length[br] == 2 :=
 Module[
@@ -1777,6 +1790,31 @@ Module[
 	(* TODO: check that all regions valid *)
 
 	booleanFunction @@ regions
+]
+
+getOCBooleanOp["Union"] := OpenCascadeShapeUnion
+getOCBooleanOp["Difference"] := OpenCascadeShapeDifference
+getOCBooleanOp["Intersection"] := OpenCascadeShapeIntersection
+
+OpenCascadeShapeCSGRegion[ cr_CSGRegion,
+	opts:OptionsPattern[OpenCascadeShapeCSGRegion]] /; Length[cr] == 2 :=
+Module[
+	{booleanOpName, booleanOp, operands, shapes, allGoodQ},
+
+	booleanOpName = cr[[1]];
+	booleanOp = getOCBooleanOp[booleanOpName];
+	operands = cr[[2]];
+
+	shapes = OpenCascadeShape /@ operands;
+
+	allGood = OpenCascadeShapeExpressionQ /@ shapes;
+	If[ Union[ allGood] =!= {True},
+		Message[OpenCascadeShape::badconv,
+			Select[shapes, Not[OpenCascadeShapeExpressionQ[#]]& ]];
+		Return[$Failed, Module];
+	];
+
+	booleanOp[shapes, opts]
 ]
 
 OpenCascadeShapeSplit::stype = "To split shapes,the list of shapes must be of the same type and also the list of tools must of the same type. In this case the `1` had types `2`."
@@ -2541,7 +2579,7 @@ Module[{center, iOut, iIn, instance},
 	instance
 ]
 
-OpenCascadeShape[Disk[c_, radius_, a:{angle1_, angle2_}]] := 
+OpenCascadeShape[Disk[c_, radius_:1, a_:{0, 2 Pi}]] := 
 Module[{center, instance},
 
 	center = Join[c, {0}];
@@ -2598,7 +2636,7 @@ Module[{p, instance},
 ]
 
 OpenCascadeShape[Rectangle[{xmin_, ymin_}]] :=
-	OpenCascadeShape[Rectangle[{xmin, ymin}, {1, 1}]]
+	OpenCascadeShape[Rectangle[{xmin, ymin}, {xmin + 1, ymin + 1}]]
 
 OpenCascadeShape[Rectangle[{xmin_, ymin_}, {xmax_, ymax_}]] :=
 	OpenCascadeShape[Polygon[{{xmin, ymin}, {xmax, ymin}, {xmax, ymax}, {xmin, ymax}}]];
