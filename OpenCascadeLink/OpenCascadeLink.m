@@ -254,7 +254,9 @@ Module[{libDir, oldpath, preLoadLibs, success},
 
 (* Utility functions *)
 
-Circle3D[{centre_, normal_}, radius_:1, angle_:{0, 2 Pi}] :=
+Circle3D[{centre_, normal_}, radius_:1, angle_:{0, 2 Pi}] /; 
+	NumericQ[radius] && radius > 0 && 
+	NumericQ[angle[[1]]] && NumericQ[angle[[2]]] && (Abs[angle[[1]] - angle[[2]]] <= 2 Pi) :=
 Module[{r, mp, mp3D},
 	r = DiscretizeRegion[Circle[centre[[{1, 2}]], radius, angle]];
 	mp = MeshPrimitives[r, 1, Multicells -> True];
@@ -263,7 +265,9 @@ Module[{r, mp, mp3D},
 ]
 
 
-Disk3D[{centre_, normal_}, radius_ : 1, angle_ : {0, 2 Pi}] :=
+Disk3D[{centre_, normal_}, radius_:1, angle_:{0, 2 Pi}] /; 
+	NumericQ[radius] && radius > 0 && 
+	NumericQ[angle[[1]]] && NumericQ[angle[[2]]] && (Abs[angle[[1]] - angle[[2]]] <= 2 Pi) :=
 Module[{r, mp, mp3D},
 	r = BoundaryDiscretizeRegion[ Disk[centre[[{1, 2}]], radius, angle]];
 	mp = MeshPrimitives[r, 2, Multicells -> True];
