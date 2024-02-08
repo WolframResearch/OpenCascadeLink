@@ -76,6 +76,10 @@
 #include <TopTools_ShapeMapHasher.hxx>
 #include <NCollection_Map.hxx>
 
+#include <BRepBuilderAPI_NurbsConvert.hxx>
+#include <BRepLib_FindSurface.hxx>
+#include <GeomConvert.hxx>
+
 
 extern "C" {
 
@@ -135,6 +139,8 @@ extern "C" {
 	DLLEXPORT int getShapeFaces(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int getShapeEdges(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int getShapeVertices(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+
+	DLLEXPORT int getShapeBSplineSurface(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int fileOperation(WolframLibraryData libData, MLINK mlp);
 
@@ -2948,6 +2954,118 @@ DLLEXPORT int getShapeVertices(WolframLibraryData libData, mint Argc, MArgument 
 	}
 
 	MArgument_setInteger(res, 0);
+	return 0;
+}
+
+
+DLLEXPORT int getShapeBSplineSurface(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	MTensor tenData;
+	mint id, count, opt, type;
+
+	double* data;
+
+	id = MArgument_getInteger(Args[0]);
+	TopoDS_Shape *instance = get_ocShapeInstance( id);
+	if (instance == NULL || instance->IsNull()) {
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	opt = MArgument_getInteger(Args[1]);
+
+	TopoDS_Face aFace = TopoDS::Face(*instance);
+	if (aFace.ShapeType() != TopAbs_FACE)
+		return LIBRARY_FUNCTION_ERROR;
+
+	BRepBuilderAPI_NurbsConvert nurb(aFace);
+	Handle(Geom_Surface) surface = BRepLib_FindSurface(nurb).Surface();
+
+	//Something needs to be added to force the edges to be present in bspline reconstruction
+
+	Handle(Geom_BSplineSurface) bsSurface = GeomConvert::SurfaceToBSplineSurface(surface);
+
+	Standard_Boolean uPeriodicQ = Standard_False;
+	if (opt & (1 << 1)) uPeriodicQ = Standard_True;
+
+	Standard_Boolean vPeriodicQ = Standard_False;
+	if (opt & (1 << 2)) vPeriodicQ = Standard_True;
+
+	if (!uPeriodicQ)
+		bsSurface->SetUNotPeriodic();                                  
+
+	if (!vPeriodicQ)
+		bsSurface->SetVNotPeriodic();
+
+	mint nuPoles = (mint) bsSurface->NbUPoles();
+	mint nvPoles = (mint) bsSurface->NbVPoles();
+	mint nuKnots = (mint) bsSurface->NbUKnots();
+	mint nvKnots = (mint) bsSurface->NbVKnots();
+
+	count = 0;
+	count += 4; /* NUPoles, NVPoles, NUKnots, NVKnots */
+	count += 4; /* UDegree, VDegree, IsUPeriodic, IsVPeriodic */
+	count += 3 * nuPoles * nvPoles;
+	count += nuPoles * nvPoles; /* for weights */
+	count += nuKnots;
+	count += nvKnots;
+	count += nuKnots; /* for UMultiplicity */
+	count += nvKnots; /* for VMultiplicity */
+
+	mint length = count;
+	int err = libData->MTensor_new( MType_Real, 1, &length, &tenData);
+	if (err) return err;
+	data = libData->MTensor_getRealData( tenData);
+
+	count = 0;
+	data[ count++] = (mreal) nuPoles;
+	data[ count++] = (mreal) nvPoles;
+
+	data[ count++] = (mreal) nuKnots;
+	data[ count++] = (mreal) nvKnots;
+
+	data[ count++] = (mreal) bsSurface->UDegree();
+	data[ count++] = (mreal) bsSurface->VDegree();
+
+	data[ count++] = (mreal) bsSurface->IsUPeriodic();
+	data[ count++] = (mreal) bsSurface->IsVPeriodic();
+
+	for (int i = 1; i <= bsSurface->NbUPoles(); i++) {
+		for (int j = 1; j <= bsSurface->NbVPoles(); j++) {
+			gp_Pnt aPnt = bsSurface->Pole(i, j);
+			data[count++] = (mreal) aPnt.X(); 
+			data[count++] = (mreal) aPnt.Y(); 
+			data[count++] = (mreal) aPnt.Z(); 
+		}
+	}
+
+	for (int i = 1; i <= bsSurface->NbUPoles(); i++) {
+		for (int j = 1; j <= bsSurface->NbVPoles(); j++) {
+			Standard_Real weight = bsSurface->Weight(i, j);
+			data[count++] = (mreal) weight;
+		}
+	}
+
+	for (int i = 1; i <= bsSurface->NbUKnots(); i++) {
+		Standard_Real uknot = bsSurface->UKnot(i);
+		data[count++] = (mreal) uknot;
+	}
+
+	for (int i = 1; i <= bsSurface->NbVKnots(); i++) {
+		Standard_Real vknot = bsSurface->VKnot(i);
+		data[count++] = (mreal) vknot;
+	}
+
+	for (int i = 1; i <= bsSurface->NbUKnots(); i++) {
+		Standard_Integer umul = bsSurface->UMultiplicity(i);
+		data[count++] = (mreal) umul;
+	}
+
+	for (int i = 1; i <= bsSurface->NbVKnots(); i++) {
+		Standard_Integer vmul = bsSurface->VMultiplicity(i);
+		data[count++] = (mreal) vmul;
+	}
+
+	MArgument_setMTensor(res, tenData);
 	return 0;
 }
 

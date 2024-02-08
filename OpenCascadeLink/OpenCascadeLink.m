@@ -72,6 +72,8 @@ OpenCascadeShapeVertices::usage = "OpenCascadeShapeVertices[ shape] returns the 
 
 OpenCascadeShapeSurfaceMeshToBoundaryMesh::usage = "OpenCascadeShapeSurfaceMeshToBoundaryMesh[ shape] returns the shape as a boundary ElementMesh.";
 
+OpenCascadeShapeBSplineSurface::usage = "OpenCascadeShapeBSplineSurface[ shape] returns a BSplineSurface of shape.";
+
 OpenCascadeShapeExport::usage = "OpenCascadeShapeExport[ \"file.ext\", expr] exports data from a OpenCascadeShape expression into a file. OpenCascadeShapeExport[ \"file\", expr, \"format\"] exports data in the specified format."
 
 OpenCascadeShapeImport::usage = "OpenCascadeShapeImport[ \"file.ext\", expr] imports data from a file into a OpenCascadeShape expression. OpenCascadeShapeImport[ \"file\", expr, \"format\"] imports data in the specified format."
@@ -144,6 +146,10 @@ Options[OpenCascadeShapeUnion] = Sort[ {
 Options[OpenCascadeShapePathSweep] = Sort[{
 	"ForceC1Continuity" -> Automatic
 }]
+
+Options[OpenCascadeShapeBSplineSurface] = Sort[ {
+	"SetPeriodic"->Automatic
+}];
 
 Begin["`Private`"]
 
@@ -245,6 +251,8 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	getShapeFacesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeFaces", {{Integer, 1, "Shared"}, Integer, {Integer, 1, "Shared"}}, Integer];
 	getShapeEdgesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeEdges", {{Integer, 1, "Shared"}, Integer, {Integer, 1, "Shared"}}, Integer];
 	getShapeVerticesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeVertices", {{Integer, 1, "Shared"}, Integer, {Integer, 1, "Shared"}}, Integer];
+
+	getShapeBSplineSurfaceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeBSplineSurface", {Integer, Integer}, {Real, 1}];
 
 	fileOperationFun = LibraryFunctionLoad[$OpenCascadeLibrary, "fileOperation", LinkObject, LinkObject];
 
@@ -2559,6 +2567,60 @@ Module[
 ]
 
 
+OpenCascadeShapeBSplineSurface[
+	instance:OpenCascadeShapeExpression[ id_]?(testOpenCascadeShapeExpression[OpenCascadeShapeBSplineSurface]),
+	opts:OptionsPattern[]
+ ] /; OpenCascadeShapeType[instance] === "Face" :=
+Module[
+	{data, temp, optParam,
+	nuPoles, nvPoles, nuKnots, nvKnots, uDegree, vDegree, uClosedQ, vClosedQ,
+	lens, fl, parts, poles, weights, uknows, vknots, umult, vmult, bss},
+
+	optParam = 0;
+
+	temp = Flatten[{OptionValue["SetPeriodic"]}];
+	temp = ArrayReshape[temp, 2, temp[[1]]];
+	temp /. Automatic -> True;
+	If[ temp[[1]] === True, optParam = BitSet[ optParam, 1]; ];
+	If[ temp[[2]] === True, optParam = BitSet[ optParam, 2]; ];
+
+	data = getShapeBSplineSurfaceFun[id, optParam];
+
+	{nuPoles, nvPoles, nuKnots, nvKnots} = Floor[data[[1 ;; 4]]];
+
+	{uDegree, vDegree} = Floor[data[[5 ;; 6]]];
+	{uClosedQ, vClosedQ} = 
+		If[# === 1, True, False] & /@ Floor[data[[7 ;; 8]]];
+
+	lens = {8, nuPoles*nvPoles*3, nuPoles*nvPoles, nuKnots, nvKnots,
+		nuKnots, nvKnots};
+
+	fl = FoldList[Plus, lens];
+	parts = MapThread[Span, {Most[fl + 1], Rest[fl]}];
+
+	poles = data[[parts[[1]]]];
+	weights = data[[parts[[2]]]];
+	uknots = data[[parts[[3]]]];
+	vknots = data[[parts[[4]]]];
+	umult = Floor[data[[parts[[5]]]]];
+	vmult = Floor[data[[parts[[6]]]]];
+
+	bss = BSplineSurface[
+		ArrayReshape[poles, {nuPoles, nvPoles, 3}],
+		SplineKnots -> {
+			Join @@ MapThread[ConstantArray, {uknots, umult}], 
+	    	Join @@ MapThread[ConstantArray, {vknots, vmult}]
+		},
+		SplineWeights -> ArrayReshape[weights, {nuPoles, nvPoles}],
+		SplineDegree -> {uDegree, vDegree},
+		SplineClosed -> {uClosedQ, vClosedQ}
+	];
+
+	bss
+]
+
+
+
 (**)
 (* Drafting *)
 (**)
@@ -2780,7 +2842,6 @@ Module[{shapes, wire, instance},
 
 	instance
 ]
-
 
 End[]
 
