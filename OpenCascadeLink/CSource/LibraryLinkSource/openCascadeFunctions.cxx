@@ -140,7 +140,7 @@ extern "C" {
 	DLLEXPORT int getShapeEdges(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int getShapeVertices(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
-	DLLEXPORT int getShapeBSplineSurface(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+	DLLEXPORT int getFaceBSplineSurface(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int fileOperation(WolframLibraryData libData, MLINK mlp);
 
@@ -2958,7 +2958,7 @@ DLLEXPORT int getShapeVertices(WolframLibraryData libData, mint Argc, MArgument 
 }
 
 
-DLLEXPORT int getShapeBSplineSurface(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+DLLEXPORT int getFaceBSplineSurface(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
 {
 	MTensor tenData;
 	mint id, count, opt, type;

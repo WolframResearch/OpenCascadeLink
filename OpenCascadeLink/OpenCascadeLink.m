@@ -72,7 +72,7 @@ OpenCascadeShapeVertices::usage = "OpenCascadeShapeVertices[ shape] returns the 
 
 OpenCascadeShapeSurfaceMeshToBoundaryMesh::usage = "OpenCascadeShapeSurfaceMeshToBoundaryMesh[ shape] returns the shape as a boundary ElementMesh.";
 
-OpenCascadeShapeBSplineSurface::usage = "OpenCascadeShapeBSplineSurface[ shape] returns a BSplineSurface of shape.";
+OpenCascadeFaceBSplineSurface::usage = "OpenCascadeFaceBSplineSurface[ shape] returns a BSplineSurface of shape.";
 
 OpenCascadeShapeExport::usage = "OpenCascadeShapeExport[ \"file.ext\", expr] exports data from a OpenCascadeShape expression into a file. OpenCascadeShapeExport[ \"file\", expr, \"format\"] exports data in the specified format."
 
@@ -147,7 +147,7 @@ Options[OpenCascadeShapePathSweep] = Sort[{
 	"ForceC1Continuity" -> Automatic
 }]
 
-Options[OpenCascadeShapeBSplineSurface] = Sort[ {
+Options[OpenCascadeFaceBSplineSurface] = Sort[ {
 	"SetPeriodic"->Automatic
 }];
 
@@ -252,7 +252,7 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	getShapeEdgesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeEdges", {{Integer, 1, "Shared"}, Integer, {Integer, 1, "Shared"}}, Integer];
 	getShapeVerticesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeVertices", {{Integer, 1, "Shared"}, Integer, {Integer, 1, "Shared"}}, Integer];
 
-	getShapeBSplineSurfaceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeBSplineSurface", {Integer, Integer}, {Real, 1}];
+	getFaceBSplineSurfaceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getFaceBSplineSurface", {Integer, Integer}, {Real, 1}];
 
 	fileOperationFun = LibraryFunctionLoad[$OpenCascadeLibrary, "fileOperation", LinkObject, LinkObject];
 
@@ -2567,8 +2567,8 @@ Module[
 ]
 
 
-OpenCascadeShapeBSplineSurface[
-	instance:OpenCascadeShapeExpression[ id_]?(testOpenCascadeShapeExpression[OpenCascadeShapeBSplineSurface]),
+OpenCascadeFaceBSplineSurface[
+	instance:OpenCascadeShapeExpression[ id_]?(testOpenCascadeShapeExpression[OpenCascadeFaceBSplineSurface]),
 	opts:OptionsPattern[]
  ] /; OpenCascadeShapeType[instance] === "Face" :=
 Module[
@@ -2584,7 +2584,7 @@ Module[
 	If[ temp[[1]] === True, optParam = BitSet[ optParam, 1]; ];
 	If[ temp[[2]] === True, optParam = BitSet[ optParam, 2]; ];
 
-	data = getShapeBSplineSurfaceFun[id, optParam];
+	data = getFaceBSplineSurfaceFun[id, optParam];
 
 	{nuPoles, nvPoles, nuKnots, nvKnots} = Floor[data[[1 ;; 4]]];
 
