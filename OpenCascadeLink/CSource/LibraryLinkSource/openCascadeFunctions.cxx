@@ -45,11 +45,19 @@
 #include <BRepBuilderAPI_Transform.hxx>
 
 #include <Geom_BSplineSurface.hxx>	
+#include <Geom_BezierSurface.hxx>
 #include <Geom_BSplineCurve.hxx>
 #include <Geom_BezierCurve.hxx>
 
 #include <gp_Circ.hxx>
 #include <Geom_Circle.hxx>
+#include <Geom_RectangularTrimmedSurface.hxx>
+#include <Geom_ConicalSurface.hxx>
+#include <Geom_CylindricalSurface.hxx>
+#include <Geom_SphericalSurface.hxx>
+#include <Geom_ToroidalSurface.hxx>
+#include <Geom_SurfaceOfLinearExtrusion.hxx>
+#include <Geom_SurfaceOfRevolution.hxx>
 
 #include <IMeshData_Status.hxx>
 #include <IMeshTools_Parameters.hxx>
@@ -140,6 +148,7 @@ extern "C" {
 	DLLEXPORT int getShapeEdges(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int getShapeVertices(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
+	DLLEXPORT int getFaceType(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int getFaceBSplineSurface(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int fileOperation(WolframLibraryData libData, MLINK mlp);
@@ -2954,6 +2963,52 @@ DLLEXPORT int getShapeVertices(WolframLibraryData libData, mint Argc, MArgument 
 	}
 
 	MArgument_setInteger(res, 0);
+	return 0;
+}
+
+DLLEXPORT int getFaceType(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	mint id  = MArgument_getInteger(Args[0]);
+	mint type = 0;
+
+	TopoDS_Shape *instance  = get_ocShapeInstance( id);
+
+	if (instance == NULL || instance->IsNull()) {
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	TopoDS_Face aFace = TopoDS::Face(*instance);
+	if (aFace.ShapeType() != TopAbs_FACE)
+		return LIBRARY_FUNCTION_ERROR;
+
+	Handle(Geom_Surface) aSurface = BRep_Tool::Surface(aFace);
+
+	if (aSurface->DynamicType() == STANDARD_TYPE(Geom_BSplineSurface)) {
+		type = 1;
+	} else if (aSurface->DynamicType() == STANDARD_TYPE(Geom_BezierSurface)) {
+		type = 2;
+	} else if (aSurface->DynamicType() == STANDARD_TYPE(Geom_RectangularTrimmedSurface)) {
+		type = 3;
+	} else if (aSurface->DynamicType() == STANDARD_TYPE(Geom_ConicalSurface)) {
+		type = 4;
+	} else if (aSurface->DynamicType() == STANDARD_TYPE(Geom_CylindricalSurface)) {
+		type = 5;
+	} else if (aSurface->DynamicType() == STANDARD_TYPE(Geom_Plane)) {
+		type = 6;
+	} else if (aSurface->DynamicType() == STANDARD_TYPE(Geom_SphericalSurface)) {
+		type = 7;
+	} else if (aSurface->DynamicType() == STANDARD_TYPE(Geom_ToroidalSurface)) {
+		type = 8;
+	} else if (aSurface->DynamicType() == STANDARD_TYPE(Geom_SurfaceOfLinearExtrusion)) {
+		type = 9;
+	} else if (aSurface->DynamicType() == STANDARD_TYPE(Geom_SurfaceOfRevolution)) {
+		type = 10;
+	} else {
+		type = -1;
+	}
+
+	MArgument_setInteger(res, type);
 	return 0;
 }
 

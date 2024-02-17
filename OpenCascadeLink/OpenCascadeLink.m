@@ -72,6 +72,7 @@ OpenCascadeShapeVertices::usage = "OpenCascadeShapeVertices[ shape] returns the 
 
 OpenCascadeShapeSurfaceMeshToBoundaryMesh::usage = "OpenCascadeShapeSurfaceMeshToBoundaryMesh[ shape] returns the shape as a boundary ElementMesh.";
 
+OpenCascadeFaceType::usage = "OpenCascadeFaceType[ shape] returns the type of a face.";
 OpenCascadeFaceBSplineSurface::usage = "OpenCascadeFaceBSplineSurface[ shape] returns a BSplineSurface of shape.";
 
 OpenCascadeShapeExport::usage = "OpenCascadeShapeExport[ \"file.ext\", expr] exports data from a OpenCascadeShape expression into a file. OpenCascadeShapeExport[ \"file\", expr, \"format\"] exports data in the specified format."
@@ -252,6 +253,7 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	getShapeEdgesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeEdges", {{Integer, 1, "Shared"}, Integer, {Integer, 1, "Shared"}}, Integer];
 	getShapeVerticesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeVertices", {{Integer, 1, "Shared"}, Integer, {Integer, 1, "Shared"}}, Integer];
 
+	getFaceTypeFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getFaceType", {Integer}, Integer];
 	getFaceBSplineSurfaceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getFaceBSplineSurface", {Integer, Integer}, {Real, 1}];
 
 	fileOperationFun = LibraryFunctionLoad[$OpenCascadeLibrary, "fileOperation", LinkObject, LinkObject];
@@ -2564,6 +2566,27 @@ Module[
 	];
 
 	bmesh
+]
+
+OpenCascadeFaceType[shape_] /; OpenCascadeShapeExpressionQ[shape] :=
+Module[{type},
+	type = getFaceTypeFun[ instanceID[ shape]];
+
+	(* These come from the TopAbs_ShapeEnum *)
+
+	Switch[ type,
+		1, "BSplineSurface",
+		2, "BezierSurface",
+		3, "RectangularTrimmedSurface",
+		4, "ConeSurface",
+		5, "CylindricalSurface",
+		6, "PlaneSurface",
+		7, "SphericalSurface",
+		8, "ToroidalSurface",
+		9, "LinearExtrusionSurface",
+		10, "RevolutionSurface",
+		_, $Failed
+	]
 ]
 
 
