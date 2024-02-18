@@ -73,6 +73,7 @@ OpenCascadeShapeVertices::usage = "OpenCascadeShapeVertices[ shape] returns the 
 OpenCascadeShapeSurfaceMeshToBoundaryMesh::usage = "OpenCascadeShapeSurfaceMeshToBoundaryMesh[ shape] returns the shape as a boundary ElementMesh.";
 
 OpenCascadeFaceType::usage = "OpenCascadeFaceType[ shape] returns the type of a face.";
+OpenCascadeEdgeType::usage = "OpenCascadeEdgeType[ shape] returns the type of an edge.";
 OpenCascadeFaceBSplineSurface::usage = "OpenCascadeFaceBSplineSurface[ shape] returns a BSplineSurface of shape.";
 
 OpenCascadeShapeExport::usage = "OpenCascadeShapeExport[ \"file.ext\", expr] exports data from a OpenCascadeShape expression into a file. OpenCascadeShapeExport[ \"file\", expr, \"format\"] exports data in the specified format."
@@ -254,6 +255,7 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	getShapeVerticesFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getShapeVertices", {{Integer, 1, "Shared"}, Integer, {Integer, 1, "Shared"}}, Integer];
 
 	getFaceTypeFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getFaceType", {Integer}, Integer];
+	getEdgeTypeFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getEdgeType", {Integer}, Integer];
 	getFaceBSplineSurfaceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "getFaceBSplineSurface", {Integer, Integer}, {Real, 1}];
 
 	fileOperationFun = LibraryFunctionLoad[$OpenCascadeLibrary, "fileOperation", LinkObject, LinkObject];
@@ -2572,7 +2574,7 @@ OpenCascadeFaceType[shape_] /; OpenCascadeShapeExpressionQ[shape] :=
 Module[{type},
 	type = getFaceTypeFun[ instanceID[ shape]];
 
-	(* These come from the TopAbs_ShapeEnum *)
+	(* These come from the Geom_Surface Class Reference *)
 
 	Switch[ type,
 		1, "BSplineSurface",
@@ -2585,6 +2587,32 @@ Module[{type},
 		8, "ToroidalSurface",
 		9, "LinearExtrusionSurface",
 		10, "RevolutionSurface",
+		11, "PlateSurface",
+		12, "OffsetSurface",
+		13, "CompositeSurface",
+		_, $Failed
+	]
+]
+
+OpenCascadeEdgeType[shape_] /; OpenCascadeShapeExpressionQ[shape] :=
+Module[{type},
+
+	type = getEdgeTypeFun[ instanceID[ shape]];
+
+	(* These come from the Geom_Curve Class Reference *)
+
+	Switch[ type,
+		0, "NotACurve",
+		1, "BSplineCurve",
+		2, "BezierCurve",
+		3, "TrimmedCurve",
+		4, "Circle",
+		5, "Ellipse",
+		6, "Hyperbola",
+		7, "Parabola",
+		8, "Line",
+		9, "OffsetCurve",
+		10, "ComplexCurve",
 		_, $Failed
 	]
 ]

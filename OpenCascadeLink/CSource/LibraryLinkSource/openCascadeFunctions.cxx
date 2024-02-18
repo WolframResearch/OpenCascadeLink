@@ -46,11 +46,6 @@
 
 #include <Geom_BSplineSurface.hxx>	
 #include <Geom_BezierSurface.hxx>
-#include <Geom_BSplineCurve.hxx>
-#include <Geom_BezierCurve.hxx>
-
-#include <gp_Circ.hxx>
-#include <Geom_Circle.hxx>
 #include <Geom_RectangularTrimmedSurface.hxx>
 #include <Geom_ConicalSurface.hxx>
 #include <Geom_CylindricalSurface.hxx>
@@ -58,6 +53,22 @@
 #include <Geom_ToroidalSurface.hxx>
 #include <Geom_SurfaceOfLinearExtrusion.hxx>
 #include <Geom_SurfaceOfRevolution.hxx>
+#include <GeomPlate_Surface.hxx>
+#include <Geom_OffsetSurface.hxx>
+#include <ShapeExtend_CompositeSurface.hxx>
+
+#include <Geom_BSplineCurve.hxx>
+#include <Geom_BezierCurve.hxx>
+#include <Geom_TrimmedCurve.hxx>
+#include <Geom_Circle.hxx>
+#include <Geom_Ellipse.hxx>
+#include <Geom_Hyperbola.hxx>
+#include <Geom_Parabola.hxx>
+#include <Geom_Line.hxx>
+#include <Geom_OffsetCurve.hxx>
+#include <ShapeExtend_ComplexCurve.hxx>
+
+#include <gp_Circ.hxx>
 
 #include <IMeshData_Status.hxx>
 #include <IMeshTools_Parameters.hxx>
@@ -149,6 +160,7 @@ extern "C" {
 	DLLEXPORT int getShapeVertices(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int getFaceType(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
+	DLLEXPORT int getEdgeType(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int getFaceBSplineSurface(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
 	DLLEXPORT int fileOperation(WolframLibraryData libData, MLINK mlp);
@@ -2984,6 +2996,8 @@ DLLEXPORT int getFaceType(WolframLibraryData libData, mint Argc, MArgument *Args
 
 	Handle(Geom_Surface) aSurface = BRep_Tool::Surface(aFace);
 
+	/* looks like the conversion above can not be Is.Null() like in Edge case */
+
 	if (aSurface->DynamicType() == STANDARD_TYPE(Geom_BSplineSurface)) {
 		type = 1;
 	} else if (aSurface->DynamicType() == STANDARD_TYPE(Geom_BezierSurface)) {
@@ -3003,6 +3017,67 @@ DLLEXPORT int getFaceType(WolframLibraryData libData, mint Argc, MArgument *Args
 	} else if (aSurface->DynamicType() == STANDARD_TYPE(Geom_SurfaceOfLinearExtrusion)) {
 		type = 9;
 	} else if (aSurface->DynamicType() == STANDARD_TYPE(Geom_SurfaceOfRevolution)) {
+		type = 10;
+	} else if (aSurface->DynamicType() == STANDARD_TYPE(GeomPlate_Surface)) {
+		type = 11;
+	} else if (aSurface->DynamicType() == STANDARD_TYPE(Geom_OffsetSurface)) {
+		type = 12;
+	} else if (aSurface->DynamicType() == STANDARD_TYPE(ShapeExtend_CompositeSurface)) {
+		type = 13;
+	} else {
+		type = -1;
+	}
+
+	MArgument_setInteger(res, type);
+	return 0;
+}
+
+
+DLLEXPORT int getEdgeType(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	mint id  = MArgument_getInteger(Args[0]);
+	mint type = 0;
+
+	TopoDS_Shape *instance  = get_ocShapeInstance( id);
+
+	if (instance == NULL || instance->IsNull()) {
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	TopoDS_Edge anEdge = TopoDS::Edge(*instance);
+	if (anEdge.ShapeType() != TopAbs_EDGE)
+		return LIBRARY_FUNCTION_ERROR;
+
+	Standard_Real first;
+	Standard_Real last;
+	Handle(Geom_Curve) aCurve = BRep_Tool::Curve(anEdge, first, last);
+
+	if (aCurve.IsNull()) {
+		type = 0;
+		MArgument_setInteger(res, type);
+		return 0;
+	}
+
+	if (aCurve->DynamicType() == STANDARD_TYPE(Geom_BSplineCurve)) {
+		type = 1;
+	} else if (aCurve->DynamicType() == STANDARD_TYPE(Geom_BezierCurve)) {
+		type = 2;
+	} else if (aCurve->DynamicType() == STANDARD_TYPE(Geom_TrimmedCurve)) {
+		type = 3;
+	} else if (aCurve->DynamicType() == STANDARD_TYPE(Geom_Circle)) {
+		type = 4;
+	} else if (aCurve->DynamicType() == STANDARD_TYPE(Geom_Ellipse)) {
+		type = 5;
+	} else if (aCurve->DynamicType() == STANDARD_TYPE(Geom_Hyperbola)) {
+		type = 6;
+	} else if (aCurve->DynamicType() == STANDARD_TYPE(Geom_Parabola)) {
+		type = 7;
+	} else if (aCurve->DynamicType() == STANDARD_TYPE(Geom_Line)) {
+		type = 8;
+	} else if (aCurve->DynamicType() == STANDARD_TYPE(Geom_OffsetCurve)) {
+		type = 9;
+	} else if (aCurve->DynamicType() == STANDARD_TYPE(ShapeExtend_ComplexCurve)) {
 		type = 10;
 	} else {
 		type = -1;
