@@ -76,6 +76,9 @@ OpenCascadeFaceType::usage = "OpenCascadeFaceType[ shape] returns the type of a 
 OpenCascadeEdgeType::usage = "OpenCascadeEdgeType[ shape] returns the type of an edge.";
 OpenCascadeFaceBSplineSurface::usage = "OpenCascadeFaceBSplineSurface[ shape] returns a BSplineSurface of shape.";
 
+OpenCascadeGraphics3D::usage = "OpenCascadeGraphics3D[ shape] returns a Graphics3D of shape.";
+OpenCascadeGraphics3DPrimitives::usage = "OpenCascadeGraphics3DPrimitives[ shape] returns a Graphics3D primitives of shape.";
+
 OpenCascadeShapeExport::usage = "OpenCascadeShapeExport[ \"file.ext\", expr] exports data from a OpenCascadeShape expression into a file. OpenCascadeShapeExport[ \"file\", expr, \"format\"] exports data in the specified format."
 
 OpenCascadeShapeImport::usage = "OpenCascadeShapeImport[ \"file.ext\", expr] imports data from a file into a OpenCascadeShape expression. OpenCascadeShapeImport[ \"file\", expr, \"format\"] imports data in the specified format."
@@ -2893,6 +2896,43 @@ Module[{shapes, wire, instance},
 
 	instance
 ]
+
+(**)
+(* Visualization *)
+(**)
+OpenCascadeGraphics3D[s_, opts : OptionsPattern[Graphics3D]] /; 
+	OpenCascadeShapeExpressionQ[s] :=
+Graphics3D[OpenCascadeGraphics3DPrimitives[s], opts]
+
+OpenCascadeGraphics3DPrimitives[s_] /; 
+	OpenCascadeShapeExpressionQ[s] := 
+Flatten[{OpenCascadeFaceGraphics3DPrimitives[s]}]
+
+OpenCascadeFaceGraphics3DPrimitives[s_] /; 
+	OpenCascadeShapeExpressionQ[ s] &&
+	(OpenCascadeShapeType[s] === "Solid" ||
+	OpenCascadeShapeType[s] === "Compund") := 
+OpenCascadeFaceGraphics3DPrimitives /@ OpenCascadeShapeFaces[s]
+
+OpenCascadeFaceGraphics3DPrimitives[f_] /; 
+	OpenCascadeShapeExpressionQ[f] && OpenCascadeShapeType[f] === "Face" :=
+Module[
+	{faceType, bmesh, grp},
+
+	faceType = OpenCascadeFaceType[f];
+
+	Switch[ faceType
+		, "BSplineSurface" | "ConeSurface",
+			grp = OpenCascadeFaceBSplineSurface[f];
+		,_,
+			(* Add Option for Visualuzation Mesh Generation *)
+			bmesh = OpenCascadeShapeSurfaceMeshToBoundaryMesh[f];
+			grp = NDSolve`FEM`ElementMeshToGraphicsComplex[bmesh];
+	];
+
+	grp
+]
+
 
 End[]
 
