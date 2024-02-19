@@ -2454,7 +2454,7 @@ OpenCascadeShapeSurfaceMeshToBoundaryMesh[
 Module[
 	{surfaceMeshOpts, ok, coords, bEle, offsets, stop, start, spans, markers,
 	markerOffset, bMeshOpts, elementMeshOpts, markerMethod, bmesh, pEle, pInci,
-	vbc, allBoundaryMarker, automaticPMarker, maxMarker},
+	vbc, allBoundaryMarker, automaticPMarker, maxMarker, lengthUnit},
 
 	surfaceMeshOpts = Flatten[{ OptionValue["ShapeSurfaceMeshOptions"]}];
 	If[ surfaceMeshOpts === {Automatic}, surfaceMeshOpts = {}];
@@ -2568,6 +2568,15 @@ Module[
 					, "DeleteDuplicateCoordinates"->False
 					, "CheckIncidentsCompleteness"->False
 				}]];
+	];
+
+	lengthUnit = OptionValue[NDSolve`FEM`ToBoundaryMesh, bMeshOpts, "LengthUnit"];
+	If[ lengthUnit =!= None,
+		(* OCCT converts to MM by default *)
+		NDSolve`FEM`SetLengthUnit[bmesh, "Millimeter"];
+		If[ StringQ[lengthUnit],
+			bmesh = NDSolve`FEM`ElementMeshCoordinateRescale[bmesh, lengthUnit];
+		];
 	];
 
 	bmesh
