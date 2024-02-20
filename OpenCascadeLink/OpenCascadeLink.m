@@ -50,6 +50,7 @@ OpenCascadeShapeLoft::usage = "OpenCascadeShapeLoft[ {shape1, shape2,..}] return
 (* https://www.opencascade.com/content/creating-ellipsoid-sphere-transformation-function-applied *)
 OpenCascadeShapeTransformation::usage = "OpenCascadeShapeTransformation[ shape, tfun] returns a new instance of an OpenCascade expression that applies the transformation function tfun to the OpenCascade expression shape.";
 
+OpenCascadeShapeCompound::usage = "OpenCascadeShapeCompound[ {shape1,..}] returns a new instance of an OpenCascade expression with a compound from shape1, ...";
 OpenCascadeShapeSolid::usage = "OpenCascadeShapeSolid[ {shape1,..}] returns a new instance of an OpenCascade expression with a solid from shape1, ...";
 OpenCascadeShapeFace::usage = "OpenCascadeShapeFace[ {shape1,..}] returns a new instance of an OpenCascade expression with a face from shape1, ...";
 OpenCascadeShapeWire::usage = "OpenCascadeShapeWire[ {shape1,..}] returns a new instance of an OpenCascade expression with a wire from shape1, ...";
@@ -220,6 +221,7 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	makeCircleFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeCircle", {Integer, {Real, 2, "Shared"}, Real, Integer, Real, Real, {Real, 2, "Shared"}}, Integer];
 	makeLineFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeLine", {Integer, {Real, 2, "Shared"}}, Integer];
 
+	makeCompoundFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeCompound", {Integer, {Integer, 1, "Shared"}}, Integer];
 	makeSolidFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSolid", {Integer, {Integer, 1, "Shared"}}, Integer];
 	makeFaceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeFace", {Integer, {Integer, 1, "Shared"}}, Integer];
 	makeWireFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeWire", {Integer, {Integer, 1, "Shared"}}, Integer];
@@ -1629,6 +1631,20 @@ Module[{wires, wire},
 	wire
 ]
 
+
+OpenCascadeShapeCompound[oces:{e__}] /;
+	 And @@ (OpenCascadeShapeExpressionQ /@ oces) :=
+Module[{p, instance, res},
+
+	ids = pack[ instanceID /@ oces];
+	ids = DeleteDuplicates[ ids];
+
+	instance = OpenCascadeShapeCreate[];
+	res = makeCompoundFun[ instanceID[ instance], ids];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instance
+]
 
 OpenCascadeShapeSolid[oces:{e__}] /;
 	 And @@ (OpenCascadeShapeExpressionQ /@ oces) :=

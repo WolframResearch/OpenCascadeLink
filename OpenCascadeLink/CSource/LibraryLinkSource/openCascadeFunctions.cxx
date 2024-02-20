@@ -124,6 +124,7 @@ extern "C" {
 	DLLEXPORT int makeCircle(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeLine(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 
+	DLLEXPORT int makeCompound(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeSolid(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeFace(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
 	DLLEXPORT int makeWire(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res);
@@ -1069,6 +1070,52 @@ DLLEXPORT int makeLine(WolframLibraryData libData, mint Argc, MArgument *Args, M
 	TopoDS_Shape shape  = polygon.Shape();
 
 	*instance = shape;
+
+	MArgument_setInteger(res, 0);
+	return 0;
+}
+
+DLLEXPORT int makeCompound(WolframLibraryData libData, mint Argc, MArgument *Args, MArgument res)
+{
+	mint id = MArgument_getInteger(Args[0]);
+
+	MTensor p1 = MArgument_getMTensor(Args[1]);
+	int type1 = libData->MTensor_getType(p1);
+	int rank1 = libData->MTensor_getRank(p1);
+	const mint* dims1 = libData->MTensor_getDimensions(p1);
+
+	TopoDS_Shape *instance = get_ocShapeInstance( id);
+
+	if (instance == NULL || type1 != MType_Integer ||
+			 rank1 != 1 || dims1[0] < 0) {
+		libData->MTensor_disown(p1);
+		MArgument_setInteger(res, 0);
+		return LIBRARY_FUNCTION_ERROR;
+	}
+
+	mint * rawP1 = libData->MTensor_getIntegerData(p1);
+
+	TopoDS_Compound aRes;
+	BRep_Builder aBuilder;
+	aBuilder.MakeCompound (aRes);
+
+	BRepBuilderAPI_MakeSolid solid;
+	TopoDS_Shape *anID;
+	for (int i = 0; i < dims1[0]; i++) {
+		anID = get_ocShapeInstance( rawP1[ i]);
+		if (anID->IsNull()) {
+			libData->MTensor_disown(p1);
+			MArgument_setInteger(res, 0);
+			return LIBRARY_FUNCTION_ERROR;
+		}
+
+		aBuilder.Add (aRes, *anID);
+	}
+	libData->MTensor_disown(p1);
+
+//	TopoDS_Compound shape  = solid.Shape();
+
+	*instance = aRes;
 
 	MArgument_setInteger(res, 0);
 	return 0;
