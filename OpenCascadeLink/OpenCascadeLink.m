@@ -53,6 +53,7 @@ OpenCascadeShapeTransformation::usage = "OpenCascadeShapeTransformation[ shape, 
 OpenCascadeShapeCompound::usage = "OpenCascadeShapeCompound[ {shape1,..}] returns a new instance of an OpenCascade expression with a compound from shape1, ...";
 OpenCascadeShapeCompSolid::usage = "OpenCascadeShapeCompSolid[ {shape1,..}] returns a new instance of an OpenCascade expression with a compsolid from solid shape1, ...";
 OpenCascadeShapeSolid::usage = "OpenCascadeShapeSolid[ {shape1,..}] returns a new instance of an OpenCascade expression with a solid from shape1, ...";
+OpenCascadeShapeShell::usage = "OpenCascadeShapeShell[ {shape1,..}] returns a new instance of an OpenCascade expression with a shell from face shape1, ...";
 OpenCascadeShapeFace::usage = "OpenCascadeShapeFace[ {shape1,..}] returns a new instance of an OpenCascade expression with a face from shape1, ...";
 OpenCascadeShapeWire::usage = "OpenCascadeShapeWire[ {shape1,..}] returns a new instance of an OpenCascade expression with a wire from shape1, ...";
 
@@ -225,6 +226,7 @@ Module[{libDir, oldpath, preLoadLibs, success},
 	makeCompoundFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeCompound", {Integer, {Integer, 1, "Shared"}}, Integer];
 	makeCompSolidFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeCompSolid", {Integer, {Integer, 1, "Shared"}}, Integer];
 	makeSolidFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeSolid", {Integer, {Integer, 1, "Shared"}}, Integer];
+	makeShellFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeShell", {Integer, {Integer, 1, "Shared"}}, Integer];
 	makeFaceFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeFace", {Integer, {Integer, 1, "Shared"}}, Integer];
 	makeWireFun = LibraryFunctionLoad[$OpenCascadeLibrary, "makeWire", {Integer, {Integer, 1, "Shared"}}, Integer];
 
@@ -1680,6 +1682,21 @@ Module[{p, instance, res},
 OpenCascadeShapeSolid[e__] /;
 	 And @@ (OpenCascadeShapeExpressionQ /@ {e}) :=
 OpenCascadeShapeSolid[{e}]
+
+OpenCascadeShapeShell[oces:{e__}] /;
+	 And @@ (OpenCascadeShapeExpressionQ /@ oces) :=
+Module[{p, instance, res},
+
+	ids = pack[ instanceID /@ oces];
+	ids = DeleteDuplicates[ ids];
+	iids = Select[ids, OpenCascadeShapeType[#] == "Face" &];
+
+	instance = OpenCascadeShapeCreate[];
+	res = makeShellFun[ instanceID[ instance], ids];
+	If[ res =!= 0, Return[$Failed, Module]];
+
+	instance
+]
 
 
 OpenCascadeShapeFace[oces:{e__}] /;
