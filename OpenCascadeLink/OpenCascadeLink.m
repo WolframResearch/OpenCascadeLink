@@ -1517,6 +1517,15 @@ Module[{coords, faces, polygons, faceCoords, shape, numPoly},
 ]
 
 
+OpenCascadeShape[bmr_] /; BoundaryMeshRegionQ[bmr] &&
+	(RegionEmbeddingDimension[bmr] === 2) && (RegionDimension[bmr] === 2) :=
+Module[{mp, shape, difference},
+	mp = MeshPrimitives[bmr, 1, Multicells -> True];
+	shape = OpenCascadeShapeFace[OpenCascadeShapeWire[OpenCascadeShape[#]]] & /@ mp;
+	OpenCascadeShapeDifference[shape]
+]
+
+
 OpenCascadeShape[OpenCascadeDisk[axis:{center_, normal_}]] := 
 	OpenCascadeShapeFace[OpenCascadeShape[OpenCascadeCircle[axis, 1, {0, 2 Pi}]]]
 
