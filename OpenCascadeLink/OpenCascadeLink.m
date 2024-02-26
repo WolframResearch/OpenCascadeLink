@@ -1519,6 +1519,16 @@ Module[{bmesh, coords, faces, polygons, faceCoords, shape, numPoly},
 ]
 
 
+
+OpenCascadeShape[mr_] /; MeshRegionQ[mr] &&
+	(RegionEmbeddingDimension[mr] === 2) && (RegionDimension[mr] === 2) :=
+Module[{em, ep},
+	em = NDSolve`FEM`ToElementMesh[mr, "MeshOrder" -> 1];
+	ep = NDSolve`FEM`ElementMeshProjection[em, {#[[1]], #[[2]], 0.}& ];
+	OpenCascadeShape[ep]
+]
+
+(* TODO: is not 100% correct fails for letter i *)
 OpenCascadeShape[bmr_] /; BoundaryMeshRegionQ[bmr] &&
 	(RegionEmbeddingDimension[bmr] === 2) && (RegionDimension[bmr] === 2) :=
 Module[{mp, shape, difference},
