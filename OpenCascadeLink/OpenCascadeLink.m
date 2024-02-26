@@ -1484,9 +1484,11 @@ Module[{closedQ = False, mesh},
 	OpenCascadeShapeInternal[ bmesh, closedQ]
 ]
 
-OpenCascadeShapeInternal[bmesh_, closedQ_] /;
-	NDSolve`FEM`BoundaryElementMeshQ[ bmesh] :=
-Module[{coords, faces, polygons, faceCoords, shape, numPoly},
+OpenCascadeShapeInternal[bmeshIn_, closedQ_] /;
+	NDSolve`FEM`BoundaryElementMeshQ[ bmeshIn] :=
+Module[{bmesh, coords, faces, polygons, faceCoords, shape, numPoly},
+	bmesh = NDSolve`FEM`MeshOrderAlteration[bmeshIn, 1];
+
 	coords = bmesh["Coordinates"];
 	faces = NDSolve`FEM`ElementIncidents[bmesh["BoundaryElements"]];
 	polygons = {};
