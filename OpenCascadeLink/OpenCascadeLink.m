@@ -1467,14 +1467,6 @@ OpenCascadeShape[mesh_] /;
 		(mesh["EmbeddingDimension"] === 3) :=
 OpenCascadeShapeInternal[ NDSolve`FEM`ToBoundaryMesh[ mesh], True]
 
-OpenCascadeShape[mesh_] /;
-	!NDSolve`FEM`BoundaryElementMeshQ[mesh] && NDSolve`FEM`ElementMeshQ[mesh] &&
-		(mesh["EmbeddingDimension"] === 2) :=
-Module[{ep},
-	ep = NDSolve`FEM`ElementMeshProjection[mesh, {#[[1]], #[[2]], 0.}& ];
-	OpenCascadeShape[ep]
-]
-
 OpenCascadeShape[bmesh_] /;
 	NDSolve`FEM`BoundaryElementMeshQ[ bmesh] &&
 	(bmesh["EmbeddingDimension"] === 3) :=
@@ -1524,25 +1516,6 @@ Module[{bmesh, coords, faces, polygons, faceCoords, shape, numPoly},
 
 	(* fix possible orientation issues *)
 	OpenCascadeShapeFix[shape]
-]
-
-
-
-OpenCascadeShape[mr_] /; MeshRegionQ[mr] &&
-	(RegionEmbeddingDimension[mr] === 2) && (RegionDimension[mr] === 2) :=
-Module[{em, ep},
-	em = NDSolve`FEM`ToElementMesh[mr, "MeshOrder" -> 1];
-	ep = NDSolve`FEM`ElementMeshProjection[em, {#[[1]], #[[2]], 0.}& ];
-	OpenCascadeShape[ep]
-]
-
-(* TODO: is not 100% correct fails for letter i *)
-OpenCascadeShape[bmr_] /; BoundaryMeshRegionQ[bmr] &&
-	(RegionEmbeddingDimension[bmr] === 2) && (RegionDimension[bmr] === 2) :=
-Module[{mp, shape, difference},
-	mp = MeshPrimitives[bmr, 1, Multicells -> True];
-	shape = OpenCascadeShapeFace[OpenCascadeShapeWire[OpenCascadeShape[#]]] & /@ mp;
-	OpenCascadeShapeDifference[shape]
 ]
 
 
@@ -2984,6 +2957,33 @@ Module[{shapes, wire, instance},
 
 	instance
 ]
+
+OpenCascadeShape[mesh_] /;
+	!NDSolve`FEM`BoundaryElementMeshQ[mesh] && NDSolve`FEM`ElementMeshQ[mesh] &&
+		(mesh["EmbeddingDimension"] === 2) :=
+Module[{ep},
+	ep = NDSolve`FEM`ElementMeshProjection[mesh, {#[[1]], #[[2]], 0.}& ];
+	OpenCascadeShape[ep]
+]
+
+
+OpenCascadeShape[mr_] /; MeshRegionQ[mr] &&
+	(RegionEmbeddingDimension[mr] === 2) && (RegionDimension[mr] === 2) :=
+Module[{em, ep},
+	em = NDSolve`FEM`ToElementMesh[mr, "MeshOrder" -> 1];
+	ep = NDSolve`FEM`ElementMeshProjection[em, {#[[1]], #[[2]], 0.}& ];
+	OpenCascadeShape[ep]
+]
+
+(* TODO: is not 100% correct fails for letter i *)
+OpenCascadeShape[bmr_] /; BoundaryMeshRegionQ[bmr] &&
+	(RegionEmbeddingDimension[bmr] === 2) && (RegionDimension[bmr] === 2) :=
+Module[{mp, shape, difference},
+	mp = MeshPrimitives[bmr, 1, Multicells -> True];
+	shape = OpenCascadeShapeFace[OpenCascadeShapeWire[OpenCascadeShape[#]]] & /@ mp;
+	OpenCascadeShapeDifference[shape]
+]
+
 
 (**)
 (* Visualization *)
