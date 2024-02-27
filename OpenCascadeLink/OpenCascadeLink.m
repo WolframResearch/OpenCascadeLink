@@ -2967,21 +2967,12 @@ Module[{ep},
 ]
 
 
-OpenCascadeShape[mr_] /; MeshRegionQ[mr] &&
+OpenCascadeShape[mr_] /; (MeshRegionQ[mr] || BoundaryMeshRegionQ[mr]) &&
 	(RegionEmbeddingDimension[mr] === 2) && (RegionDimension[mr] === 2) :=
 Module[{em, ep},
-	em = NDSolve`FEM`ToElementMesh[mr, "MeshOrder" -> 1];
+	em = NDSolve`FEM`ToElementMesh[mr, "MeshOrder" -> 1, "MaxCellMeasure"->Infinity];
 	ep = NDSolve`FEM`ElementMeshProjection[em, {#[[1]], #[[2]], 0.}& ];
 	OpenCascadeShape[ep]
-]
-
-(* TODO: is not 100% correct fails for letter i *)
-OpenCascadeShape[bmr_] /; BoundaryMeshRegionQ[bmr] &&
-	(RegionEmbeddingDimension[bmr] === 2) && (RegionDimension[bmr] === 2) :=
-Module[{mp, shape, difference},
-	mp = MeshPrimitives[bmr, 1, Multicells -> True];
-	shape = OpenCascadeShapeFace[OpenCascadeShapeWire[OpenCascadeShape[#]]] & /@ mp;
-	OpenCascadeShapeDifference[shape]
 ]
 
 
