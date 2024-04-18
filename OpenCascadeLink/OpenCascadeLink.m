@@ -2754,7 +2754,8 @@ Module[{center, iOut, iIn, instance},
 	iOut = OpenCascadeShape[OpenCascadeDisk[{center, $OpenCascadeDraftAxis}, rOut, a]];
 	iIn = OpenCascadeShape[OpenCascadeDisk[{center, $OpenCascadeDraftAxis}, rIn, a]];
 	instance = OpenCascadeShapeDifference[iOut, iIn];
-	instance = OpenCascadeShapeFace[instance];
+(* the following is problematic for Annulus[{0, 0}, {1, 2}, {0, 2 \[Pi]}] *)
+(*	instance = OpenCascadeShapeFace[instance];*)
 	instance = Make2DShape[ instance];
 
 	instance
