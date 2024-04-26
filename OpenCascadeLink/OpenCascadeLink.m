@@ -142,6 +142,7 @@ Options[OpenCascadeShapeLoft] = Sort[ {
 	"CheckCompatibility" -> Automatic
 }];
 
+Options[OpenCascadeShapeInactiveRegion] = 
 Options[OpenCascadeShapeBooleanRegion] = 
 Options[OpenCascadeShapeCSGRegion] = 
 Options[OpenCascadeShapeDifference] =
@@ -948,6 +949,8 @@ Module[{instance, tm, res},
 ]
 
 
+OpenCascadeShape[ ir:Inactive[RegionUnion|RegionIntersection|RegionDifference][data__]] :=
+	OpenCascadeShapeInactiveRegion[ ir]
 
 OpenCascadeShape[ br_BooleanRegion] /; Length[br] == 2 :=
 	OpenCascadeShapeBooleanRegion[ br]
@@ -1843,6 +1846,27 @@ OpenCascadeShapeUnion[eN, opts]
 
 OpenCascadeShape::badconv = "The expression `1` could not be converted to OpenCascade."
 
+OpenCascadeShapeInactiveRegion[ ir:Inactive[RegionUnion|RegionDifference|RegionIntersection][data__],
+	opts:OptionsPattern[OpenCascadeShapeInactiveRegion]] :=
+Module[
+	{booleanOpName, booleanOp, operands, shapes, allGood},
+
+	booleanOpName = ir[[0, 1]];
+	booleanOp = getOCBooleanOp[booleanOpName];
+	operands = Flatten[{data}];
+
+	shapes = OpenCascadeShape /@ operands;
+
+	allGood = OpenCascadeShapeExpressionQ /@ shapes;
+	If[ Union[ allGood] =!= {True},
+		Message[OpenCascadeShape::badconv,
+			Select[shapes, Not[OpenCascadeShapeExpressionQ[#]]& ]];
+		Return[$Failed, Module];
+	];
+
+	booleanOp[shapes, opts]
+]
+
 OpenCascadeShapeBooleanRegion[ br_BooleanRegion,
 	opts:OptionsPattern[OpenCascadeShapeBooleanRegion]] /; Length[br] == 2 :=
 Module[
@@ -1863,6 +1887,11 @@ Module[
 	booleanFunction @@ regions
 ]
 
+
+getOCBooleanOp[RegionUnion] := OpenCascadeShapeUnion
+getOCBooleanOp[RegionDifference] := OpenCascadeShapeDifference
+getOCBooleanOp[RegionIntersection] := OpenCascadeShapeIntersection
+
 getOCBooleanOp["Union"] := OpenCascadeShapeUnion
 getOCBooleanOp["Difference"] := OpenCascadeShapeDifference
 getOCBooleanOp["Intersection"] := OpenCascadeShapeIntersection
@@ -1870,7 +1899,7 @@ getOCBooleanOp["Intersection"] := OpenCascadeShapeIntersection
 OpenCascadeShapeCSGRegion[ cr_CSGRegion,
 	opts:OptionsPattern[OpenCascadeShapeCSGRegion]] /; Length[cr] == 2 :=
 Module[
-	{booleanOpName, booleanOp, operands, shapes, allGoodQ},
+	{booleanOpName, booleanOp, operands, shapes, allGood},
 
 	booleanOpName = cr[[1]];
 	booleanOp = getOCBooleanOp[booleanOpName];
