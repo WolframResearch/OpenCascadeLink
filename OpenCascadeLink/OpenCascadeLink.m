@@ -2654,7 +2654,9 @@ Module[
 	lengthUnit = OptionValue[NDSolve`FEM`ToBoundaryMesh, bMeshOpts, "LengthUnit"];
 	If[ lengthUnit =!= None,
 		(* OCCT converts to MM by default *)
+		(*
 		NDSolve`FEM`SetLengthUnit[bmesh, "Millimeter"];
+		*)
 		If[ StringQ[lengthUnit],
 			bmesh = NDSolve`FEM`ElementMeshCoordinateRescale[bmesh, lengthUnit];
 		];
