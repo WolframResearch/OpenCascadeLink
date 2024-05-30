@@ -2835,7 +2835,7 @@ Module[{p, instance},
 	instance
 ]
 
-OpenCascadeShape[p:Polygon[coords_, data_]] /;
+OpenCascadeShape[Polygon[coords_, data_]] /;
 	MatrixQ[coords, NumericQ] && MatchQ[ Dimensions[coords], {_, 2}] :=
 Module[{p, instance},
 
