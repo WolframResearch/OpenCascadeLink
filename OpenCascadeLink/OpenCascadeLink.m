@@ -550,7 +550,7 @@ OpenCascadeShape[Ball[p, 1.]]
 
 OpenCascadeShape[Ball[p_, r___]] /; 
 	ArrayQ[ p, 2, NumericQ] && (Last[ Dimensions[ p]] === 3) := 
-OpenCascadeShape[Ball[#, r]]& /@ p
+OpenCascadeShapeUnion[OpenCascadeShape[Ball[#, r]]& /@ p]
 
 
 OpenCascadeShape[Cone[{pMin_, pMax_}, r_]] /;
