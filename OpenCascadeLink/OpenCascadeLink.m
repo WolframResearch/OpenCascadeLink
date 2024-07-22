@@ -1864,7 +1864,9 @@ Module[
 		Return[$Failed, Module];
 	];
 
-	booleanOp[shapes, opts]
+	faces = Flatten[OpenCascadeShapeFaces /@ shapes];
+
+	booleanOp[faces, opts]
 ]
 
 OpenCascadeShapeBooleanRegion[ br_BooleanRegion,
