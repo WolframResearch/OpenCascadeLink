@@ -1456,6 +1456,13 @@ Module[
 	pts = bf["ControlPoints"];
 	pts = pack[N[pts]];
 
+	(* The weights are defaulted to all being 1. *)
+
+	If[ !(2 <= Length[pts] <= 25),
+		(* TODO: Message? *)
+		Return[$Failed, Module];
+	];
+
 	instance = OpenCascadeShapeCreate[];
 
 	res = makeBezierCurveFun[ instanceID[ instance], pts];
