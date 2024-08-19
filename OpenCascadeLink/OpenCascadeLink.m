@@ -1352,7 +1352,7 @@ Module[
 
 
 OpenCascadeShape[BSplineCurve[pts_, OptionsPattern[]]] /;
-	Length[ Dimensions[ pts]] === 2 :=
+	MatrixQ[pts, NumericQ] && MatchQ[ Dimensions[pts], {_, 3}] :=
 Module[
 	{k, w, d, c, bsf, cpts, poles, weights, knots, mults, degree, periodic,
 	closed, instance, res, npoles},
@@ -2871,16 +2871,16 @@ OpenCascadeShape[Triangle[coords_]] /;
 OpenCascadeShape[Polygon[coords]]
 
 
-(* 1D primitives *)
+(* RegionDimension 1D primitives *)
 
-OpenCascadeShape[BezierCurve[coords_, opts:OptionsPattern[]]] /;
+OpenCascadeShape[(head:(BezierCurve|BSplineCurve))[coords_, opts:OptionsPattern[]]] /;
 		MatrixQ[coords, NumericQ] && MatchQ[ Dimensions[coords], {_, 2}] :=
 Module[{p, instance},
 
 	p = pack[ N[ coords]];
 	p = Join[p, ConstantArray[{0.}, {Length[p]}], 2];
 
-	instance = OpenCascadeShape[BezierCurve[p, opts]];
+	instance = OpenCascadeShape[head[p, opts]];
 	instance = Make2DShape[ instance];
 
 	instance
