@@ -131,7 +131,6 @@ Options[OpenCascadeShapeSimplify] = Sort[ {
 	"SimplifyBSplineEdges" -> Automatic,
 	"LinearTolerance" -> Automatic,
 	"AngularTolerance" -> Automatic,
-	"AngularTolerance" -> Automatic,
 	"KeepEdges" -> Automatic,
 	"KeepVertices" -> Automatic,
 	"AllowInternalEdges" -> Automatic
@@ -1080,7 +1079,7 @@ Module[{p, instance, res, optParam, temp, types},
 	If[ temp === True, optParam = BitSet[ optParam, 1]; ];
 
 	temp = OptionValue["CheckCompatibility"];
-	If[ temp === Automatic, temp = True;]
+	If[ temp === Automatic, temp = True;];
 	If[ temp === True, optParam = BitSet[ optParam, 2]; ];
 
 	instance = OpenCascadeShapeCreate[];
