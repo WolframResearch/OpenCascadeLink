@@ -924,11 +924,27 @@ Module[{shape},
 		OpenCascadeShape[shape, tf]
 ]
 
-(* this is here for backward compatiblity *)
+(* the 2 arg form is here for backward compatiblity *)
 OpenCascadeShape[shape_, tf:TransformationFunction[mat_]] /;
 	OpenCascadeShapeExpressionQ[shape] &&
 	MatrixQ[mat, NumericQ] && (Dimensions[mat] == {4,4}) :=
 OpenCascadeShapeTransformation[shape, tf]
+
+(* 2D drafting case *)
+OpenCascadeShapeTransformation[shape_, TransformationFunction[mat_]] /;
+	OpenCascadeShapeExpressionQ[shape] &&
+	MatrixQ[mat, NumericQ] && (Dimensions[mat] == {3,3}) :=
+Module[{tf},
+
+	m = IdentityMatrix[4];
+	m[[1 ;; 2, 1 ;; 2]] = mat[[1 ;; 2, 1 ;; 2]];
+	m[[-1, 1 ;; 2]] = mat[[-1, 1 ;; 2]];
+	m[[1 ;; 2, -1]] = mat[[1 ;; 2, -1]];
+
+	tf = TransformationFunction[m];
+
+	OpenCascadeShapeTransformation[shape, tf]
+]
 
 OpenCascadeShapeTransformation[shape_, tf:TransformationFunction[mat_]] /;
 	OpenCascadeShapeExpressionQ[shape] &&
