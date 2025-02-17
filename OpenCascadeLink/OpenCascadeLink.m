@@ -3024,6 +3024,13 @@ Module[{ep},
 
 
 OpenCascadeShape[mr_] /; (MeshRegionQ[mr] || BoundaryMeshRegionQ[mr]) &&
+	(RegionEmbeddingDimension[mr] === 3) && (RegionDimension[mr] === 3) :=
+Module[{em, ep},
+	em = NDSolve`FEM`ToBoundaryMesh[mr];
+	OpenCascadeShape[em]
+]
+
+OpenCascadeShape[mr_] /; (MeshRegionQ[mr] || BoundaryMeshRegionQ[mr]) &&
 	(RegionEmbeddingDimension[mr] === 2) && (RegionDimension[mr] === 2) :=
 Module[{em, ep},
 	em = NDSolve`FEM`ToElementMesh[mr, "MeshOrder" -> 1, "MaxCellMeasure"->Infinity];
