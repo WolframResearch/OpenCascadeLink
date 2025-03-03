@@ -1795,6 +1795,13 @@ And[
 	instance
 ]
 
+OpenCascadeShapeDifference[ shape1_, shapes:{__}, opts:OptionsPattern[OpenCascadeShapeDifference]] /;
+And[
+	OpenCascadeShapeExpressionQ[shape1],
+ 	TrueQ[AllTrue[shapes, OpenCascadeShapeExpressionQ]]
+] := OpenCascadeShapeDifference[shape1, OpenCascadeShapeUnion[shapes, opts], opts] 
+
+
 OpenCascadeShapeDifference[eN__, opts:OptionsPattern[OpenCascadeShapeDifference]] /;
 	And @@ (OpenCascadeShapeExpressionQ /@ {eN}) === True :=
 Fold[OpenCascadeShapeDifference[##, opts]&, {eN}]
