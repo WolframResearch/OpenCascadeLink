@@ -529,6 +529,10 @@ Module[{res, fileOperation, fileName, fileWithExtension,
 
 instanceID[ OpenCascadeShapeExpression[ id_]] := id
 
+(* Remove a Region Wrapper *)
+OpenCascadeShape[r:Region[__]] :=
+	OpenCascadeShape[r[[1]]]
+
 (* map graphics primitives to open cascade *)
 
 OpenCascadeShape[Ball[p_, r_]] /;
