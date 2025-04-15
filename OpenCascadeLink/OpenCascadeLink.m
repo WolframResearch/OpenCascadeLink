@@ -845,16 +845,16 @@ Module[{cp, op, ip, s1, s2, shape, pc, pi, ipp},
 	Switch[ Head[ip],
 		Polyhedron,
 			If[ Length[ip] =!= 2, Return[$Failed, Module]];
-			pc = ip[[1]];
+			pc = PolyhedronCoordinates[ip];
 			pi = ip[[2]];
 			(* ip needs to be reversed *)
-			ipp = Polyhedron[pc, Reverse /@ pi];
-			s2 = OpenCascadeShape[Polygon @@ ipp];
+			ipp = Polyhedron[pc, Map[Reverse, pi, {2}]];
+			s2 = OpenCascadeShape[RegionBoundary[ipp]];
 			s2 = OpenCascadeShapeSolid[s2];
-			If[ !OpenCascadeShapeExpressionQ[ s2], Return[$Failed, Module]];
+			If[ !OpenCascadeShapeExpressionQ[s2], Return[$Failed, Module]];
 			shape = OpenCascadeShapeDifference[s1, s2];
 			shape = OpenCascadeShapeSolid[shape];
-			If[ !OpenCascadeShapeExpressionQ[ shape], Return[$Failed, Module]];
+			If[ !OpenCascadeShapeExpressionQ[shape], Return[$Failed, Module]];
 		,
 		EmptyRegion,
 			shape = s1;
