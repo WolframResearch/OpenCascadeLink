@@ -19,8 +19,6 @@
 				<include name='ExampleData/*' />
 				<include name='Kernel/*.m' />
 				<include name='OpenCascadeLink.m' />
-			</fileset>
-			<fileset dir='${basedir}'>
 				<include name='PacletInfo.m' />
 			</fileset>
 		</copy>
