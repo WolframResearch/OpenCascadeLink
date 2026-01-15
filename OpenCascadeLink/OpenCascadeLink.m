@@ -1025,6 +1025,12 @@ OpenCascadeShapeRotationalSweep[ shape_, {p1_, p2_}] /;
 OpenCascadeShapeRotationalSweep[shape, {p1, p2}, 2 Pi]
 
 
+
+OpenCascadeShapeLinearSweep[ shape1_, v_] /;
+	OpenCascadeShapeExpressionQ[shape1] &&
+	VectorQ[v, NumericQ] && (Length[v] === 3) :=
+OpenCascadeShapeLinearSweep[ shape1, {{0, 0, 0}, v}]
+
 OpenCascadeShapeLinearSweep[ shape1_, {p1_, p2_}] /;
 	OpenCascadeShapeExpressionQ[shape1] &&
 	VectorQ[p1, NumericQ] && (Length[p1] === 3) &&
