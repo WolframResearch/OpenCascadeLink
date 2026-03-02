@@ -2355,9 +2355,18 @@ DLLEXPORT int makeFillet(WolframLibraryData libData, mint Argc, MArgument *Args,
 
 	TopExp_Explorer explore(*instance1, TopAbs_EDGE);
 	mint i = 0, iter = 0;
+
     while (explore.More() && (i < dims[0])) {
 		if ( indices[i] == iter) {
-			filleted.Add(radius, TopoDS::Edge(explore.Current()));
+			TopoDS_Edge edge = TopoDS::Edge(explore.Current());
+			try {
+				filleted.Add(radius, edge);
+			}
+			catch (Standard_ConstructionError) {
+				*instance = *instance1;
+				MArgument_setInteger(res, ERROR);
+				return 0;
+			}
 			i++;
 		};
 		iter++;
@@ -2416,7 +2425,15 @@ DLLEXPORT int makeChamfer(WolframLibraryData libData, mint Argc, MArgument *Args
 	mint i = 0, iter = 0;
     while (explore.More() && (i < dims[0])) {
 		if ( indices[i] == iter) {
-			chamfered.Add(distance, TopoDS::Edge(explore.Current()));
+			TopoDS_Edge edge = TopoDS::Edge(explore.Current());
+			try {
+				chamfered.Add(distance, edge);
+			}
+			catch (Standard_ConstructionError) {
+				*instance = *instance1;
+				MArgument_setInteger(res, ERROR);
+				return 0;
+			}
 			i++;
 		};
 		iter++;
