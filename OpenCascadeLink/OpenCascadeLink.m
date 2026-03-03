@@ -1550,7 +1550,10 @@ Module[{bmesh, coords, faces, polygons, faceCoords, shape, numPoly},
 	];
 
 	(* fix possible orientation issues *)
-	OpenCascadeShapeFix[shape]
+	shape = OpenCascadeShapeFix[shape];
+
+	(* simplify shape: i.e. remove duplicate edges *)
+	OpenCascadeShapeSimplify[shape]
 ]
 
 
