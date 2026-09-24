@@ -9,7 +9,7 @@ $OpenCascadeVersion::usage = "$OpenCascadeVersion gives the version number of th
 
 OpenCascadeShapeExpression::usage = "OpenCascadeShapeExpression[ id] represents an instance of a OpenCascadeShape object."
 
-OpenCascadeShapeExpression2D::usage = "OpenCascadeShapeExpressionw2D[ id] represents an instance of a 2D OpenCascadeShape object."
+OpenCascadeShapeExpression2D::usage = "OpenCascadeShapeExpression2D[ id] represents an instance of a 2D OpenCascadeShape object."
 
 OpenCascadeShapeExpressionQ::usage = "OpenCascadeShapeExpressionQ[ expr] returns True if expr represents an active instance of a OpenCascadeShape object."
 
@@ -555,7 +555,6 @@ OpenCascadeShape[Ball[p_, r___]] /;
 	ArrayQ[ p, 2, NumericQ] && (Last[ Dimensions[ p]] === 3) := 
 OpenCascadeShapeUnion[OpenCascadeShape[Ball[#, r]]& /@ p]
 
-
 OpenCascadeShape[Cone[{pMin_, pMax_}, r_]] /;
 		VectorQ[pMin, NumericQ] && (Length[ pMin] == 3) && 
 		VectorQ[pMax, NumericQ] && (Length[ pMax] == 3) &&
@@ -885,6 +884,25 @@ Module[{c, inci, sewenFaces},
 
 	sewenFaces
 ]
+
+
+OpenCascadeShape[Sphere[p_]] /; VectorQ[ p, NumericQ] && (Length[ p] === 3) := 
+OpenCascadeShape[Sphere[p, 1.]]
+
+OpenCascadeShape[s:Sphere[p_, r_]] /;
+		VectorQ[p, NumericQ] && (Length[ p] == 3) :=
+Module[{ocb},
+	ocb = OpenCascadeShape[s /. Sphere -> Ball];
+	If[ OpenCascadeShapeExpressionQ[ocb],
+		OpenCascadeShapeFaces[ocb][[1]]
+	,
+		Return[$Failed, Module]
+	]
+]
+
+OpenCascadeShape[Sphere[p_, r___]] /; 
+	ArrayQ[ p, 2, NumericQ] && (Last[ Dimensions[ p]] === 3) := 
+OpenCascadeShapeUnion[OpenCascadeShape[Sphere[#, r]]& /@ p]
 
 
 OpenCascadeShape[SphericalShell[c_, {r1_, r2_}]] /;
